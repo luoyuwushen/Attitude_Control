@@ -9,5 +9,8 @@
 tmp/
 build/
 output/
+# Official manuals / reference examples stay local; record hashes in docs.
+Reference/
+Release/
 *.log
 *.tmp

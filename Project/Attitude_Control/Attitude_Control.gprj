@@ -1,8 +1,23 @@
-<?xml version="1" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE gowin-fpga-project>
 <Project>
     <Template>FPGA</Template>
     <Version>5</Version>
-    <Device name="" pn="">gw2a55c-005</Device>
-    <FileList/>
+    <Device name="GW2A-55C" pn="GW2A-LV55PG484C8/I7">gw2a55c-005</Device>
+    <FileList>
+        <File path="src/adc_sampler.v" type="file.verilog" enable="1" />
+        <File path="src/attitude_control.cst" type="file.cst" enable="1" />
+        <File path="src/attitude_control.sdc" type="file.sdc" enable="1" />
+        <File path="src/attitude_controller.v" type="file.verilog" enable="1" />
+        <File path="src/calibration_divider.v" type="file.verilog" enable="1" />
+        <File path="src/key_debounce.v" type="file.verilog" enable="1" />
+        <File path="src/motor_pwm.v" type="file.verilog" enable="1" />
+        <File path="src/quadrature_encoder.v" type="file.verilog" enable="1" />
+        <File path="src/reset_sync.v" type="file.verilog" enable="1" />
+        <File path="src/state_estimator.v" type="file.verilog" enable="1" />
+        <File path="src/telemetry.v" type="file.verilog" enable="1" />
+        <File path="src/top.v" type="file.verilog" enable="1" />
+        <File path="src/uart_rx_byte.v" type="file.verilog" enable="1" />
+        <File path="src/uart_tx_byte.v" type="file.verilog" enable="1" />
+    </FileList>
 </Project>
