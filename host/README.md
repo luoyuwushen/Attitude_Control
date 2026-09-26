@@ -1,10 +1,10 @@
 # J280 姿态控制测量工作站
 
-版本 **0.3.0（2026-09-27）**，配合项目 FPGA **0.1.1** 基线使用。支持自定义串口、通用收发、实时曲线、实验记录、CSV 回放和手动开启的实测辅助。位置与观测扩展字段需要后续固件上报；硬件标定、起摆与抗扰仍待实物验收。
+上位机版本 **host-v0.3.0（2026-09-27）**，兼容项目/FPGA **project-v0.1.1** 基线。支持自定义串口、通用收发、实时曲线、实验记录、CSV 回放和手动开启的实测辅助。位置与观测扩展字段需要后续固件上报；硬件标定、起摆与抗扰仍待实物验收。
 
 ## 启动
 
-Windows 本机发布包 `Project/Release/v0.3.0/J280_Monitor.exe` 可直接运行；同目录的 `HOST_README.md` 和 `HOST_PROTOCOL.md` 提供说明。EXE 为本地产物，不包含在源码仓库中，克隆后可按下文自行打包。源码运行时，在 `Project` 执行：
+Windows 本机发布包 `Project/Release/host-v0.3.0/J280_Monitor.exe` 可直接运行；同目录的 `HOST_README.md` 和 `HOST_PROTOCOL.md` 提供说明。EXE 为本地产物，不包含在源码仓库中，克隆后可按下文自行打包。源码运行时，在 `Project` 执行：
 
 ```powershell
 python -m pip install -r host/requirements.txt
@@ -25,7 +25,7 @@ python tools/host_monitor.py --demo
 | 停止位 | 1、1.5、2 | 是否可用取决于串口驱动 |
 | 工作模式 | J280 遥测与控制、通用串口收发 | 两种模式须断开后切换 |
 
-**当前 FPGA 固定为 115200、8N1。** 点击“恢复 J280 默认”可恢复匹配配置；修改上位机参数不会修改 FPGA。J280 模式选用其他参数时，所有项目控制命令均禁用，包括串口停止命令；停止机构使用板上 SW3。
+**当前 project-v0.1.1 FPGA 固定为 115200、8N1。** 点击“恢复 J280 默认”可恢复匹配配置；修改上位机参数不会修改 FPGA。J280 模式选用其他参数时，所有项目控制命令均禁用，包括串口停止命令；停止机构使用板上 SW3。
 
 串口设置与常用波特率保存在采集目录的 `host_preferences.json`；源码默认位于 `Project/Release/captures`，EXE 位于同目录 `captures`，`--output` 可指定其他目录。删除该偏好文件后，下次启动恢复默认设置；开发者窗口不会随偏好自动打开。
 
@@ -85,4 +85,4 @@ python -m pip install PyInstaller==6.20.0
 python tools/build_host.py
 ```
 
-默认输出 `Release/J280_Monitor.exe`。使用 `python tools/build_host.py --dist-dir Release/v0.3.0` 可输出到独立版本目录，避免覆盖正在运行的程序。构建会进行离线启动检查；该检查不代表物理串口或实物控制通过。
+默认输出 `Release/host-v0.3.0/J280_Monitor.exe`。也可使用 `python tools/build_host.py --dist-dir Release/host-v0.3.0` 输出到独立版本目录，避免覆盖正在运行的程序。构建会进行离线启动检查；该检查不代表物理串口或实物控制通过。

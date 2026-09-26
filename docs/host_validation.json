@@ -1,5 +1,7 @@
 {
-  "version": "0.3.0",
+  "host_version": "host-v0.3.0",
+  "project_version": "project-v0.1.1",
+  "release_id": "host-v0.3.0",
   "validated_at_utc": "2026-09-26T19:21:52.399802+00:00",
   "platform": "Windows-11-10.0.26200-SP0",
   "python": "3.12.5",
@@ -24,7 +26,7 @@
       "settings_terminal_integration_tests": 11
     },
     "source_smoke": "passed; startup, demonstration, plots, motion disabled, manually loaded developer window, close",
-    "windows_exe_build_and_smoke": "passed; tools/build_host.py --dist-dir Release/v0.3.0 returned 0",
+    "windows_exe_build_and_smoke": "passed; tools/build_host.py --dist-dir Release/host-v0.3.0 returned 0",
     "visual_review": [
       "realtime main window",
       "serial settings",
@@ -45,13 +47,13 @@
   "hardware_serial_validation": "pending; no physical port opened",
   "fpga_protocol": "v1 unchanged: 115200/8N1; v2 host decoder only",
   "executable": {
-    "path": "Release/v0.3.0/J280_Monitor.exe",
-    "bytes": 57635432,
-    "sha256": "1833d1f27214362caeed968394d9d5c18e6692c6f20d9a61faf2b3388a269e96"
+    "path": "Release/host-v0.3.0/J280_Monitor.exe",
+    "bytes": 57633318,
+    "sha256": "713d092e5aff086483957af43eff05ed7e0ea72bbf423396e614a214b3a9c8ec"
   },
   "source_sha256": {
     "host/__init__.py": "b7b8a08bd9d32550ee1d509aac087b2a7eb8ae4e6a7f05f867b8ab9814f090ff",
-    "host/app.py": "7b337a9a858da05ec755baee518415616fb1ac505b463a721f988f46b81613b1",
+    "host/app.py": "a96bde29eba306a411a6a280c95ecb6bd5ec4373d6a6c145d852d2ed81fa911e",
     "host/core.py": "593e6dfd2b22962d7ccf79bc55a862fd416b34dcdc407f87c1610caab506128d",
     "host/measurement_ui.py": "7337b2b99c02a78ee2c851aa5411c5e0bd878c485124f5716d456186615e1266",
     "host/measurements.py": "ec5d55ae43892cca434581eaac6535f619b17397097f3b6f64601ae5884ca0fe",
@@ -67,7 +69,7 @@
     "tests/test_host_settings.py": "68b0e7eb8057ae5013a08b46dbd22f68f81684e987130dfac7b9488f83b3817f",
     "tests/test_host_transport_race.py": "c7f9ef6922825697095fe0b4ac16f8cd9081dcb6af0b0ea461d0c6dea467ef3d",
     "tests/test_host_ui.py": "19b6a47994e812ed20c564b58a4db0f99c05a04428ad6b3c3e94080cf34d3fb0",
-    "tools/build_host.py": "b15572cdd535fde9e1e6dc4786b29e090f0b368920668085a4cc61cdf5c7814c",
+    "tools/build_host.py": "b6592c83165095c1b3d46baeeafd9c12261676ab569eac19e75b5514e9f921dc",
     "tools/host_monitor.py": "b3c34136f63f1b12b42246fd891caf19c9911b056318134bb0dd9b645497dc54"
   }
 }

@@ -6,12 +6,13 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+HOST_RELEASE_ID = 'host-v0.3.0'
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--skip-smoke', action='store_true')
-    parser.add_argument('--dist-dir', type=Path, default=ROOT / 'Release',
+    parser.add_argument('--dist-dir', type=Path, default=ROOT / 'Release' / HOST_RELEASE_ID,
                         help='输出目录；可使用独立版本目录，避免覆盖正在运行的 EXE')
     args = parser.parse_args()
     if sys.platform != 'win32':

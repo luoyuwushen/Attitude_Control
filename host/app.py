@@ -23,6 +23,8 @@ from host.settings import SettingsDialog, load_preferences, save_preferences
 from host.serial_ui import SerialPanel
 
 STATE_NAMES = {0: '待机', 1: '自动起摆', 2: '直立平衡', 3: '故障', 4: '限时点动'}
+HOST_VERSION = 'host-v0.3.0'
+PROJECT_VERSION = 'project-v0.1.1'
 FAULT_NAMES = {1: '传感器 / 接口异常', 2: '标定失效', 4: '采样丢失',
                8: '位移 / 速度超限', 16: '起摆超时', 32: '平衡跌落'}
 EXTENSIONS = [
@@ -705,7 +707,8 @@ class Window(QMainWindow):
 
     def start_recording(self, metadata):
         try:
-            metadata = dict(metadata, source=self.source, host_version='0.3.0',
+            metadata = dict(metadata, source=self.source, host_version=HOST_VERSION,
+                            project_version=PROJECT_VERSION,
                             baud=self.serial_config.baudrate, serial_config=self.serial_config.as_dict(),
                             serial_mode=self.serial_mode, stop_on_disconnect=self.stop_on_close.isChecked() and self.serial_mode == 'project' and self.serial_config.is_project_default,
                             direction_verified=self.direction_check.isChecked())
