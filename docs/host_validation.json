@@ -1,0 +1,58 @@
+{
+  "version": "0.2.0",
+  "validated_at_utc": "2026-09-26T18:27:32.927186+00:00",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.5",
+  "dependencies": {
+    "PySide6-Essentials": "6.8.3",
+    "pyqtgraph": "0.13.7",
+    "pyserial": "3.5",
+    "PyInstaller": "6.20.0"
+  },
+  "checks": {
+    "python_regression": {
+      "tests": 65,
+      "skipped": 0,
+      "returncode": 0,
+      "core_tests": 24,
+      "ui_serial_tests": 23,
+      "existing_tests": 10,
+      "dispatch_race_tests": 8
+    },
+    "source_smoke": "passed",
+    "windows_exe_build_and_smoke": "passed; tools/build_host.py --dist-dir Release/v0.2.0 returned 0",
+    "visual_review": [
+      "realtime curves",
+      "experiment metrics and events",
+      "missing extension measurements"
+    ],
+    "project_pins_reference_checksums": "passed: 14 files, 29 pads, 31/31 references",
+    "baseline_bitstream_verify_only": "passed",
+    "release_review_regressions": [
+      "worker timestamp freshness and old connection signals",
+      "dequeued stop/close dispatch races",
+      "missing CSV time rejected",
+      "earliest replay source preserved",
+      "unknown fault/calibration cannot prove recovery"
+    ]
+  },
+  "hardware_serial_validation": "pending; no physical port opened",
+  "fpga_protocol": "v1 unchanged; v2 host decoder only",
+  "executable": {
+    "path": "Release/v0.2.0/J280_Monitor.exe",
+    "bytes": 57580188,
+    "sha256": "a797b5bafce1cb9899ada601f1d40df9ae8a25702d2c1f4320a48acd501a76aa"
+  },
+  "source_sha256": {
+    "host/__init__.py": "b7b8a08bd9d32550ee1d509aac087b2a7eb8ae4e6a7f05f867b8ab9814f090ff",
+    "host/app.py": "41d5edc866e0098f2e16572a6586cab7cdf982f9a9f59ef8cbb6ea02357e77fa",
+    "host/core.py": "593e6dfd2b22962d7ccf79bc55a862fd416b34dcdc407f87c1610caab506128d",
+    "host/transport.py": "e1205a2991068bb2539eb24c8d9ca8c9b933264fd8b06078d2d1831ce80cc25e",
+    "host/requirements.txt": "3e3b3e57f7c7119268b0fc864bfc38a6aa3dd2b493a0da37cfa77a5607b0a3b7",
+    "tools/host_monitor.py": "b3c34136f63f1b12b42246fd891caf19c9911b056318134bb0dd9b645497dc54",
+    "tools/build_host.py": "b15572cdd535fde9e1e6dc4786b29e090f0b368920668085a4cc61cdf5c7814c",
+    "tests/test_host_core.py": "8092a7b8f9a78116933b288b749d6dea3a3b09f4a966b1d0a17ed4c99658fc54",
+    "tests/test_host_ui.py": "19b6a47994e812ed20c564b58a4db0f99c05a04428ad6b3c3e94080cf34d3fb0",
+    "tests/test_host_transport_race.py": "c7f9ef6922825697095fe0b4ac16f8cd9081dcb6af0b0ea461d0c6dea467ef3d"
+  }
+}

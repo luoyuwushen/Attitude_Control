@@ -12,5 +12,10 @@ output/
 # Official manuals belong to ../Reference; reject accidental copies into Git.
 Reference/
 Release/
+# Local handbooks and agent instructions; never publish them.
+/用户手册.md
+/交接文档.md
+AGENTS.md
+AGENT.md
 *.log
 *.tmp

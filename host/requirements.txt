@@ -1,0 +1,4 @@
+PySide6-Essentials==6.8.3
+pyqtgraph==0.13.7
+pyserial==3.5
+numpy>=1.26,<3
