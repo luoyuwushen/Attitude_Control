@@ -93,7 +93,7 @@ def main():
         for report_file in pnr.iterdir():
             if report_file.suffix in {'.html', '.txt'}:
                 copy_result(report_file, archive / report_file.name)
-    (ROOT / 'docs/build_validation.json').write_text(json.dumps(summary, indent=2) + '\n', encoding='utf-8')
+    (ROOT / 'docs/build_validation.json').write_text(json.dumps(summary, indent=2) + '\n', encoding='utf-8', newline='\n')
     print('PASS: timing closed, Release bitstream verified, evidence saved to docs/build_validation.json')
 
 

@@ -6,4 +6,5 @@
 *.cst text eol=lf
 *.sdc text eol=lf
 *.gprj text eol=lf
+*.json text eol=lf
 *.pdf binary
