@@ -18,6 +18,9 @@ from serial.tools import list_ports
 
 from host.core import Metrics, Replay, SessionRecorder, demo_record
 from host.transport import SerialWorker
+from host.serial_config import SerialConfig
+from host.settings import SettingsDialog, load_preferences, save_preferences
+from host.serial_ui import SerialPanel
 
 STATE_NAMES = {0: '待机', 1: '自动起摆', 2: '直立平衡', 3: '故障', 4: '限时点动'}
 FAULT_NAMES = {1: '传感器 / 接口异常', 2: '标定失效', 4: '采样丢失',
@@ -47,7 +50,7 @@ QPushButton:disabled { color:#607384; background:#1c2a38; border-color:#2b3c4f; 
 QPushButton#primary { background:#127567; color:white; border-color:#299884; }
 QPushButton#stop { background:#a13d48; color:white; border-color:#d66b77; font-weight:600; }
 QPushButton#primary:disabled, QPushButton#stop:disabled { color:#607384; background:#1c2a38; border-color:#2b3c4f; }
-QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox, QTextEdit { background:#111e2a; border:1px solid #3b5166; padding:6px; border-radius:5px; }
+QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox, QTextEdit, QPlainTextEdit { background:#111e2a; border:1px solid #3b5166; padding:6px; border-radius:5px; }
 QComboBox QAbstractItemView { background:#172330; selection-background-color:#127567; }
 QTabWidget::pane { border:1px solid #2b3c4f; border-radius:8px; }
 QTabBar::tab { background:#1c2a38; padding:10px 22px; color:#9db0c3; }
@@ -87,6 +90,10 @@ class Window(QMainWindow):
         self.resize(1440, 960)
         self.setMinimumSize(1120, 760)
         self.output_root = Path(output_root or default_output())
+        self.preferences_path = self.output_root / 'host_preferences.json'
+        self.serial_config, self.serial_mode, self.baud_presets = load_preferences(self.preferences_path)
+        self.developer_window = None
+        self.measurement_panel = None
         self.worker = None
         self.serial_ready = False
         self.source = 'idle'
@@ -100,6 +107,7 @@ class Window(QMainWindow):
         self.replay_rows = []
         self.replay_index = 0
         self.replay_anchor = 0.0
+        self.replay_cursor = 0.0
         self.recovery = None
         self.recovery_start = None
         self.recovery_result = None
@@ -150,7 +158,10 @@ class Window(QMainWindow):
         left_layout.addWidget(self.ports)
         self.refresh_button = button('刷新串口', self.refresh_ports)
         left_layout.addWidget(self.refresh_button)
-        left_layout.addWidget(label('115200 bps · 8N1 · 核心板 CH340', 'muted'))
+        self.serial_config_label = label('', 'muted')
+        left_layout.addWidget(self.serial_config_label)
+        self.settings_button = button('设置', self.open_settings)
+        left_layout.addWidget(self.settings_button)
         self.connect_button = button('连接串口', self.connect_serial, 'primary')
         left_layout.addWidget(self.connect_button)
         self.stop_on_close = QCheckBox('断开时发送停止 S')
@@ -161,20 +172,30 @@ class Window(QMainWindow):
         self.replay_button = button('打开 CSV 回放', self.open_replay)
         left_layout.addWidget(self.replay_button)
         left_layout.addSpacing(18)
-        left_layout.addWidget(label('标定与运行'))
+        left_layout.addWidget(label('运行控制'))
+        self.developer_controls = QWidget(self)
+        developer_controls_layout = QVBoxLayout(self.developer_controls)
+        developer_controls_layout.addWidget(label('标定与限时点动'))
         self.direction_check = QCheckBox('已核验方向、盲区与运动范围')
-        left_layout.addWidget(self.direction_check)
+        developer_controls_layout.addWidget(self.direction_check)
+        developer_buttons = QGridLayout()
+        developer_controls_layout.addLayout(developer_buttons)
         for command, text in [('D', '① 记录下垂点'), ('U', '② 记录直立点'),
                               ('G', '自动起摆与平衡'), ('F', '正向点动 · 150 ms'),
                               ('B', '反向点动 · 150 ms'), ('R', '清控制器故障')]:
             b = button(text, lambda checked=False, c=command: self.send_command(c),
                        'primary' if command == 'G' else None)
             b.setToolTip(f'发送单字节 {command}；以设备遥测确认执行结果')
-            left_layout.addWidget(b)
+            if command in 'DUFB':
+                index = 'DUFB'.index(command)
+                developer_buttons.addWidget(b, index // 2, index % 2)
+            else:
+                left_layout.addWidget(b)
             self.command_buttons[command] = b
+        developer_controls_layout.addWidget(label('自然下垂时记录 D，停机扶至直立后记录 U。点动为 10% 控制指令，运行中请保持 SW3 可操作。', 'muted'))
+        self.developer_controls.hide()
         self.stop_button = button('停止  S  /  Esc', lambda: self.send_command('S'), 'stop')
         left_layout.addWidget(self.stop_button)
-        left_layout.addWidget(label('自然下垂时记录 D，停机扶至直立后记录 U。点动为 10% 控制指令，运行中请保持 SW3 可操作。', 'muted'))
         left_layout.addStretch()
         self.health = label('等待数据', 'muted')
         left_layout.addWidget(self.health)
@@ -202,13 +223,83 @@ class Window(QMainWindow):
         self.tabs = QTabWidget()
         self.tabs.addTab(self.build_plots(), '实时曲线')
         self.tabs.addTab(self.build_experiments(), '实验与记录')
-        self.tabs.addTab(self.build_extensions(), '扩展测量')
+        self.extension_widget = self.build_extensions()
+        self.extension_widget.setParent(self)
+        self.extension_widget.hide()
+        self.serial_panel = SerialPanel(self.output_root, self.send_raw, self)
+        self.tabs.addTab(self.serial_panel, '串口收发')
         right_layout.addWidget(self.tabs)
         splitter.addWidget(right)
         splitter.setStretchFactor(1, 1)
         layout.addWidget(splitter)
         self.message = label('连接后自动接收遥测；查看演示和回放可在无板卡时使用。', 'muted')
         layout.addWidget(self.message)
+
+    def open_settings(self):
+        dialog = SettingsDialog(self.serial_config, self.serial_mode, self.baud_presets,
+                                connected=self.worker is not None, parent=self)
+        result = dialog.exec()
+        if dialog.developer_requested:
+            self.open_developer()
+        elif result == QDialog.Accepted and not self.worker:
+            try:
+                save_preferences(self.preferences_path, dialog.selected_config,
+                                 dialog.selected_mode, dialog.presets)
+            except OSError as error:
+                self.message.setText(f'设置保存失败：{error}')
+                return
+            self.serial_config = dialog.selected_config
+            self.serial_mode = dialog.selected_mode
+            self.baud_presets = dialog.presets
+            self.direction_check.setChecked(False)
+            self.message.setText('串口设置已保存，下次连接生效。')
+        self.update_display()
+
+    def open_developer(self):
+        if self.developer_window is None:
+            from host.measurement_ui import MeasurementPanel
+            dialog = QDialog(self)
+            dialog.setWindowTitle('J280 · 开发者模式')
+            dialog.resize(1000, 880)
+            layout = QVBoxLayout(dialog)
+            layout.addWidget(self.developer_controls)
+            self.developer_controls.show()
+            tabs = QTabWidget()
+            self.measurement_panel = MeasurementPanel(self.output_root, dialog)
+            self.measurement_panel.reset(self.measurement_source())
+            for record in self.history:
+                self.measurement_panel.ingest(record)
+            tabs.addTab(self.measurement_panel, '实测与辨识')
+            tabs.addTab(self.experiment_analysis, '实验指标')
+            self.experiment_analysis.show()
+            tabs.addTab(self.extension_widget, '扩展遥测')
+            self.extension_widget.show()
+            layout.addWidget(tabs)
+            layout.addWidget(button('停止  S  /  Esc', lambda: self.send_command('S'), 'stop'))
+            shortcut = QShortcut(QKeySequence('Esc'), dialog)
+            shortcut.activated.connect(lambda: self.send_command('S'))
+            self.developer_window = dialog
+        self.measurement_panel.set_context(self.measurement_source(), self.is_fresh())
+        self.developer_window.show()
+        self.developer_window.raise_()
+        self.developer_window.activateWindow()
+
+    def measurement_source(self):
+        if self.source == 'serial' and (self.serial_mode != 'project' or not self.serial_config.is_project_default):
+            return 'idle'
+        return self.source
+
+    def send_raw(self, data):
+        return bool(self.serial_mode == 'raw' and self.source == 'serial' and
+            self.serial_ready and self.worker and self.worker.send_raw(data))
+
+    def receive_raw(self, data):
+        if self.source == 'serial' and self.sender() is self.worker:
+            self.serial_panel.ingest(data)
+
+    def raw_sent(self, data):
+        if self.sender() is self.worker:
+            self.serial_panel.sent(data)
 
     def build_plots(self):
         widget = QWidget()
@@ -234,10 +325,8 @@ class Window(QMainWindow):
         grid = QGridLayout()
         pg.setConfigOptions(antialias=True, background='#14202d', foreground='#b9cddd')
         definitions = [
-            ('姿态与位置', '°', [('theta_deg', '摆杆', '#6de0c7'), ('arm_deg', '摆臂', '#77abff'),
-                               ('target_arm_deg', '摆臂目标', '#e9b86e')]),
-            ('角速度', 'rad/s', [('omega_rad_s', '摆杆', '#6de0c7'), ('arm_speed_rad_s', '摆臂', '#77abff'),
-                                  ('target_speed_rad_s', '目标速度', '#e9b86e')]),
+            ('姿态与位置', '°', [('theta_deg', '摆杆', '#6de0c7'), ('arm_deg', '摆臂', '#77abff')]),
+            ('角速度', 'rad/s', [('omega_rad_s', '摆杆', '#6de0c7'), ('arm_speed_rad_s', '摆臂', '#77abff')]),
             ('电机控制指令', '‰', [('command_permille', '控制量', '#e9b86e')]),
             ('原始采集', 'code', [('adc', 'ADC', '#be9ef4')])]
         self.plots = []
@@ -275,6 +364,8 @@ class Window(QMainWindow):
         self.record_path = label(f'记录目录：{self.output_root}', 'muted')
         self.record_path.setTextInteractionFlags(Qt.TextSelectableByMouse)
         box.addWidget(self.record_path)
+        self.experiment_analysis = QWidget(self)
+        analysis_box = QVBoxLayout(self.experiment_analysis)
         recover_row = QHBoxLayout()
         recover_row.addWidget(label('恢复判据：角度范围'))
         self.tolerance = QDoubleSpinBox()
@@ -290,17 +381,19 @@ class Window(QMainWindow):
         recover_row.addWidget(self.hold_seconds)
         recover_row.addWidget(button('标记扰动结束', self.mark_recovery))
         recover_row.addStretch()
-        box.addLayout(recover_row)
+        analysis_box.addLayout(recover_row)
         self.metric_table = QTableWidget(0, 2)
         self.metric_table.setHorizontalHeaderLabels(['实验指标', '结果'])
         self.metric_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.metric_table.setEditTriggers(QTableWidget.NoEditTriggers)
-        box.addWidget(self.metric_table, 2)
+        analysis_box.addWidget(self.metric_table, 2)
+        analysis_box.addWidget(label('平衡误差仅统计已标定、无故障的平衡样本。恢复时间由手动扰动结束标记起算；50 Hz 遥测与接收时间限制时间精度。', 'muted'))
+        self.experiment_analysis.hide()
         box.addWidget(label('事件记录'))
         self.events_text = QTextEdit()
         self.events_text.setReadOnly(True)
         box.addWidget(self.events_text, 1)
-        box.addWidget(label('平衡误差仅统计已标定、无故障的平衡样本。恢复时间由手动扰动结束标记起算；50 Hz 遥测与接收时间限制时间精度。', 'muted'))
+        box.addWidget(label('实验指标、扰动恢复分析和实测辅助工具可在“设置 → 进入开发者模式”中使用。', 'muted'))
         return widget
 
     def build_extensions(self):
@@ -343,6 +436,9 @@ class Window(QMainWindow):
         self.replay_pause.setChecked(False)
         self.origin = time.monotonic()
         self.last_tick = self.origin
+        self.serial_panel.clear()
+        if self.measurement_panel:
+            self.measurement_panel.reset(self.measurement_source())
 
     def connect_serial(self):
         if self.worker:
@@ -355,8 +451,10 @@ class Window(QMainWindow):
         self.finish_recording()
         self.reset_data('serial')
         self.serial_ready = False
-        self.worker = SerialWorker(port, self)
+        self.worker = SerialWorker(port, self, config=self.serial_config, mode=self.serial_mode)
         self.worker.records.connect(self.receive_serial)
+        self.worker.raw_received.connect(self.receive_raw)
+        self.worker.raw_sent.connect(self.raw_sent)
         self.worker.status.connect(self.serial_status)
         self.worker.statistics.connect(self.set_stats)
         self.worker.command_sent.connect(self.command_sent)
@@ -371,8 +469,10 @@ class Window(QMainWindow):
         self.connect_button.setText('断开串口' if self.serial_ready else '连接串口')
         self.connect_button.setEnabled(True)
         if self.serial_ready:
-            self.log_event('connection', '串口已连接，等待有效遥测')
-            self.message.setText('连接后只接收数据。操作命令发送后，请以状态和标定遥测确认结果。')
+            self.log_event('connection', f'串口已连接 {self.serial_config.display_label} / {self.serial_mode}')
+            self.message.setText('通用收发已连接，可在串口收发页发送文本或 HEX；此模式断开不发送停止字节。' if self.serial_mode == 'raw' else
+                '连接后只接收数据。操作命令发送后，请以状态和标定遥测确认结果。' if self.serial_config.is_project_default else
+                '当前设置与 J280 固件的 115200 / 8N1 不同，项目命令已禁用。')
 
     def set_stats(self, stats):
         self.stats = stats
@@ -441,6 +541,8 @@ class Window(QMainWindow):
         return bool(self.latest and math.isfinite(age) and 0 <= age < 1.0)
 
     def allowed(self, command):
+        if self.serial_mode != 'project' or not self.serial_config.is_project_default:
+            return False
         if self.source != 'serial' or not self.serial_ready or not self.worker or self.worker.closing.is_set():
             return False
         if command == 'S':
@@ -469,10 +571,12 @@ class Window(QMainWindow):
 
     def command_sent(self, command):
         self.log_event('command_sent', f'已写入 {command}；未代表设备确认')
+        if self.measurement_panel:
+            self.measurement_panel.notify_command(command)
 
     def receive_serial(self, records):
         # Ignore queued signals from a connection that has already ended.
-        if self.source == 'serial' and self.sender() is self.worker:
+        if self.source == 'serial' and self.serial_mode == 'project' and self.sender() is self.worker:
             self.receive(records)
 
     def receive(self, records):
@@ -492,6 +596,8 @@ class Window(QMainWindow):
                 self.last_received = now
             self.rate_history.append(self.last_received)
             self.history.append(record)
+            if self.measurement_panel and self.measurement_source() != 'idle':
+                self.measurement_panel.ingest(record)
             self.metrics.add(record)
             if self.recorder:
                 try:
@@ -504,6 +610,9 @@ class Window(QMainWindow):
                 self.log_event('state', f"{STATE_NAMES.get(transition[0], '未知')} / 标定 {transition[1]} / 故障 {transition[2]}")
                 self.last_transition = transition
             self.update_recovery(record)
+        if self.measurement_panel:
+            # Queued old serial batches must not temporarily enable capture.
+            self.measurement_panel.set_context(self.measurement_source(), self.is_fresh())
 
     def update_recovery(self, record):
         if not self.recovery or self.recovery_result is not None:
@@ -596,8 +705,9 @@ class Window(QMainWindow):
 
     def start_recording(self, metadata):
         try:
-            metadata = dict(metadata, source=self.source, host_version='0.2.0',
-                            baud=115200, stop_on_disconnect=self.stop_on_close.isChecked(),
+            metadata = dict(metadata, source=self.source, host_version='0.3.0',
+                            baud=self.serial_config.baudrate, serial_config=self.serial_config.as_dict(),
+                            serial_mode=self.serial_mode, stop_on_disconnect=self.stop_on_close.isChecked() and self.serial_mode == 'project' and self.serial_config.is_project_default,
                             direction_verified=self.direction_check.isChecked())
             self.recorder = SessionRecorder(self.output_root, metadata)
             self.metrics = Metrics()
@@ -656,6 +766,14 @@ class Window(QMainWindow):
 
     def update_display(self):
         busy = self.worker is not None
+        project_control = self.serial_mode == 'project' and self.serial_config.is_project_default
+        self.serial_config_label.setText(f'{self.serial_config.display_label} · ' + ('J280 遥测' if self.serial_mode == 'project' else '通用收发'))
+        self.stop_on_close.setEnabled(project_control)
+        self.direction_check.setEnabled(project_control)
+        self.serial_panel.set_send_enabled(bool(self.serial_mode == 'raw' and busy and self.serial_ready and not self.worker.closing.is_set()))
+        self.serial_panel.flush()
+        if self.measurement_panel:
+            self.measurement_panel.set_context(self.measurement_source(), self.is_fresh())
         self.demo_button.setEnabled(not busy)
         self.replay_button.setEnabled(not busy)
         self.ports.setEnabled(not busy)
@@ -668,6 +786,8 @@ class Window(QMainWindow):
         stale = self.source == 'serial' and not self.is_fresh()
         self.source_badge.setText({'idle': '未连接', 'demo': '演示 · 非实测', 'replay': 'CSV 回放',
                                   'serial': '串口 · 数据超时' if stale else '串口 · 实时采集'}[self.source])
+        if self.source == 'serial' and self.serial_mode == 'raw':
+            self.source_badge.setText('通用串口 · 已连接' if self.serial_ready else '通用串口 · 连接中')
         r = self.latest
         if r:
             for key in ['theta_deg', 'arm_deg', 'command_permille']:
@@ -697,6 +817,8 @@ class Window(QMainWindow):
         rate = len(self.rate_history) / 2
         age = now - self.last_received if self.latest else None
         self.health.setText(f"接收 {self.stats.get('frames', self.metrics.snapshot().get('samples', 0))} 帧 · {rate:.1f} 帧/s\n最后帧龄 {fmt(age)} s\nCRC 错误 {self.stats.get('crc_errors', 0)} · 缺帧 {self.stats.get('missing_frames', 0)}\n重复 {self.stats.get('duplicates', 0)} · 重启/倒序 {self.stats.get('resets', 0)}\n未知协议 {self.stats.get('unsupported_frames', 0)}")
+        if self.source == 'serial' and self.serial_mode == 'raw':
+            self.health.setText(f"通用串口收发\nRX {self.stats.get('rx_bytes', 0)} B · TX {self.stats.get('tx_bytes', 0)} B")
         self.update_metrics()
         if not self.pause_plots.isChecked():
             self.update_plots()
@@ -768,6 +890,9 @@ class Window(QMainWindow):
                 self.message.setText('正在关闭串口，请稍后关闭窗口；必要时按 SW3。')
                 return
         self.finish_recording()
+        if self.developer_window:
+            self.developer_window.close()
+        self.timer.stop()
         event.accept()
 
 
@@ -812,7 +937,12 @@ def main():
         def verify_smoke():
             smoke['passed'] = bool(window.latest and len(window.history) >= 20
                 and window.plot_curves['theta_deg'].getData()[0] is not None
-                and not window.allowed('G') and not window.allowed('F'))
+                and not window.allowed('G') and not window.allowed('F')
+                and window.developer_window is None)
+            window.open_developer()
+            smoke['passed'] = bool(smoke['passed'] and window.measurement_panel
+                and len(window.measurement_panel.records) >= 20
+                and window.developer_window.isVisible())
             window.close()
         QTimer.singleShot(3200, verify_smoke)
     result = app.exec()

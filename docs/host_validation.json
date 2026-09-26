@@ -1,6 +1,6 @@
 {
-  "version": "0.2.0",
-  "validated_at_utc": "2026-09-26T18:27:32.927186+00:00",
+  "version": "0.3.0",
+  "validated_at_utc": "2026-09-26T19:21:52.399802+00:00",
   "platform": "Windows-11-10.0.26200-SP0",
   "python": "3.12.5",
   "dependencies": {
@@ -11,48 +11,63 @@
   },
   "checks": {
     "python_regression": {
-      "tests": 65,
+      "tests": 129,
       "skipped": 0,
       "returncode": 0,
       "core_tests": 24,
       "ui_serial_tests": 23,
       "existing_tests": 10,
-      "dispatch_race_tests": 8
+      "dispatch_race_tests": 8,
+      "serial_config_transport_tests": 16,
+      "measurement_tests": 24,
+      "measurement_ui_tests": 13,
+      "settings_terminal_integration_tests": 11
     },
-    "source_smoke": "passed",
-    "windows_exe_build_and_smoke": "passed; tools/build_host.py --dist-dir Release/v0.2.0 returned 0",
+    "source_smoke": "passed; startup, demonstration, plots, motion disabled, manually loaded developer window, close",
+    "windows_exe_build_and_smoke": "passed; tools/build_host.py --dist-dir Release/v0.3.0 returned 0",
     "visual_review": [
-      "realtime curves",
-      "experiment metrics and events",
-      "missing extension measurements"
+      "realtime main window",
+      "serial settings",
+      "manually entered developer window"
     ],
     "project_pins_reference_checksums": "passed: 14 files, 29 pads, 31/31 references",
     "baseline_bitstream_verify_only": "passed",
-    "release_review_regressions": [
-      "worker timestamp freshness and old connection signals",
-      "dequeued stop/close dispatch races",
-      "missing CSV time rejected",
-      "earliest replay source preserved",
-      "unknown fault/calibration cannot prove recovery"
+    "measurement_evidence": [
+      "Q10 conversion consistency",
+      "continuous source/time/sequence and origin checks",
+      "explicit mechanical angle required",
+      "stale queued telemetry cannot enable capture",
+      "replay provenance retained without current physical label",
+      "static ADC endpoints retain original records",
+      "raw CSV SHA256 and independent manual reports"
     ]
   },
   "hardware_serial_validation": "pending; no physical port opened",
-  "fpga_protocol": "v1 unchanged; v2 host decoder only",
+  "fpga_protocol": "v1 unchanged: 115200/8N1; v2 host decoder only",
   "executable": {
-    "path": "Release/v0.2.0/J280_Monitor.exe",
-    "bytes": 57580188,
-    "sha256": "a797b5bafce1cb9899ada601f1d40df9ae8a25702d2c1f4320a48acd501a76aa"
+    "path": "Release/v0.3.0/J280_Monitor.exe",
+    "bytes": 57635432,
+    "sha256": "1833d1f27214362caeed968394d9d5c18e6692c6f20d9a61faf2b3388a269e96"
   },
   "source_sha256": {
     "host/__init__.py": "b7b8a08bd9d32550ee1d509aac087b2a7eb8ae4e6a7f05f867b8ab9814f090ff",
-    "host/app.py": "41d5edc866e0098f2e16572a6586cab7cdf982f9a9f59ef8cbb6ea02357e77fa",
+    "host/app.py": "7b337a9a858da05ec755baee518415616fb1ac505b463a721f988f46b81613b1",
     "host/core.py": "593e6dfd2b22962d7ccf79bc55a862fd416b34dcdc407f87c1610caab506128d",
-    "host/transport.py": "e1205a2991068bb2539eb24c8d9ca8c9b933264fd8b06078d2d1831ce80cc25e",
+    "host/measurement_ui.py": "7337b2b99c02a78ee2c851aa5411c5e0bd878c485124f5716d456186615e1266",
+    "host/measurements.py": "ec5d55ae43892cca434581eaac6535f619b17397097f3b6f64601ae5884ca0fe",
     "host/requirements.txt": "3e3b3e57f7c7119268b0fc864bfc38a6aa3dd2b493a0da37cfa77a5607b0a3b7",
-    "tools/host_monitor.py": "b3c34136f63f1b12b42246fd891caf19c9911b056318134bb0dd9b645497dc54",
-    "tools/build_host.py": "b15572cdd535fde9e1e6dc4786b29e090f0b368920668085a4cc61cdf5c7814c",
+    "host/serial_config.py": "3fabcfe478f115781027b506ca95778ce151528378c40879cb0df7fd1004ea8d",
+    "host/serial_ui.py": "035f517a107b9f7672ca47b592efe29e370683e69268b72115c3170de44dc82d",
+    "host/settings.py": "e28e9d6f5080c136be109e4eaaefa122e3c535a336f8c5b41078e76fbda5b363",
+    "host/transport.py": "aa687a4c6154057f69ee7b3ccc32701c27e789a53202bf8eac859e86664abf0c",
     "tests/test_host_core.py": "8092a7b8f9a78116933b288b749d6dea3a3b09f4a966b1d0a17ed4c99658fc54",
+    "tests/test_host_measurement_ui.py": "e7676816126827986a6c07ad29d503b166414f694a38ff2f2d1a5b0bed307372",
+    "tests/test_host_measurements.py": "ded63e7d24c5bd78cb7a3beeb8d39a840924715180cd9092f51826174c93c54b",
+    "tests/test_host_serial.py": "c5592e633cc106aa44aa71b22cf751fd649189b320c30e0db2d303ad486c9c1e",
+    "tests/test_host_settings.py": "68b0e7eb8057ae5013a08b46dbd22f68f81684e987130dfac7b9488f83b3817f",
+    "tests/test_host_transport_race.py": "c7f9ef6922825697095fe0b4ac16f8cd9081dcb6af0b0ea461d0c6dea467ef3d",
     "tests/test_host_ui.py": "19b6a47994e812ed20c564b58a4db0f99c05a04428ad6b3c3e94080cf34d3fb0",
-    "tests/test_host_transport_race.py": "c7f9ef6922825697095fe0b4ac16f8cd9081dcb6af0b0ea461d0c6dea467ef3d"
+    "tools/build_host.py": "b15572cdd535fde9e1e6dc4786b29e090f0b368920668085a4cc61cdf5c7814c",
+    "tools/host_monitor.py": "b3c34136f63f1b12b42246fd891caf19c9911b056318134bb0dd9b645497dc54"
   }
 }
