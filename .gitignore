@@ -1,0 +1,13 @@
+# Reproducible source files only; keep vendor reference originals locally.
+**/impl/
+**/*.gprj.user
+**/*.gao
+**/*.vcd
+**/*.fst
+**/__pycache__/
+.tools/
+tmp/
+build/
+output/
+*.log
+*.tmp

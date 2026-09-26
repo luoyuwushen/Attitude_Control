@@ -1,0 +1,9 @@
+*.v text eol=lf
+*.sv text eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.tcl text eol=lf
+*.cst text eol=lf
+*.sdc text eol=lf
+*.gprj text eol=lf
+*.pdf binary
