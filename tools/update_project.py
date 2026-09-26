@@ -2,7 +2,7 @@
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
-p = Path(__file__).resolve().parents[1] / 'Project/Attitude_Control'
+p = Path(__file__).resolve().parents[1] / 'Attitude_Control'
 project = ET.Element('Project')
 ET.SubElement(project, 'Template').text = 'FPGA'
 ET.SubElement(project, 'Version').text = '5'
@@ -14,4 +14,4 @@ for file in sorted((p / 'src').iterdir()):
         ET.SubElement(files, 'File', path='src/' + file.name, type='file.' + kind, enable='1')
 ET.indent(project, space='    ')
 text = '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE gowin-fpga-project>\n'
-(p / 'Attitude_Control.gprj').write_text(text + ET.tostring(project, encoding='unicode') + '\n', encoding='utf-8')
+(p / 'Attitude_Control.gprj').write_text(text + ET.tostring(project, encoding='unicode') + '\n', encoding='utf-8', newline='\n')

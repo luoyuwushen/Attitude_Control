@@ -22,7 +22,8 @@ def main():
     compiler = args.iverilog or shutil.which('iverilog') or (str(fallback) if fallback.exists() else None)
     if not compiler:
         parser.error('Icarus Verilog is required. Install it or provide --iverilog.')
-    compiler = Path(compiler)
+    # Resolve against the caller's directory before subprocesses switch to ROOT.
+    compiler = Path(compiler).resolve()
     if compiler.is_dir():
         compiler = compiler / ('iverilog.exe' if sys.platform == 'win32' else 'iverilog')
     simulator = compiler.with_name('vvp.exe' if sys.platform == 'win32' else 'vvp')
@@ -30,7 +31,7 @@ def main():
         simulator = Path(shutil.which('vvp') or simulator)
     run([sys.executable, 'tools/verify_project.py'])
     run([sys.executable, '-m', 'unittest', 'discover', '-s', 'tests', '-p', 'test_*.py', '-v'])
-    sources = sorted((ROOT / 'Project/Attitude_Control/src').glob('*.v'))
+    sources = sorted((ROOT / 'Attitude_Control/src').glob('*.v'))
     with tempfile.TemporaryDirectory(prefix='attitude_sim_') as directory:
         directory = Path(directory)
         run([compiler, '-g2005', '-Wall', '-s', 'top', '-o', directory / 'top.vvp', *sources])

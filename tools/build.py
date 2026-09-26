@@ -11,7 +11,7 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-PROJECT = ROOT / 'Project/Attitude_Control'
+PROJECT = ROOT / 'Attitude_Control'
 
 
 def copy_result(source, destination):
@@ -28,7 +28,7 @@ def main():
     args = parser.parse_args()
     if not args.gw_sh and not args.verify_only:
         parser.error('Provide --gw-sh with your Gowin IDE/bin/gw_sh executable')
-    subprocess.run([sys.executable, ROOT / 'tools/verify_project.py'], check=True)
+    subprocess.run([sys.executable, ROOT / 'tools/verify_project.py'], cwd=ROOT, check=True)
     if not args.verify_only:
         result = subprocess.run([args.gw_sh, 'build.tcl'], cwd=PROJECT, capture_output=True, timeout=600)
         output = result.stdout.decode('utf-8', errors='replace') + result.stderr.decode('utf-8', errors='replace')

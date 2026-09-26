@@ -6,7 +6,7 @@ import re
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
-PROJECT = ROOT / 'Project/Attitude_Control'
+PROJECT = ROOT / 'Attitude_Control'
 
 
 def verify():
@@ -62,14 +62,20 @@ def verify():
         for name in group.split():
             assert name.split('[')[0] in base_ports, f'Unknown SDC port: {name}'
     manifest = json.loads((ROOT / 'docs/reference_manifest.json').read_text(encoding='utf-8'))
+    reference_available = (ROOT.parent / 'Reference').is_dir()
     present = 0
     for name, checksum in manifest.items():
-        path = ROOT / name
+        # Official files remain beside the Project repository, never inside it.
+        path = ROOT.parent / name
+        if reference_available:
+            assert path.is_file(), f'Missing local reference: {name}'
         if path.is_file():
             assert hashlib.sha256(path.read_bytes()).hexdigest() == checksum, f'Reference changed: {name}'
             present += 1
     print(f'PASS: {len(listed)} project files, {len(expected)} unique pads, voltage standards, '
           f'{present}/{len(manifest)} local reference checksums')
+    if not reference_available:
+        print('SKIP: sibling Reference directory is absent; official files were not verified')
 
 
 if __name__ == '__main__':

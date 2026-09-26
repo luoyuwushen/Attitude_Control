@@ -4,7 +4,7 @@
 
 ## 当前版本
 
-`v0.1.0`：基础功能的软件与 FPGA 工程基线，**等待实物标定与赛题现场验收**。
+`v0.1.1`：基础功能的软件与 FPGA 工程基线，整理了独立的 Project 仓库目录和使用指南，**等待实物标定与赛题现场验收**。
 
 | 功能 | 当前状态 |
 | --- | --- |
@@ -20,29 +20,186 @@
 
 ## 快速开始
 
+本机的仓库根目录是 `E:\workplace\Gowin\Attitude_Control\Project`。下文所有命令均在这个目录执行；克隆到其他位置时，将路径替换为实际仓库目录。
+
 ```powershell
+Set-Location "E:\workplace\Gowin\Attitude_Control\Project"
 python -m pip install -r requirements-dev.txt
+python tools/verify_project.py
 python tools/run_tests.py --iverilog .tools/iverilog/bin
 python tools/build.py --gw-sh "你的高云安装目录/IDE/bin/gw_sh.exe"
-python tools/telemetry_monitor.py --port COM5 --seconds 10 --csv capture.csv
 ```
 
-Gowin GUI 打开 `Project/Attitude_Control/Attitude_Control.gprj`。器件、CST 和 SDC 已设置；SW4 的 T20 使用 SSPI 管脚 GPIO 复用，构建脚本显式启用该选项。**下载与启动前先阅读交接文档的方向核验和标定步骤**。
+需要 Python、Gowin EDA/Programmer 和 Icarus Verilog。`.tools/iverilog` 是本机安装位置，不随 Git 分发；其他机器将 `--iverilog` 改为自己的 Icarus `bin` 目录。完整自检包含闭环仿真，需要约两分钟。构建脚本检查引脚及建立/保持时间，成功后将位流保存到 [Release/Attitude_Control.fs](Release/Attitude_Control.fs)，验证结果保存到 [docs/build_validation.json](docs/build_validation.json)。
+
+GUI 工程入口为 [Attitude_Control/Attitude_Control.gprj](Attitude_Control/Attitude_Control.gprj)。**首次下载后先采集、标定和检查方向，完成下面的使用步骤后再按 G/SW2。**
 
 ## 文档与目录
 
 | 文件 / 目录 | 用途 |
 | --- | --- |
-| [开发项目技术文档.md](开发项目技术文档.md) | 架构、算法、定点格式、引脚依据、时序、测试与限制 |
-| [交接文档.md](交接文档.md) | 复现、下载、现场参数测量、联调顺序和待办 |
+| 本 README | 项目状态、普通用户上手步骤、后续路线 |
+| [开发项目技术文档.md](开发项目技术文档.md) | 开发者使用的架构、算法、定点格式、引脚依据、时序与验证说明 |
+| [交接文档.md](交接文档.md) | 接手者使用的复现方法、现场待测参数表、联调记录与验收待办 |
 | [CHANGELOG.md](CHANGELOG.md) | 各迭代的更新内容与解决的问题 |
-| `Project/Attitude_Control` | 可综合 RTL 与高云工程 |
+| [Attitude_Control](Attitude_Control) | 可综合 RTL 与高云工程 |
 | `tests` / `tools` | 自检、闭环模型、构建和串口工具 |
-| `Reference` | 本地官方赛题、手册、原理图和例程，保持原始内容 |
+| [../Reference](../Reference) | 仓库外的本地官方赛题、手册、原理图和例程 |
 | `docs/reference_manifest.json` | 官方输入资料的 SHA256 校验清单 |
 | `Release/Attitude_Control.fs` | 本地最终构建的 bitstream；按现场方向配置重新生成 |
 
-官方材料与 EDA/仿真器安装目录不随公共源码仓库分发。复制项目时保留已有 Reference；源码和自检可以独立克隆，官方资料校验只核对本地存在的原件。
+本机工作目录一级为 `Project` 和 `Reference`，Git 仓库位于 `Project`。公开克隆只包含源码和文档，不包含官方资料、EDA/仿真器及本机构建的位流。需要官方手册时，请从赛方资料另行配置与仓库同级的 `Reference`；下面的 PDF 链接依赖这份本地资料。
+
+## 使用指南
+
+硬件组装、供电和下载流程参考 [J280 上手使用手册](../Reference/用户手册等/J280姿态控制系统开发套件上手使用手册.pdf)，板卡信息参考 [J280 用户手册](../Reference/用户手册等/J280姿态控制系统开发套件用户手册.pdf)。下面提到的页码均为 **PDF 页码**。
+
+**本项目的按键和串口命令与官方 Interface_test/PID_Control 示例不同。** 本项目 SW1 标定下垂点、SW2 自动起摆、SW3 停止、SW4 标定直立点；不要照官方例程把 SW1/SW2 当正反转，或按 SW3 开启打印。遥测自动发送，也不用将本项目 ADC 调到官方示例中的 990～1040 或编码器偏置 10000。
+
+### 1. 安装软件并确认工程
+
+1. 安装 Python；本项目验证环境使用 Python 3.12。在仓库目录执行快速开始中的依赖安装命令。
+2. 安装 Gowin EDA 和 Programmer；已有环境可直接使用。本机验证使用 Gowin V1.9.12.03，安装与启动说明见 [官方快速安装启动指南](../Reference/云源软件参考资料/SUG501-1.5_Gowin云源软件快速安装启动指南.pdf)。
+3. 按 [Icarus Verilog 官方安装指南](https://steveicarus.github.io/iverilog/usage/installation.html) 安装仿真器，确认所选 `bin` 目录包含 `iverilog.exe` 和 `vvp.exe`，再用 `--iverilog` 指定该目录运行自检。源码可在不连接板卡时验证，连接板卡后的动作仍需按后续步骤逐项核验。
+4. 按上手手册 PDF 第 11 页要求，将工程放在非中文路径。本机当前路径满足要求。
+
+### 2. 连接现有套件、电源和 USB
+
+1. 将机构固定在平整桌面，检查摆臂、摆杆及现有排线。若尚未组装，按上手手册 PDF 第 5～6 页将电机长轴装入摆臂联轴器并紧固两颗螺丝；连接电机与角度传感器排线。电机使用本工程的 A 路，B 路保持停止。
+2. 保持出厂电压跳帽：J7/BANK0 为 2.5 V、J8/BANK1 为 3.3 V、J9/BANK4 为 3.3 V，不改动跳帽位置（PDF 第 7 页）。
+3. 使用套件原配 **12 V、3 A 适配器**连接底板 DC12V 输入，按手册完成接线后将电源开关置 ON（上手手册 PDF 第 6、10 页；用户手册 PDF 第 15 页）。USB 串口连接不能替代电机套件的 12 V 供电。
+4. 下载时，电脑 USB 连接 **底板 Type-C 下载口**。在 Windows 设备管理器的“通用串行总线设备”中确认 `GWU2X`（PDF 第 10 页）。未识别时，先检查供电、下载口、线缆和官方驱动。
+5. 下载完成后，USB 改接 **核心板串口**。在“端口(COM 和 LPT)”中找到 `USB-SERIAL CH340(COMX)`，记下实际 COM 号。它与底板下载口的用途不同。
+
+换接 USB 时保持底板 12 V 供电；SRAM 配置断电后丢失。这里仅使用现有套件及配套连接，不增加硬件。
+
+### 3. 构建 50 MHz 工程并下载 SRAM
+
+推荐使用快速开始中的 `tools/build.py`，它会核验全部引脚、生成报告及位流。使用 GUI 时：
+
+1. 打开 [Attitude_Control/Attitude_Control.gprj](Attitude_Control/Attitude_Control.gprj)，确认器件为 `GW2A-LV55PG484C8/I7`、顶层为 `top`，工程使用现有 CST 和 SDC。系统时钟为 50 MHz。
+2. 在 **Place&Route → 右键 Configuration → Dual-Purpose Pin** 中勾选 **Use SSPI as regular IO**，使 T20/SW4 可作为按键输入。构建脚本已开启此选项，但纯 GUI 构建须手动检查，不能只打开 GPRJ 就假定已生效。
+3. 执行 **Run all**（上手手册 PDF 第 11 页）。查看建立和保持时间零违例的结果；不要只凭生成了 `.fs` 判断构建完成。不要让工具自动分配未约束的引脚。
+4. 保持底板正常供电、USB 连接底板下载口，点击 **Programmer**。在 **Edit → Setting → Cable Setting** 中确认下载线为 **Gowin USB Cable（GWU2X）**，点击工具栏扫描设备图标，核对识别器件与 J280 工程选型一致。
+5. 打开 **Edit → Configure Device**，或双击设备的 **Operation**。在 **Device Configuration** 中设置 **Access Mode=SRAM Mode、Operation=SRAM Program**，通过 **File name** 选择本次位流，然后 **Save**；上手手册 PDF 第 12 页的界面也可双击 **FS File** 选择文件。
+6. 执行 **Program/Configure** 或点击工具栏编程图标，查看输出面板结果；配置完成后核心板 DONE 蓝灯亮。确认成功后保持 12 V 供电，USB 改接核心板串口。首次验证使用 SRAM，不先烧写 Flash；不要选官方 `Interface_test` 或 `PID_Control.fs` 的位流。
+
+Programmer 菜单依据 [Gowin Programmer 用户指南](../Reference/云源软件参考资料/SUG502-2.2.1_Gowin_Programmer用户指南.pdf) PDF 第 19～23、28、34 页；下载及换接串口依据 J280 上手手册 PDF 第 10～12 页。不同版本界面布局可能不同，以对应的下载线、扫描器件、SRAM 模式和本次位流为准。
+
+**按构建方式选择位流，避免下载旧副本：**
+
+- 只执行 GUI **Run all**：选择刚生成的 `Attitude_Control/impl/pnr/Attitude_Control.fs`；GUI 不会更新 `Release` 副本。
+- 执行 `tools/build.py` 且核验通过：选择脚本刚复制的 `Release/Attitude_Control.fs`，对应证据为 `docs/build_validation.json`。
+
+选择前检查文件本次生成时间和构建结果；修改方向或参数后，必须重新构建并下载相应的新位流。
+
+下载、复位或重新上电后，本项目处于 IDLE，电机高阻，标定未完成。只有现场方向和运动范围确认后，才进入自动运行。
+
+### 4. 打开串口监视，认识命令和遥测
+
+串口设置为 **115200 bps、8 数据位、无校验、1 停止位（8N1）**。下面的 `COM5` 是示例，请替换为设备管理器中的实际端口。同一个串口一次只由一个程序打开。
+
+```powershell
+python tools/telemetry_monitor.py --port COM5 --seconds 10 --csv Release/capture.csv
+```
+
+遥测为带 CRC 校验的 24 字节二进制帧，约 50 Hz，普通文本串口窗口会显示乱码；监视工具将其解析为 ADC、角度、摆臂角度、控制量、状态、校准标志和故障，并可保存 CSV。构建后 `Release` 目录已存在，上面的记录保存到仓库内 `Release/capture.csv`，不进入 Git；官方串口助手也不要与本工具同时占用端口。
+
+| 操作 | 按键 | 串口单字节命令 | 条件与效果 |
+| --- | --- | --- | --- |
+| 记录下垂点 | SW1 | `D` | 停机并自然下垂，记录当前采样 |
+| 记录直立点 | SW4 | `U` | 停机且已有下垂点，记录直立零位 |
+| 自动起摆与平衡 | SW2 | `G` | 标定有效、无持续异常，点动期间不接受 |
+| 停止 | SW3 | `S` | 任意状态停止；SW3 按下直接关闭驱动 |
+| 清控制器故障 | 无 | `R` | 非运行状态；持续传感异常仍需排查和重新标定 |
+| 正/反点动 | 无 | `F` / `B` | 仅标定后的 IDLE；10% 占空比，最多 150 ms |
+| 复位 | SW5 | 无 | 回到 IDLE、清除标定，之后重新 D/U |
+
+`--command` 在程序打开串口时发送一次指定字节，然后接收遥测。例如停止命令为：
+
+```powershell
+python tools/telemetry_monitor.py --port COM5 --command S --seconds 2
+```
+
+监视程序运行期间可直接用板上按键操作。**达到 `--seconds` 或按 Ctrl+C 退出监视程序不会自动发送 S。** 试验结束先按 SW3 停止，再关闭监视；发送其他串口命令前须先释放当前程序占用的端口。停止键松开不自动重新启动。
+
+| 显示字段 | 含义 |
+| --- | --- |
+| `state=0/1/2/3/4` | IDLE / 起摆 / 平衡 / 故障 / 点动 |
+| `cal=0/1` | 两点标定未完成 / 已完成；完成标定不等于方向已核验 |
+| `ADC` | 原始 10 位平均码，范围 0～1023 |
+| `theta`、`arm` | 工具显示角度，单位 °；摆杆直立为零，摆臂以直立标定位置为零 |
+| `pwm` | 有符号控制指令，单位千分比；不是实测转速 |
+| `fault` | 十六进制控制器故障码；含义见下面的排查表 |
+| `seq` | 已发送帧序号，可与 CSV 一起核查记录连续性 |
+
+### 5. 首次两点标定
+
+1. 按 SW3 或发 `S`，让机构停稳。摆杆自然下垂并保持静止至少几十毫秒后，按 SW1 或发送 `D`。
+2. 保持电机停止，轻扶摆杆到直立位置，稳定后按 SW4 或发送 `U`。两位置之间应处于同一连续的电位器有效区间。
+3. 检查 `cal=1`、直立 `theta` 接近 0°；释放摆杆下垂后应接近 +180° 或 -180°。这里不要求复现官方例程的偏置码。
+4. 若 `cal` 仍为 0，先检查是否先 D 后 U、采样是否稳定、两点跨度是否足够以及是否跨越传感器盲区，不用猜测的常量替代标定。
+
+使用串口时，分别在上述两个实物位置执行，不能将两条命令作为无人操作的连续脚本：
+
+```powershell
+python tools/telemetry_monitor.py --port COM5 --command D --seconds 2
+python tools/telemetry_monitor.py --port COM5 --command U --seconds 2
+```
+
+标定仅保存在 FPGA 寄存器中，复位或重新下载/上电后须重做。运行中按标定键，第一次只停止机构；停稳后再次按键才记录标定点。
+
+### 6. 核验三个方向与电位器盲区
+
+先保持停止，手动检查姿态和编码器；再在允许短时运动的情况下使用 F/B 点动。每次点动最多 150 ms，点动期间重复 F/B 不延长本次持续时间，S/SW3 可中断。
+
+```powershell
+python tools/telemetry_monitor.py --port COM5 --command F --seconds 2
+python tools/telemetry_monitor.py --port COM5 --command B --seconds 2
+```
+
+| 检查项 | 现场要确认的关系 | 对应配置 |
+| --- | --- | --- |
+| 摆杆方向 | 直立附近手动倾斜时，theta 的正负与采用的机械坐标一致 | `THETA_SIGN` |
+| 摆臂/编码器方向 | 手动转动摆臂时，arm 的增减与摆臂正方向一致；核验实际计数分辨率 | `ENCODER_SIGN`、`COUNTS_PER_REV` |
+| 电机方向 | F/B 的实际运动方向分别与正/负控制量一致，反馈方向符合模型约定 | `MOTOR_SIGN` |
+
+方向关系和待测参数详见 [交接文档](交接文档.md)。需要修改时，在 [top.v](Attitude_Control/src/top.v) 设置对应参数，再重新测试、构建、下载和标定。工程默认符号均为 +1，成功仿真示例使用 `THETA_SIGN=-1`；两者都不能代替现场检查。F/B 没有明显动作时，先检查供电、连接与静摩擦，不能仅凭这一现象判断编码器损坏。
+
+WDD35D4 电位器约有 345° 电气行程，存在盲区。保持电机停止，缓慢检查所需运动范围内 ADC 是否连贯变化，以及轨迹是否经过突跳或无效区。按上手手册 PDF 第 18 页的方法调整联轴器/传感器安装角度后重新紧固、重新标定，使实际起摆轨迹处于连续有效区间。无法覆盖时先限制运动范围，不关闭跳变保护强行起摆。
+
+### 7. 自动起摆、平衡与轻扰恢复
+
+1. 确认供电、安装、两点标定、三个方向及运动范围已经核验，`cal=1` 且没有持续异常。先按 S/SW3 停止，释放摆杆使其自然下垂，手离开运动轨迹。
+2. 按 SW2 或发送 `G`。预期从 `state=1` 起摆进入 `state=2` 平衡，不需要先手扶直立再启动。点动尚未结束时 G 会被拒收。
+3. 记录起摆、捕获、稳态角度与控制指令。稳定平衡后再施加小幅轻扰，立即撤手，观察是否回到直立附近，并保留 CSV/录像。
+4. 发现方向、振荡或运动范围异常时先按 SW3，再检查配置和模型参数；默认增益的仿真成功不保证当前实物也能平衡。
+
+```powershell
+python tools/telemetry_monitor.py --port COM5 --command G --seconds 60 --csv Release/balance.csv
+```
+
+此命令开始时发送 G，之后只接收遥测，60 秒结束时不自动停机。试验结束先按 SW3 停止，再关闭程序。基础实物验证未完成前，不以 README 中的仿真时间和误差作为实测结论。
+
+### 8. 停止与故障排查
+
+SW3 是本项目的停止键，按下直接撤销电机驱动；S 也可停止。停止输出为 IN1=IN2=0、PWM=1，按 TB6612 定义为高阻滑行，停止后机构可能仍有惯性运动。松开 SW3、清故障或重开监视程序都不会自动重启。
+
+| 现象 / 故障码 | 优先检查与处理 |
+| --- | --- |
+| 下载器没有 GWU2X / 串口没有 CH340 | 底板供电、USB 是否接对下载口/核心板串口、线缆与驱动 |
+| SW4 没有反应 | GUI 的 T20/SSPI GPIO 复用选项是否开启 |
+| 串口乱码 / 没有遥测 | 实际 COM 号、端口占用、115200/8N1；二进制帧应使用本项目监视工具 |
+| `cal=0` | 停稳后先 D 再 U，检查采样、跨度和传感器连续区间 |
+| `0x01` | ADC 过量程、角度跳变或编码器异常；先检查接线、盲区和数据，再重标定 |
+| `0x02` | 校准有效性丢失；停止后重新 D/U |
+| `0x04` | 有效状态采样丢失；检查采集链路与控制节拍 |
+| `0x08` | 位移/速度超限；检查实际运动范围、方向和编码器分辨率 |
+| `0x10` | 起摆超时；检查方向、摩擦、机械参数与起摆/捕获条件 |
+| `0x20` | 平衡跌落；检查零位、反馈方向、增益、延迟与扰动大小 |
+| G/F/B 被拒收 | 标定、当前状态、点动是否结束、停止键是否释放及持续传感异常 |
+
+先消除原因，再在停止状态用 R 清控制器故障；持续传感器故障不能只靠 R 清掉，须检查并重新 D/U 或复位后标定。停止或 R 之后仍拒绝启动时，按这个顺序排查，不反复发送 G/F/B 绕过保护。
 
 ## 当前不足
 
