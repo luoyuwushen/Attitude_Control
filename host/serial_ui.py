@@ -16,6 +16,10 @@ class SerialPanel(QWidget):
         self.pending = bytearray()
         self.rx_total = self.tx_total = 0
         self.limit = 262144
+        # Saving retains the raw ring; the terminal only renders a small tail.
+        # A full-ring HEX rebuild on each flush can starve telemetry delivery.
+        self.display_limit = 8192
+        self.character_limit = self.display_limit * 4
         layout = QVBoxLayout(self)
         row = QHBoxLayout()
         self.hex_view = QCheckBox('HEX 接收显示')
@@ -36,7 +40,7 @@ class SerialPanel(QWidget):
         layout.addWidget(self.count)
         self.view = QPlainTextEdit()
         self.view.setReadOnly(True)
-        self.view.document().setMaximumBlockCount(4096)
+        self.view.document().setMaximumBlockCount(self.display_limit // 16)
         layout.addWidget(self.view, 3)
         self.input = QPlainTextEdit()
         self.input.setPlaceholderText('输入文本，或勾选 HEX 后输入例如 AA 55 01 18')
@@ -81,26 +85,43 @@ class SerialPanel(QWidget):
 
     def flush(self):
         if self.pending:
-            data = bytes(self.pending)
+            truncated = len(self.pending) > self.display_limit
+            data = bytes(self.pending[-self.display_limit:])
             self.pending.clear()
-            text = data.hex(' ').upper() + '\n' if self.hex_view.isChecked() else self.decoder.decode(data)
+            if truncated:
+                self.decoder = self.new_decoder()
+            text = self.hex_lines(data) + '\n' if self.hex_view.isChecked() else self.decoder.decode(data)
             cursor = self.view.textCursor()
             cursor.movePosition(cursor.MoveOperation.End)
+            if self.hex_view.isChecked() and cursor.block().length() > 1:
+                cursor.insertText('\n')
             cursor.insertText(text)
+            # Text streams without line breaks also need a strict display bound.
+            excess = self.view.document().characterCount() - 1 - self.character_limit
+            if excess > 0:
+                trim = self.view.textCursor()
+                trim.movePosition(trim.MoveOperation.Start)
+                # Qt positions count UTF-16 units; moving by whole characters
+                # avoids leaving half of an emoji at the start of the display.
+                trim.movePosition(trim.MoveOperation.NextCharacter, trim.MoveMode.KeepAnchor, excess)
+                trim.removeSelectedText()
             self.view.setTextCursor(cursor)
-            # Text without newlines still needs a strict memory bound.
-            if self.view.document().characterCount() > self.limit * 3:
-                self.render()
         self.update_count()
+
+    @staticmethod
+    def hex_lines(data):
+        # Short blocks keep Qt layout cost bounded even after hours of receiving.
+        return '\n'.join(data[offset:offset + 16].hex(' ').upper()
+                         for offset in range(0, len(data), 16))
 
     def render(self, *_):
         self.pending.clear()
         self.decoder = self.new_decoder()
-        data = bytes(self.buffer)
-        self.view.setPlainText(data.hex(' ').upper() if self.hex_view.isChecked() else self.decoder.decode(data))
+        data = bytes(self.buffer[-self.display_limit:])
+        self.view.setPlainText(self.hex_lines(data) if self.hex_view.isChecked() else self.decoder.decode(data))
 
     def update_count(self):
-        self.count.setText(f'RX {self.rx_total} B / TX {self.tx_total} B · 接收缓存保留末 {self.limit // 1024} KiB')
+        self.count.setText(f'RX {self.rx_total} B / TX {self.tx_total} B · 原始缓存末 {self.limit // 1024} KiB · 窗口仅显示末段')
 
     def sent(self, data):
         self.tx_total += len(data)

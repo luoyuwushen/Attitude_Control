@@ -1,0 +1,99 @@
+{
+  "host_version": "host-v0.4.0",
+  "project_version": "project-v0.1.1",
+  "release_id": "host-v0.4.0",
+  "validated_at_utc": "2026-09-27T08:39:24.347485+00:00",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.5",
+  "dependencies": {
+    "PySide6-Essentials": "6.8.3",
+    "pyqtgraph": "0.13.7",
+    "pyserial": "3.5",
+    "PyInstaller": "6.20.0"
+  },
+  "checks": {
+    "python_regression": {
+      "tests": 144,
+      "skipped": 0,
+      "returncode": 0,
+      "core_tests": 24,
+      "ui_serial_tests": 23,
+      "existing_tests": 10,
+      "dispatch_race_tests": 8,
+      "serial_config_transport_tests": 16,
+      "measurement_tests": 24,
+      "measurement_ui_tests": 13,
+      "settings_terminal_integration_tests": 11,
+      "operation_log_page_tests": 15
+    },
+    "source_smoke": "passed; default main page, demonstration, plots, motion disabled, developer page in the same window, close",
+    "windows_exe_build_and_smoke": "passed; tools/build_host.py returned 0; output Release/host-v0.4.0",
+    "visual_review": [
+      "main control and curves at 1440x960",
+      "serial settings and independent logging switches",
+      "developer page in the same main window",
+      "main and developer at minimum 1120x760",
+      "all four time captions fit inside their plot scenes at minimum size"
+    ],
+    "project_pins_reference_checksums": "passed: 14 files, 29 pads, 31/31 references",
+    "baseline_bitstream_verify_only": "passed",
+    "measurement_evidence": [
+      "Q10 conversion consistency",
+      "continuous source/time/sequence and origin checks",
+      "explicit mechanical angle required",
+      "stale queued telemetry cannot enable capture",
+      "replay provenance retained without current physical label",
+      "static ADC endpoints retain original records",
+      "raw CSV SHA256 and independent manual reports"
+    ],
+    "ui_regression_after_layout": {
+      "tests": 134,
+      "skipped": 0,
+      "returncode": 0
+    },
+    "operation_log_evidence": [
+      "default off; demo and replay do not create device logs",
+      "independent serial/control channels and per-connection directories",
+      "persisted switches editable while connected",
+      "raw bytes and worker timestamps; short writes retain known written bytes only",
+      "command queued versus written; no device acknowledgement claimed",
+      "old worker signals ignored",
+      "background disk writing; bounded overflow and disk failure explicitly incomplete",
+      "logging failure does not disable stop",
+      "final background stop/write signals drained on exit"
+    ]
+  },
+  "hardware_serial_validation": "pending; this software validation opened no physical COM port; earlier field feedback remains in local handbook",
+  "fpga_protocol": "project-v0.1.1 unchanged: v1 115200/8N1; v2 host decoder only; SW5 physical button, no UART reset added",
+  "executable": {
+    "path": "Release/host-v0.4.0/J280_Monitor.exe",
+    "bytes": 57673686,
+    "sha256": "9f74dfe01cafc00a69b9961866827ed6797ed3be24853b372b68e87aed773b79"
+  },
+  "source_sha256": {
+    "host/__init__.py": "b7b8a08bd9d32550ee1d509aac087b2a7eb8ae4e6a7f05f867b8ab9814f090ff",
+    "host/app.py": "edb937c62996cca70deca2e0400212935a6ef1b1ac0c04f0b76ee617d070ae02",
+    "host/core.py": "593e6dfd2b22962d7ccf79bc55a862fd416b34dcdc407f87c1610caab506128d",
+    "host/measurement_ui.py": "3575b4e33c0c4f27a394074c433a001b94357ddc459ceafb2d4029fd68301d7f",
+    "host/measurements.py": "ec5d55ae43892cca434581eaac6535f619b17397097f3b6f64601ae5884ca0fe",
+    "host/operation_log.py": "67159652ca42d15d10dfef3c4b36c47bcf8bb335b5e329cdf9e352528613e75f",
+    "host/serial_config.py": "3fabcfe478f115781027b506ca95778ce151528378c40879cb0df7fd1004ea8d",
+    "host/serial_ui.py": "035f517a107b9f7672ca47b592efe29e370683e69268b72115c3170de44dc82d",
+    "host/settings.py": "bc66606aca51af582ae94d553df58df27b49b70df7d8313cefdf15d57a1914e4",
+    "host/transport.py": "e42c9ab6912cb16851c184ed3822b4985227fa9b3f5f5c73099c7f826474ed84",
+    "host/version.py": "0ffad02ca79475f6ac52367a80580cee18e95b26e74e9b0b80460a7b63f2b2a2",
+    "host/requirements.txt": "3e3b3e57f7c7119268b0fc864bfc38a6aa3dd2b493a0da37cfa77a5607b0a3b7",
+    "tests/test_control_model.py": "52b685a8c072c7221614e5ffc96ea1f994cbcffa37c32469276833d012d7e187",
+    "tests/test_host_core.py": "8092a7b8f9a78116933b288b749d6dea3a3b09f4a966b1d0a17ed4c99658fc54",
+    "tests/test_host_measurement_ui.py": "e7676816126827986a6c07ad29d503b166414f694a38ff2f2d1a5b0bed307372",
+    "tests/test_host_measurements.py": "ded63e7d24c5bd78cb7a3beeb8d39a840924715180cd9092f51826174c93c54b",
+    "tests/test_host_operation_log.py": "c8b94b1d03122f6463305d88b20a42e7147dfe20768e6dd2c6190ba053ea4724",
+    "tests/test_host_serial.py": "c5592e633cc106aa44aa71b22cf751fd649189b320c30e0db2d303ad486c9c1e",
+    "tests/test_host_settings.py": "8ac91b50290f60d7b5e9781c3b11a4252de303e77546940f37e921265c241f02",
+    "tests/test_host_transport_race.py": "c7f9ef6922825697095fe0b4ac16f8cd9081dcb6af0b0ea461d0c6dea467ef3d",
+    "tests/test_host_ui.py": "19b6a47994e812ed20c564b58a4db0f99c05a04428ad6b3c3e94080cf34d3fb0",
+    "tests/test_telemetry.py": "42327303ce961de4145fc4299ef24ebc30ee53c05c071feba00c1c163c53aef1",
+    "tools/build_host.py": "509b82504b22f2ba783aaae8c0ff0eb902abb4f219f6124f3c40a2a10d2124d3",
+    "tools/host_monitor.py": "b3c34136f63f1b12b42246fd891caf19c9911b056318134bb0dd9b645497dc54"
+  }
+}

@@ -1,10 +1,10 @@
 # J280 姿态控制测量工作站
 
-上位机版本 **host-v0.4.0（2026-09-27）**，兼容项目/FPGA **project-v0.1.1** 基线。主界面提供现有串口控制、实时曲线、实验记录、CSV 回放和通用收发；开发者模式在同一窗口切换到测量分析页面。设置可分别保留串口和开发板控制日志。位置与观测扩展字段需要后续固件上报；硬件标定、起摆与抗扰仍需现场核验。
+上位机版本 **host-v0.4.1（2026-09-27）**，兼容项目/FPGA **project-v0.1.1** 基线。主界面提供现有串口控制、实时曲线、实验记录、CSV 回放和通用收发；开发者模式在同一窗口切换到测量分析页面。设置可分别保留串口和开发板控制日志。本版修复长时采集的 HEX 显示积压；硬件标定、起摆与抗扰仍需现场核验。
 
 ## 启动
 
-Windows 本机发布包 `Project/Release/host-v0.4.0/J280_Monitor.exe` 可直接运行；同目录的 `HOST_README.md` 和 `HOST_PROTOCOL.md` 提供说明。EXE 为本地产物，不包含在源码仓库中，克隆后可按下文自行打包。源码运行时，在 `Project` 执行：
+Windows 本机发布包 `Project/Release/host-v0.4.1/J280_Monitor.exe` 可直接运行；同目录的 `HOST_README.md` 和 `HOST_PROTOCOL.md` 提供说明。EXE 为本地产物，不包含在源码仓库中，克隆后可按下文自行打包。源码运行时，在 `Project` 执行：
 
 ```powershell
 python -m pip install -r host/requirements.txt
@@ -16,6 +16,8 @@ python tools/host_monitor.py --demo
 ## 串口设置与连接
 
 先关闭占用同一串口的官方工具，选择核心板 CH340 的实际 COM 号。在“设置”中选择工作模式和串口参数，保存后点击“连接串口”；连接期间参数锁定，修改前须断开。
+
+host-v0.4.1 将原始缓存与文本显示分别限制大小，避免长时间接收后界面积压。“保存接收字节”仍导出末 256 KiB 原始数据；终端窗口只显示末段，完整采集应使用实验记录或串口日志。升级时先用 SW3 停止并完全松开，保存当前记录，关闭旧程序后启动新 EXE；保留同一套件的 `captures/host_preferences.json` 可沿用设置。只换上位机且 FPGA 未复位时，无需重复 D/U 标定。实板长时稳定性仍需复验。
 
 | 设置 | 支持值 | 用法 |
 | --- | --- | --- |
@@ -103,4 +105,4 @@ python -m pip install PyInstaller==6.20.0
 python tools/build_host.py
 ```
 
-默认输出 `Release/host-v0.4.0/J280_Monitor.exe`。也可使用 `python tools/build_host.py --dist-dir Release/host-v0.4.0` 输出到独立版本目录，避免覆盖正在运行的程序。构建会进行离线启动检查；该检查不代表物理串口或实物控制通过。
+默认输出 `Release/host-v0.4.1/J280_Monitor.exe`。也可使用 `python tools/build_host.py --dist-dir Release/host-v0.4.1` 输出到独立版本目录，避免覆盖正在运行的程序。构建会进行离线启动检查；该检查不代表物理串口或实物控制通过。
