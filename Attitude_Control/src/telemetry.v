@@ -1,6 +1,6 @@
 // 24 字节小端遥测，UART 8N1；角度及角速度使用有符号 Q10 rad(/s)。
 // 0..3 AA 55 01 18；4..5序号；6..7 ADC；8..17五个 signed16；
-// 18状态、19校准标志、20故障、21保留0；22..23 CRC16 小端。
+// 18状态、19校准标志、20控制器/板级故障、21启动诊断；22..23 CRC16 小端。
 // CRC16/CCITT-FALSE: poly=1021, init=FFFF，覆盖 0..21，无反射/异或。
 `timescale 1ns/1ps
 `default_nettype none
@@ -20,6 +20,7 @@ module telemetry #(
     input wire [2:0] state,
     input wire [7:0] fault,
     input wire calibrated,
+    input wire [7:0] diagnostic_status,
     output wire tx
 );
     function [15:0] crc16_byte;
@@ -68,7 +69,7 @@ module telemetry #(
                 frame[14] <= arm_speed[7:0]; frame[15] <= arm_speed[15:8];
                 frame[16] <= command[7:0]; frame[17] <= command[15:8];
                 frame[18] <= {5'd0, state}; frame[19] <= {7'd0, calibrated};
-                frame[20] <= fault; frame[21] <= 8'd0;
+                frame[20] <= fault; frame[21] <= diagnostic_status;
                 sequence_number <= sequence_number + 1'b1;
                 crc <= 16'hFFFF;
                 byte_index <= 5'd0;

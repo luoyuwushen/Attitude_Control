@@ -1,0 +1,132 @@
+{
+  "project_version": "project-v0.1.2",
+  "compatible_host_version": "host-v0.4.1",
+  "validated_at_utc": "2026-09-27T09:22:28.562770+00:00",
+  "hardware": "official J280 development board and official pendulum kit only",
+  "changes": [
+    "idle board faults included in v1 fault bit 0",
+    "last start admission/rejection retained in v1 byte 21",
+    "new start request wins over a simultaneous new diagnostic jog"
+  ],
+  "protocol": {
+    "version": 1,
+    "frame_bytes": 24,
+    "baud": 115200,
+    "format": "8N1",
+    "diagnostic_marker_mask": 128,
+    "start_result_shift": 4,
+    "start_result_mask": 7,
+    "live_masks": {
+      "sensor_fault": 1,
+      "input_fault": 2,
+      "over_range": 4,
+      "synchronized_sw3": 8
+    },
+    "start_results": {
+      "0": "no retained request",
+      "1": "accepted by controller",
+      "2": "uncalibrated",
+      "3": "estimator sensor fault",
+      "4": "input fault or OTR",
+      "5": "stop or calibration priority",
+      "6": "jog in progress",
+      "7": "state or clear priority"
+    },
+    "old_host_gui_decodes_byte21": false,
+    "old_host_raw_hex_preserves_byte21": true
+  },
+  "python_regression": {
+    "tests": 152,
+    "skipped": 0,
+    "returncode": 0
+  },
+  "rtl_benches": {
+    "tb_closed_loop": "passed",
+    "tb_controller": "passed",
+    "tb_estimator": "passed",
+    "tb_interfaces": "passed",
+    "tb_top": "passed",
+    "tb_start_diagnostics": "passed"
+  },
+  "final_source_recompiled_benches": [
+    "tb_interfaces",
+    "tb_top",
+    "tb_start_diagnostics"
+  ],
+  "diagnostics_bench": {
+    "forced_internal_state": false,
+    "stimuli": "real UART, button, ADC and OTR inputs; accelerated debounce, ADC interval, TX baud and diagnostic jog timer",
+    "simulated_duration_ms": 9.790132,
+    "cases": [
+      "short SW2 pulse rejected by debounce",
+      "uncalibrated start",
+      "healthy SW2 start",
+      "busy start",
+      "SW3 held and released",
+      "sticky sensor fault while calibrated",
+      "R preserves sensor/rejection evidence",
+      "three new rail-fault frames with CRC",
+      "current OTR",
+      "latched input fault",
+      "G during jog and jog timeout",
+      "same-edge D/SW2",
+      "same-edge R/SW2",
+      "same-edge F/SW2",
+      "same-edge B/SW2"
+    ]
+  },
+  "build_evidence": "build_validation.json",
+  "baseline_build_evidence": "build_validation_project-v0.1.1.json",
+  "timing": {
+    "fmax_mhz": 50.673,
+    "setup_violations": 0,
+    "hold_violations": 0
+  },
+  "pins": {
+    "count": 29,
+    "official_constraints_unchanged": true,
+    "placed_pins_verified": true
+  },
+  "references": {
+    "verified_checksums": 31,
+    "originals_unchanged": true
+  },
+  "control_and_sensor_algorithms_unchanged": true,
+  "acquisition_snapshot_publish_condition_unchanged": true,
+  "bitstream": {
+    "path": "Release/project-v0.1.2/Attitude_Control.fs",
+    "bytes": 18588969,
+    "sha256": "20c03f70604de31c7b04123a0904c8c6ca22357feeac76a7af37311798b22e06"
+  },
+  "source_sha256": {
+    "Attitude_Control/src/adc_sampler.v": "95073c1921f0e5f0b3fc086e9cbf7c0ff3dd6015a87fe0c939da70ac1ff8c671",
+    "Attitude_Control/src/attitude_control.cst": "3d68ed209bc75f8bc565b9458dcafad00bdb873f8a0e553d814e12e2cea02707",
+    "Attitude_Control/src/attitude_control.sdc": "7ce70d9d3fc11f1a7a053ace2fb988b87b716b4b2f1b96f3ad71ffd534d16c8f",
+    "Attitude_Control/src/attitude_controller.v": "83f3f2d586c9d2ef909294fc7e9db5191aa747b49d0e13b2e411cbf02024827b",
+    "Attitude_Control/src/calibration_divider.v": "25950cd80fd46c6a65c0000fdda495825575766e37e650be6bbc46b0e08ceeb9",
+    "Attitude_Control/src/key_debounce.v": "a4a648df7d506ea42b7253f4e91967803bdefbca4ead784935e57614e53681ea",
+    "Attitude_Control/src/motor_pwm.v": "4ad6398d76f74fc95842cff862c85312dd54d350b47247c284aa118f6ad2cf28",
+    "Attitude_Control/src/quadrature_encoder.v": "2696604dd9fa20a7c336855dba596d1c8253f01688735e82ed3a5c6a2877bae1",
+    "Attitude_Control/src/reset_sync.v": "1219239a961487841c2ecb93ae9fab5758c2d234e468968eb04a50739ac05cea",
+    "Attitude_Control/src/state_estimator.v": "c558dea58ae7c7beb400d497032bf30471a12be116be23bfebeca3767575929a",
+    "Attitude_Control/src/telemetry.v": "6332ed96cffa5d27fd4a8dc28bcc2342c741f9de8b071943fac1515fc75a6321",
+    "Attitude_Control/src/top.v": "f92e9d99bd2a9ff87ddf87d6a8feaffaf8c383176b9cdf1687111d6552c412cf",
+    "Attitude_Control/src/uart_rx_byte.v": "764cb9640fec89a57851dd53af536dc93f779ad72f17167d84249d4d5a4ced4b",
+    "Attitude_Control/src/uart_tx_byte.v": "48e56ab342381cc012b8b607c40ecf43d1b91976474e799ebc29dd8e5b8709f3"
+  },
+  "test_sha256": {
+    "tests/tb_closed_loop.sv": "09534f0a17b33ea007a7c90ad338d0095b548f4278c653ced2ab67d2da44f8c7",
+    "tests/tb_controller.sv": "1690cb73819ae8602d6e6caf6688e73867db59aa7fe6a41aa61e2ecdfbeb6764",
+    "tests/tb_estimator.sv": "5556cabc06d676a8bf2a61044213f7127be5dcfee6fe6e6bc81313c0ef2622bf",
+    "tests/tb_interfaces.sv": "0097487e25a96b6a0a9dcbdff38a06b6b5fbfb7ac3d3b2586f4214a1b42f2209",
+    "tests/tb_start_diagnostics.sv": "c264a839c5c0c150d0a28a05ebcbf95dbf4bd896776809982c264a16e15db787",
+    "tests/tb_top.sv": "27109a5d8f585699956d59e615e261f092037d9ec5bc3c0c7324e7ab7b29ba51",
+    "tests/test_start_diagnostics_protocol.py": "1d87b5a956ceb99066e53f9cd14c4d4f982d1b82ce7931662a645af3989dfc6d"
+  },
+  "hardware_validation": "pending; no physical serial port was opened or device command sent by these checks; the observed real SW2 start failure is not yet confirmed resolved",
+  "existing_limitations": [
+    "GUI does not interpret byte 21 or identify board firmware version",
+    "first motor-direction verification workflow still requires redesign",
+    "mechanical parameters and safe motion range require measurement"
+  ]
+}

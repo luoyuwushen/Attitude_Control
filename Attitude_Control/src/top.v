@@ -73,6 +73,32 @@ module top #(
     wire signed [15:0] command;
     wire motor_enable;
     wire board_fault = sensor_fault || input_fault || over_range;
+    wire controller_stop = request_stop || !stop_sync[1] || request_down || request_up;
+    // Keep the last admission result: a key/UART pulse is much shorter than
+    // the 20 ms telemetry interval. This register never enables the motor.
+    reg [2:0] start_result;
+    always @(posedge clk_50m or negedge reset_n) begin
+        if (!reset_n) start_result <= 3'd0;
+        else if (request_start) begin
+            // Match the controller's stop/clear/start priority using the
+            // signals before this edge, including its old calibration flag.
+            if (controller_stop) start_result <= 3'd5;
+            else if (request_clear && state != 1 && state != 2) start_result <= 3'd7;
+            else if (jogging) start_result <= 3'd6;
+            else if (state != 0) start_result <= 3'd7;
+            else if (!calibrated) start_result <= 3'd2;
+            else if (sensor_fault) start_result <= 3'd3;
+            else if (input_fault || over_range) start_result <= 3'd4;
+            else start_result <= 3'd1;
+        end else if (stopped && (request_down || request_up)) start_result <= 3'd0;
+    end
+    // v1 byte 21: bit 7 identifies this diagnostic layout, bits 6:4 retain
+    // admission, bits 3:0 are live SW3/sampler/input/estimator flags.
+    wire [7:0] diagnostic_status = {1'b1,start_result,!stop_sync[1],
+                                    over_range,input_fault,sensor_fault};
+    // Idle board faults must be visible to existing host-v0.4.1 displays.
+    // This is status aggregation; the controller's sticky fault is unchanged.
+    wire [7:0] telemetry_fault = fault | (board_fault ? 8'h01 : 8'h00);
     // Limited diagnostic movement for verifying the installed motor direction.
     // It is available only after calibration, while the controller is idle.
     always @(posedge clk_50m or negedge reset_n) begin
@@ -81,7 +107,7 @@ module top #(
                  board_fault || state != 0 || !calibrated ||
                  arm > 6144 || arm < -6144 || arm_speed > 20480 || arm_speed < -20480) begin
             jog_remaining <= 0; jog_command <= 0;
-        end else if ((request_forward || request_backward) && !jogging) begin
+        end else if ((request_forward || request_backward) && !jogging && !request_start) begin
             jog_remaining <= JOG_CYCLES;
             jog_command <= request_backward ? -16'sd100 : 16'sd100;
         end else if (jogging) jog_remaining <= jog_remaining-1'b1;
@@ -89,7 +115,7 @@ module top #(
     // A press on a calibration key while running first stops the mechanism.
     attitude_controller u_controller(
         clk_50m,reset_n,state_valid,calibrated,board_fault,
-        request_start && !jogging,request_stop || !stop_sync[1] || request_down || request_up,request_clear,
+        request_start && !jogging,controller_stop,request_clear,
         theta,omega,arm,arm_speed,state,fault,command,motor_enable);
     wire signed [15:0] requested_command = jogging ? jog_command : command;
     reg signed [15:0] motor_command;
@@ -118,14 +144,15 @@ module top #(
                     telemetry_count <= 0; telemetry_due <= 1;
                 end else telemetry_count <= telemetry_count+1'b1;
             end
-            // Publish angle, speed and ADC from the same acquisition frame.
+            // Publish after the estimator completes this acquisition. A fault
+            // snapshot may retain the last trusted angle, with fault set.
             if (telemetry_due && (state_valid || !calibrated)) begin
                 telemetry_valid <= 1; telemetry_due <= 0;
             end
         end
     end
     telemetry u_telemetry(clk_50m,reset_n,telemetry_valid,sample_q4[13:4],
-                          theta,omega,arm,arm_speed,requested_command,jogging ? 3'd4 : state,fault,
-                          calibrated,uart_tx);
+                          theta,omega,arm,arm_speed,requested_command,jogging ? 3'd4 : state,telemetry_fault,
+                          calibrated,diagnostic_status,uart_tx);
 endmodule
 `default_nettype wire

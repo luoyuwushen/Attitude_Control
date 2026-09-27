@@ -1,7 +1,7 @@
 {
   "setup_violations": 0,
   "hold_violations": 0,
-  "fmax_mhz": 50.673,
+  "fmax_mhz": 50.966,
   "placed_pins": {
     "clk_50m": {
       "pad": "M19",
@@ -122,11 +122,11 @@
   },
   "device": "GW2A-LV55PG484C8/I7",
   "tool": "V1.9.12.03 (64-bit)",
-  "bitstream_sha256": "20c03f70604de31c7b04123a0904c8c6ca22357feeac76a7af37311798b22e06",
+  "bitstream_sha256": "694db871d1588aa7197f7c8ad24bc1ad8c14c5cfdf41964ab8d7a03c6b1df898",
   "dsp_usage": "14.5/20",
-  "logic_usage": "2891/54720",
-  "register_usage": "1332/42000",
-  "created_time": "Sun Sep 27 17:17:12 2026",
+  "logic_usage": "2894/54720",
+  "register_usage": "1322/42000",
+  "created_time": "Sat Sep 26 22:56:46 2026",
   "source_sha256": {
     "Attitude_Control/src/adc_sampler.v": "95073c1921f0e5f0b3fc086e9cbf7c0ff3dd6015a87fe0c939da70ac1ff8c671",
     "Attitude_Control/src/attitude_control.cst": "3d68ed209bc75f8bc565b9458dcafad00bdb873f8a0e553d814e12e2cea02707",
@@ -138,8 +138,8 @@
     "Attitude_Control/src/quadrature_encoder.v": "2696604dd9fa20a7c336855dba596d1c8253f01688735e82ed3a5c6a2877bae1",
     "Attitude_Control/src/reset_sync.v": "1219239a961487841c2ecb93ae9fab5758c2d234e468968eb04a50739ac05cea",
     "Attitude_Control/src/state_estimator.v": "c558dea58ae7c7beb400d497032bf30471a12be116be23bfebeca3767575929a",
-    "Attitude_Control/src/telemetry.v": "6332ed96cffa5d27fd4a8dc28bcc2342c741f9de8b071943fac1515fc75a6321",
-    "Attitude_Control/src/top.v": "f92e9d99bd2a9ff87ddf87d6a8feaffaf8c383176b9cdf1687111d6552c412cf",
+    "Attitude_Control/src/telemetry.v": "eb32f9a26fa21d5ce9162b9ef585de2eba476ee7f8938b76e2202a007e4e2184",
+    "Attitude_Control/src/top.v": "e5e83d6d17e4c8fb9cf4f4db6a7fc598d4f85f3a8a6e57d7811390852249e24f",
     "Attitude_Control/src/uart_rx_byte.v": "764cb9640fec89a57851dd53af536dc93f779ad72f17167d84249d4d5a4ced4b",
     "Attitude_Control/src/uart_tx_byte.v": "48e56ab342381cc012b8b607c40ecf43d1b91976474e799ebc29dd8e5b8709f3"
   }

@@ -54,7 +54,7 @@ module tb_interfaces;
         .clk(clk), .rst_n(rst_n), .sample_valid(sample_valid), .adc(adc),
         .theta(theta), .omega(omega), .arm(arm), .arm_speed(arm_speed),
         .command(command), .state(state), .fault(fault), .calibrated(calibrated),
-        .tx(telemetry_tx));
+        .diagnostic_status(8'hB4), .tx(telemetry_tx));
     uart_rx_byte #(.CLK_HZ(1000000), .BAUD(100000)) telemetry_rx_dut (
         .clk(clk), .rst_n(rst_n), .rx(telemetry_tx), .data(telemetry_data),
         .valid(telemetry_valid), .framing_error(telemetry_error));
@@ -166,7 +166,7 @@ module tb_interfaces;
                 {telemetry_bytes[offset+17],telemetry_bytes[offset+16]} !== -16'sd500)
                 $fatal(1, "telemetry signed fields");
             if (telemetry_bytes[offset+18] !== 8'd3 || telemetry_bytes[offset+19] !== 8'd1 ||
-                telemetry_bytes[offset+20] !== 8'h02 || telemetry_bytes[offset+21] !== 8'd0)
+                telemetry_bytes[offset+20] !== 8'h02 || telemetry_bytes[offset+21] !== 8'hB4)
                 $fatal(1, "telemetry status fields");
             crc_check = packet_crc(offset);
             if ({telemetry_bytes[offset+23],telemetry_bytes[offset+22]} !== crc_check)
