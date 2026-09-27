@@ -2,7 +2,7 @@
 import json
 from pathlib import Path
 
-from PySide6.QtWidgets import (QComboBox, QDialog, QDialogButtonBox, QFormLayout,
+from PySide6.QtWidgets import (QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFormLayout,
                               QGroupBox, QLabel, QPushButton, QVBoxLayout)
 from host.serial_config import SerialConfig
 
@@ -25,7 +25,15 @@ def load_preferences(path):
         return SerialConfig(), 'project', list(BAUD_PRESETS)
 
 
-def save_preferences(path, config, mode, presets):
+def load_log_preferences(path):
+    try:
+        data = json.loads(Path(path).read_text(encoding='utf-8')).get('logging', {})
+        return {key: data.get(key) is True for key in ('serial', 'control')}
+    except (OSError, ValueError, TypeError, AttributeError):
+        return {'serial': False, 'control': False}
+
+
+def save_preferences(path, config, mode, presets, log_preferences=None):
     config.validate()
     if mode not in ('project', 'raw'):
         raise ValueError('Invalid mode')
@@ -33,8 +41,10 @@ def save_preferences(path, config, mode, presets):
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + '.tmp')
     try:
+        logging = load_log_preferences(path) if log_preferences is None else {
+            key: log_preferences.get(key) is True for key in ('serial', 'control')}
         temporary.write_text(json.dumps({'serial': config.as_dict(), 'mode': mode,
-            'baud_presets': sorted(set(presets)), 'format_version': 1},
+            'baud_presets': sorted(set(presets)), 'logging': logging, 'format_version': 2},
             ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
         temporary.replace(path)
     finally:
@@ -43,7 +53,7 @@ def save_preferences(path, config, mode, presets):
 
 
 class SettingsDialog(QDialog):
-    def __init__(self, config, mode, presets, connected=False, parent=None):
+    def __init__(self, config, mode, presets, connected=False, parent=None, log_preferences=None):
         super().__init__(parent)
         self.setWindowTitle('设置')
         self.setMinimumWidth(520)
@@ -52,6 +62,7 @@ class SettingsDialog(QDialog):
         self.selected_mode = mode
         self.presets = list(presets)
         self.connected = connected
+        self.selected_log_preferences = dict(log_preferences or {'serial': False, 'control': False})
         layout = QVBoxLayout(self)
         group = QGroupBox('串口设置')
         form = QFormLayout(group)
@@ -92,6 +103,18 @@ class SettingsDialog(QDialog):
             '自定义串口可用于通用收发。部分组合是否可用取决于串口驱动。')
         hint.setWordWrap(True)
         layout.addWidget(hint)
+        logs = QGroupBox('日志保留')
+        logs_box = QVBoxLayout(logs)
+        self.serial_log_check = QCheckBox('保留串口收发日志（RX / TX 原始字节）')
+        self.control_log_check = QCheckBox('保留开发板控制日志（命令 / 状态 / 异常）')
+        self.serial_log_check.setChecked(self.selected_log_preferences['serial'])
+        self.control_log_check.setChecked(self.selected_log_preferences['control'])
+        logs_box.addWidget(self.serial_log_check)
+        logs_box.addWidget(self.control_log_check)
+        log_hint = QLabel('两项可分别开启。保存后立即生效，写入 captures/logs；不依赖实验记录按钮。')
+        log_hint.setWordWrap(True)
+        logs_box.addWidget(log_hint)
+        layout.addWidget(logs)
         developer = QGroupBox('开发者模式')
         dev_box = QVBoxLayout(developer)
         description = QLabel('ADC 静态与标定分析、编码器计数、有效区扫描、自由衰减、'
@@ -145,6 +168,8 @@ class SettingsDialog(QDialog):
                 return
             self.selected_mode = self.mode_combo.currentData()
             self.presets = sorted(set(self.presets + [self.selected_config.baudrate]))
+        self.selected_log_preferences = {'serial': self.serial_log_check.isChecked(),
+                                         'control': self.control_log_check.isChecked()}
         self.accept()
 
     def enter_developer(self):

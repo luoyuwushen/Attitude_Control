@@ -6,7 +6,9 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-HOST_RELEASE_ID = 'host-v0.3.0'
+sys.path.insert(0, str(ROOT))
+from host.version import HOST_VERSION
+HOST_RELEASE_ID = HOST_VERSION
 
 
 def main():

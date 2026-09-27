@@ -2,6 +2,7 @@
 import queue
 import threading
 import time
+from datetime import datetime, timezone
 
 import serial
 from PySide6.QtCore import QThread, Signal
@@ -17,6 +18,7 @@ class SerialWorker(QThread):
     command_sent = Signal(str)
     raw_received = Signal(bytes)
     raw_sent = Signal(bytes)
+    wire_activity = Signal(dict)
     failed = Signal(str)
 
     def __init__(self, port, parent=None, config=None, mode='project'):
@@ -94,8 +96,11 @@ class SerialWorker(QThread):
 
     def _write(self, port, payload, message):
         written = port.write(payload)
-        if isinstance(written, int):
-            self.tx_bytes += max(0, min(written, len(payload)))
+        count = max(0, min(written, len(payload))) if type(written) is int else 0
+        self.tx_bytes += count
+        self.wire_activity.emit({'direction': 'TX', 'data': payload[:count],
+            'requested_bytes': len(payload), 'complete': written == len(payload),
+            'host_monotonic': time.monotonic(), 'time_utc': datetime.now(timezone.utc).isoformat()})
         if written != len(payload):
             raise serial.SerialException(message)
 
@@ -140,6 +145,8 @@ class SerialWorker(QThread):
                 data = port.read(min(max(port.in_waiting, 1), 4096))
                 if data:
                     self.rx_bytes += len(data)
+                    self.wire_activity.emit({'direction': 'RX', 'data': data,
+                        'host_monotonic': time.monotonic(), 'time_utc': datetime.now(timezone.utc).isoformat()})
                     self.raw_received.emit(data)
                     if self.decoder:
                         records = self.decoder.feed(data)
