@@ -5,7 +5,7 @@
   "host": "host-v0.7.0",
   "firmware_id": "0x00030000",
   "hardware_access": false,
-  "distribution": "local_commit_only_by_user_request; no_GitHub_push",
+  "distribution_at_validation": "local_commit_only_by_user_request; no_GitHub_push",
   "status": "offline_validated_physical_small_amplitude_balance_not_accepted",
   "scope": "ADC去尖峰、水平盲区分类、真实异常保护、上位机记录及离线稳定目标验收；保留v0.2.9的H反馈与积分。",
   "baseline": {
