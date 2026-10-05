@@ -1,0 +1,1027 @@
+{
+  "project_version": "project-v0.2.4",
+  "host_version": "host-v0.6.4",
+  "generated_utc": "2026-09-28T07:02:26.997009+00:00",
+  "status": "offline_validation_passed_hardware_pending",
+  "current_hardware_stage": "Manual upright H takeover and hands-free balance only. Automatic G/SW2 work deferred by user until H balance is achieved.",
+  "physical_port_opened": false,
+  "hardware_flashed": false,
+  "scope": "Frozen individual runs aggregated by source hashes; not a claim that tools/run_tests.py ran end-to-end.",
+  "python": {
+    "passed": true,
+    "tests": 253,
+    "host_tests": 235,
+    "skips": 0,
+    "log": {
+      "path": "Release/host-v0.6.4/validation/python-final.txt",
+      "bytes": 42042,
+      "sha256": "55d4b1ed5a74b3e50826ea6242610e4eca4574c63da73513fd85ecaa34b982a8"
+    }
+  },
+  "rtl": {
+    "passed": true,
+    "benches": [
+      {
+        "bench": "tb_adc_continuous",
+        "passed": true,
+        "evidence": {
+          "path": "Release/project-v0.2.4/validation/tb_adc_continuous_validation.json",
+          "bytes": 8537,
+          "sha256": "ac99389a1221564e5a6942ab85a0b305c7eae94e3bb6d978ec010cb08c40519a"
+        }
+      },
+      {
+        "bench": "tb_adc_observability",
+        "passed": true,
+        "log": {
+          "path": "Release/project-v0.2.4/validation/tb_adc_observability_final.log",
+          "bytes": 2015,
+          "sha256": "ed969bc57f73fbb25bfab2efb195289c21f319af21683d3f719c27bf0a5669bc"
+        },
+        "simulation_nanoseconds": 3012873
+      },
+      {
+        "bench": "tb_adc_quality",
+        "passed": true,
+        "log": {
+          "path": "Release/project-v0.2.4/validation/tb_adc_quality_final.log",
+          "bytes": 1967,
+          "sha256": "925f38b015e88c05e5ae14a17d133781720d3c7bae140dc6d17553e11980f51c"
+        },
+        "simulation_nanoseconds": 20012871
+      },
+      {
+        "bench": "tb_balance_entry",
+        "passed": true,
+        "elapsed_s": 0.11000000001513399,
+        "log": {
+          "path": "Release/project-v0.2.4/validation/tb_balance_entry-final.txt",
+          "bytes": 4934,
+          "sha256": "816c86abce01d07f1a189d568a12277dd196f914ee69068e92b520ccae531b0c"
+        }
+      },
+      {
+        "bench": "tb_closed_loop",
+        "passed": true,
+        "elapsed_s": 122.86000000001513,
+        "log": {
+          "path": "Release/project-v0.2.4/validation/tb_closed_loop-final.txt",
+          "bytes": 6362,
+          "sha256": "977076f274bdd7973a7ec5b38230c51cede7eb94f1499a916d9c0d28a343839a"
+        }
+      },
+      {
+        "bench": "tb_controller",
+        "passed": true,
+        "elapsed_s": 0.9070000000065193,
+        "log": {
+          "path": "Release/project-v0.2.4/validation/tb_controller-final.txt",
+          "bytes": 4860,
+          "sha256": "e4c7bc1a5b621f6654bcaa47bc2eff34230518484d1da23e76ccff14a73c0283"
+        }
+      },
+      {
+        "bench": "tb_estimator",
+        "passed": true,
+        "elapsed_s": 0.25,
+        "log": {
+          "path": "Release/project-v0.2.4/validation/tb_estimator-final.txt",
+          "bytes": 4846,
+          "sha256": "5839d274ee8645c82f8a326a0e4dfae06b5822e76e53d1b1c37de6c2ded1b270"
+        }
+      },
+      {
+        "bench": "tb_estimator_motion",
+        "passed": true,
+        "elapsed_s": 0.139999999984866,
+        "log": {
+          "path": "Release/project-v0.2.4/validation/tb_estimator_motion-final.txt",
+          "bytes": 4903,
+          "sha256": "6b43c690fbc651aae5720f515706434a9c0253443f1aaa60c1e5c310f1a8d83c"
+        }
+      },
+      {
+        "bench": "tb_fault_heartbeat",
+        "passed": true,
+        "elapsed_s": 4.5,
+        "log": {
+          "path": "Release/project-v0.2.4/validation/tb_fault_heartbeat-final.txt",
+          "bytes": 4899,
+          "sha256": "7f6e866e131d6f5e8cb0602ab6d7d89b8d3c7f689688c70c0336204e1cd4bbeb"
+        }
+      },
+      {
+        "bench": "tb_interfaces",
+        "passed": true,
+        "elapsed_s": 0.21799999999348074,
+        "log": {
+          "path": "Release/project-v0.2.4/validation/tb_interfaces-final.txt",
+          "bytes": 4837,
+          "sha256": "c40ed17e0b5dd3426df66dc9c2f18debca9a90bf61fee17050d56a17ecc59aa4"
+        }
+      },
+      {
+        "bench": "tb_motor_test",
+        "passed": true,
+        "elapsed_s": 0.11000000001513399,
+        "log": {
+          "path": "Release/project-v0.2.4/validation/tb_motor_test-final.txt",
+          "bytes": 4920,
+          "sha256": "d8ca1a26e6f92d43c23623ec0e003fb4eead6b225e79134feb92319e928386b9"
+        }
+      },
+      {
+        "bench": "tb_motor_test_top",
+        "passed": true,
+        "elapsed_s": 28.937000000005355,
+        "log": {
+          "path": "Release/project-v0.2.4/validation/tb_motor_test_top-final.txt",
+          "bytes": 4982,
+          "sha256": "b58da1989bacf8210defce10e08aa3fd39ce832e16b44e4bff622ca78584b97c"
+        }
+      },
+      {
+        "bench": "tb_sample_freshness",
+        "passed": true,
+        "elapsed_s": 4.907000000006519,
+        "log": {
+          "path": "Release/project-v0.2.4/validation/tb_sample_freshness-final.txt",
+          "bytes": 4904,
+          "sha256": "2d94123bcc9504968fc1905f8f5c05d932aff863a65668c7adb5512b1552843f"
+        }
+      },
+      {
+        "bench": "tb_sensor_recovery",
+        "passed": true,
+        "elapsed_s": 0.125,
+        "log": {
+          "path": "Release/project-v0.2.4/validation/tb_sensor_recovery-final.txt",
+          "bytes": 4897,
+          "sha256": "8a38061775725348a81dec70f354393fc4ba91adddd289de0e10d2cdc2ccdb49"
+        }
+      },
+      {
+        "bench": "tb_start_diagnostics",
+        "passed": true,
+        "elapsed_s": 42.062000000005355,
+        "log": {
+          "path": "Release/project-v0.2.4/validation/tb_start_diagnostics-final.txt",
+          "bytes": 4906,
+          "sha256": "87a9623426f85005073bd6a8c7f9906b67a9ecc419fa5a5ed259a65768033d0d"
+        }
+      },
+      {
+        "bench": "tb_start_runtime",
+        "passed": true,
+        "elapsed_s": 418.46899999998277,
+        "log": {
+          "path": "Release/project-v0.2.4/validation/tb_start_runtime-final.txt",
+          "bytes": 4899,
+          "sha256": "96f673d9fd019d08d458fe349ab65015534f644aa785910ea3a317a3ada522ca"
+        }
+      },
+      {
+        "bench": "tb_telemetry_v2",
+        "passed": true,
+        "elapsed_s": 0.26600000000325963,
+        "log": {
+          "path": "Release/project-v0.2.4/validation/tb_telemetry_v2-final.txt",
+          "bytes": 5305,
+          "sha256": "17672a692db44f0a251d245a128bad09806a1520efe612f465e441a5fd411e29"
+        }
+      },
+      {
+        "bench": "tb_top",
+        "passed": true,
+        "elapsed_s": 31.75,
+        "log": {
+          "path": "Release/project-v0.2.4/validation/tb_top-final.txt",
+          "bytes": 4897,
+          "sha256": "8d425e7caef96114d8561475920fdc6ad63287a9c99686636c4eb65338cdbca8"
+        }
+      },
+      {
+        "bench": "tb_top_v2",
+        "passed": true,
+        "log": {
+          "path": "Release/project-v0.2.4/validation/tb_top_v2-specialist.txt",
+          "bytes": 3342,
+          "sha256": "ada1b567c0a6dbfbe58840f95c5a34540a977ff104ef257a10fbb475f283ad65"
+        }
+      }
+    ],
+    "count": 19,
+    "verilog2005_top_compile": "passed"
+  },
+  "build": {
+    "setup_violations": 0,
+    "hold_violations": 0,
+    "fmax_mhz": 54.471,
+    "placed_pins": {
+      "clk_50m": {
+        "pad": "M19",
+        "standard": "LVCMOS33"
+      },
+      "rst_n": {
+        "pad": "AB3",
+        "standard": "LVCMOS33"
+      },
+      "key_sw[0]": {
+        "pad": "T18",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[1]": {
+        "pad": "R18",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[2]": {
+        "pad": "U20",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[3]": {
+        "pad": "T20",
+        "standard": "LVCMOS15"
+      },
+      "uart_rx": {
+        "pad": "L20",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[0]": {
+        "pad": "L21",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[1]": {
+        "pad": "M21",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[2]": {
+        "pad": "J20",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[3]": {
+        "pad": "J19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[4]": {
+        "pad": "D19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[5]": {
+        "pad": "H18",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[6]": {
+        "pad": "H19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[7]": {
+        "pad": "G19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[8]": {
+        "pad": "G17",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[9]": {
+        "pad": "E19",
+        "standard": "LVCMOS33"
+      },
+      "adc_otr": {
+        "pad": "F18",
+        "standard": "LVCMOS33"
+      },
+      "enc1_a": {
+        "pad": "Y20",
+        "standard": "LVCMOS33"
+      },
+      "enc1_b": {
+        "pad": "AA20",
+        "standard": "LVCMOS33"
+      },
+      "uart_tx": {
+        "pad": "K20",
+        "standard": "LVCMOS33"
+      },
+      "adc_clk": {
+        "pad": "G18",
+        "standard": "LVCMOS33"
+      },
+      "adc_oe_n": {
+        "pad": "H20",
+        "standard": "LVCMOS33"
+      },
+      "AN1": {
+        "pad": "Y17",
+        "standard": "LVCMOS33"
+      },
+      "AN2": {
+        "pad": "Y19",
+        "standard": "LVCMOS33"
+      },
+      "PWMA": {
+        "pad": "Y18",
+        "standard": "LVCMOS33"
+      },
+      "BN1": {
+        "pad": "AA17",
+        "standard": "LVCMOS33"
+      },
+      "BN2": {
+        "pad": "V15",
+        "standard": "LVCMOS33"
+      },
+      "PWMB": {
+        "pad": "V14",
+        "standard": "LVCMOS33"
+      }
+    },
+    "device": "GW2A-LV55PG484C8/I7",
+    "tool": "V1.9.12.03 (64-bit)",
+    "bitstream_sha256": "504aab52c6f7643004f27842982162328df9544385781a1bf58837ad00f0234e",
+    "dsp_usage": "17/20",
+    "logic_usage": "7140/54720",
+    "register_usage": "5174/42000",
+    "created_time": "Mon Sep 28 03:39:09 2026",
+    "source_sha256": {
+      "Attitude_Control/src/adc_sampler.v": "1e5af785dedb3eed3ba5e1d2661e4cccaf7d0cac616c89f50def9c6de8992fed",
+      "Attitude_Control/src/attitude_control.cst": "3d68ed209bc75f8bc565b9458dcafad00bdb873f8a0e553d814e12e2cea02707",
+      "Attitude_Control/src/attitude_control.sdc": "9402f7049dfcf8cbc29688997cf9a63abc0b28154128a2c49c67f5dbbb056ef5",
+      "Attitude_Control/src/attitude_controller.v": "5131c5806e0efcee39404e935bf4ba5f9ea81fc9864349f918172f6ece04574b",
+      "Attitude_Control/src/calibration_divider.v": "25950cd80fd46c6a65c0000fdda495825575766e37e650be6bbc46b0e08ceeb9",
+      "Attitude_Control/src/key_debounce.v": "a4a648df7d506ea42b7253f4e91967803bdefbca4ead784935e57614e53681ea",
+      "Attitude_Control/src/motor_pwm.v": "4ad6398d76f74fc95842cff862c85312dd54d350b47247c284aa118f6ad2cf28",
+      "Attitude_Control/src/motor_test.v": "c13df05aeffe902e79bf20dfec826123970994b8880d8a5a0f36276076e385ff",
+      "Attitude_Control/src/quadrature_encoder.v": "2696604dd9fa20a7c336855dba596d1c8253f01688735e82ed3a5c6a2877bae1",
+      "Attitude_Control/src/reset_sync.v": "1219239a961487841c2ecb93ae9fab5758c2d234e468968eb04a50739ac05cea",
+      "Attitude_Control/src/state_estimator.v": "232a4e44dfeb714dd8fafac756f7e9c51b82bc41242529a7722ab7fa318abec8",
+      "Attitude_Control/src/telemetry.v": "b8a749902bd8d2b3072c52496382f41fc35f9f7ac1a13ec504fec3672913b33e",
+      "Attitude_Control/src/top.v": "06c906b3cb29e369a50010a2d7df0b68aaab32652de89c4ca47a32f5d4e1e6ba",
+      "Attitude_Control/src/uart_rx_byte.v": "764cb9640fec89a57851dd53af536dc93f779ad72f17167d84249d4d5a4ced4b",
+      "Attitude_Control/src/uart_tx_byte.v": "48e56ab342381cc012b8b607c40ecf43d1b91976474e799ebc29dd8e5b8709f3"
+    }
+  },
+  "host_checks": {
+    "physical_port_opened": false,
+    "python": {
+      "command": "python -m unittest discover -s tests -p test_*.py -v",
+      "returncode": 0,
+      "tests": 253,
+      "elapsed_s": 20.962,
+      "log": "Release/host-v0.6.4/validation/python-final.txt"
+    },
+    "build_host_including_exe_smoke": {
+      "command": "python tools/build_host.py",
+      "returncode": 0,
+      "exe_smoke_included": true,
+      "log": "Release/host-v0.6.4/validation/build-host.txt"
+    },
+    "source_smoke": {
+      "command": "python tools/host_monitor.py --smoke-test",
+      "returncode": 0,
+      "log": "Release/host-v0.6.4/validation/source-smoke.txt"
+    },
+    "provenance": "Return codes observed from completed root exec tool sessions; build_host.py uses subprocess check=True for EXE smoke."
+  },
+  "host_render_replay": {
+    "source": "offline_simulation",
+    "physical_port_opened": false,
+    "source_telemetry": "Release\\host-v0.6.3\\captures\\fpga_logs\\20260928_024714_862122_10895c39\\telemetry.jsonl",
+    "source_sha256": "5978f43fd12b42f191e20e99987e5eed9d44dbc6fc3ab6987864808e4793f759",
+    "host_source_sha256": {
+      "app.py": "f5ef5ceb427051ebdec1f953379d5ee98a04cabf1e68f614670d2aad33d9d526",
+      "core.py": "6b468d14b4540740000c468c248e4f44cd65e9119a652331a4c16a24e898f826",
+      "diagnostics.py": "8f9d125b5abe0bfcea759b1ce7643e4ccb17a363cfce56c5d4320a2b87ba8d40",
+      "transport.py": "ac488dbca1b5a3f7b1418d169a3c33b7c09b0fcde00d7cd379eca1cc14f957a1",
+      "version.py": "f8ea0198d3ad9b0177834d62352919773c46ca7489115feea0d802a6bbe3aa89",
+      "operation_log.py": "912a85c441c5fbbd9ac40b61dab539415587e7b6766b6712d00f36217b7ed0d2",
+      "serial_ui.py": "c73a7c1256432fb96047d03226b4d923d6e9891cc8a73fbe94a813c21c9d99cc",
+      "measurements.py": "1dc33cd605b74e1e346644e1af625ef8be6db2ae65b9adf27a5101f9cf2f16c6"
+    },
+    "host_source_unchanged_during_run": true,
+    "source_frames": 9746,
+    "source_crc_stats": {
+      "frames": 9746,
+      "crc_errors": 0,
+      "discarded_bytes": 0,
+      "unsupported_frames": 0,
+      "missing_frames": 0,
+      "duplicates": 0,
+      "resets": 0
+    },
+    "input_frame_bytes": 199,
+    "input_firmware_version": "0x00020003",
+    "input_transformation": "Unmodified project-v0.2.3 field bytes and original worker cadence; repeated prehistory only is synthetic.",
+    "modified_input_sha256": "5d03a1a6084ffca90225a97c6e15eca3f1613e208fff21fc0e720ca24e95c2a6",
+    "modified_input_crc_stats": {
+      "frames": 9746,
+      "crc_errors": 0,
+      "discarded_bytes": 0,
+      "unsupported_frames": 0,
+      "missing_frames": 0,
+      "duplicates": 0,
+      "resets": 0
+    },
+    "replay_decode_stats": {
+      "frames": 4501,
+      "crc_errors": 0,
+      "discarded_bytes": 0,
+      "unsupported_frames": 0,
+      "missing_frames": 0,
+      "duplicates": 0,
+      "resets": 0
+    },
+    "batch_reconstruction": "complete frame groups sharing recorded host_monotonic; original byte fragments unavailable",
+    "synthetic_prehistory_samples": 15000,
+    "mode": "fixed",
+    "render_policy": "independent 10 Hz, 1 px, no AA",
+    "platform": "offscreen",
+    "window_s": 300,
+    "width": 1366,
+    "requested_duration_s": 90.0,
+    "wall_s": 90.06200000000536,
+    "input_frames": 4501,
+    "published_frames": 4501,
+    "delivered_frames": 4501,
+    "metrics_samples": 4501,
+    "all_input_delivered_logged_match": true,
+    "telemetry_timeout_events": 0,
+    "telemetry_timeout_event_details": [],
+    "telemetry_restored_event_details": [
+      {
+        "telemetry": {
+          "sequence": 1391,
+          "state": 0,
+          "calibrated": 0,
+          "fault": 0,
+          "diagnostic_status": 128,
+          "first_fault": 0,
+          "sensor_flags": 0,
+          "firmware_version": 131075
+        },
+        "last_received_monotonic": 189909.234,
+        "acceptance_phase": "timed_replay",
+        "acceptance_elapsed_s": 0.062000000005355105,
+        "event": "telemetry_restored",
+        "time_utc": "2026-09-27T20:02:24.197493+00:00",
+        "host_monotonic": 189909.265
+      }
+    ],
+    "connection_event_details": [
+      {
+        "telemetry": {},
+        "status": "connected",
+        "acceptance_phase": "await_first_frame",
+        "acceptance_elapsed_s": null,
+        "event": "connection",
+        "time_utc": "2026-09-27T20:02:24.143167+00:00",
+        "host_monotonic": 189909.203
+      }
+    ],
+    "replay_start_monotonic": 189909.203,
+    "reproduce_initialization_bug": false,
+    "initialization": "History/layout prepared while disconnected; serial_status(connected) before timed replay",
+    "logged_frames": 4501,
+    "all_logged_raw_frames_match": true,
+    "delivery_overflows": 0,
+    "errors": [],
+    "measurements": {
+      "pending_batches": {
+        "count": 4490,
+        "mean": 1.3846325167037863,
+        "p95": 3,
+        "p99": 3,
+        "max": 4
+      },
+      "delivery_lag_ms": {
+        "count": 4501,
+        "mean": 10.164407908616344,
+        "p95": 32.00000000651926,
+        "p99": 46.999999991385266,
+        "max": 62.000000005355105
+      },
+      "receive_ms": {
+        "count": 4490,
+        "mean": 0.1496341203407847,
+        "p95": 0.2243999915663153,
+        "p99": 0.31079998007044196,
+        "max": 0.7768000068608671
+      },
+      "plot_prepare_ms": {
+        "count": 823,
+        "mean": 34.06494993878158,
+        "p95": 40.59889999916777,
+        "p99": 45.42499998933636,
+        "max": 50.176899996586144
+      },
+      "stop_callback_lag_ms": {
+        "count": 89,
+        "mean": 10.820224720610598,
+        "p95": 32.00000000651926,
+        "p99": 47.0000000204891,
+        "max": 47.0000000204891
+      },
+      "stop_command_accepted": {
+        "count": 89,
+        "mean": 1,
+        "p95": 1,
+        "p99": 1,
+        "max": 1
+      }
+    },
+    "limitations": "Offline Qt rendering on this computer; not physical serial-driver/motor/hardware acceptance.",
+    "acceptance_checks": {
+      "exact_input_delivery_log_equality": true,
+      "expected_recorded_cadence_count": true,
+      "no_crc_errors": true,
+      "no_delivery_overflow": true,
+      "no_telemetry_timeouts": true,
+      "no_errors": true,
+      "no_source_change": true,
+      "stop_callbacks_observed": true,
+      "all_stop_commands_accepted": true,
+      "delivery_below_freshness_deadline": true,
+      "stop_callbacks_below_200ms": true
+    },
+    "passed": true
+  },
+  "ui_visual_review": {
+    "sizes": [
+      "1000x750",
+      "1366x768"
+    ],
+    "note": "Layout reviewed before final F/B readiness gate-only fix; final Python tests verify gating and legacy compatibility."
+  },
+  "field_analysis": {
+    "frames": 21457,
+    "sessions": 3,
+    "raw_inputs_unchanged": true,
+    "raw_source_sha256": {
+      "Release/host-v0.6.3/captures/fpga_logs/20260928_024714_862122_10895c39/telemetry.jsonl": "5978f43fd12b42f191e20e99987e5eed9d44dbc6fc3ab6987864808e4793f759",
+      "Release/host-v0.6.3/captures/fpga_logs/20260928_024714_862122_10895c39/control.jsonl": "291f290e7cccd6fccd18cc8d913e66dc1208480ecf2f8a2782d8d30d7e840d68",
+      "Release/host-v0.6.3/captures/fpga_logs/20260928_024714_862122_10895c39/metadata.json": "1709234756678fc2171c458da935fdb864ed8894503c8042675c4b25a4cab393",
+      "Release/host-v0.6.3/captures/fpga_logs/20260928_025110_081863_d949c49e/telemetry.jsonl": "d458ef4f5483c833e7867b445e0af6ec8869b30fa544bd2c2c53ca2709f47718",
+      "Release/host-v0.6.3/captures/fpga_logs/20260928_025110_081863_d949c49e/control.jsonl": "6b6f5897d35120981c2e90ac6e988da5ad842b2ed63908a52d545a396a3652f9",
+      "Release/host-v0.6.3/captures/fpga_logs/20260928_025110_081863_d949c49e/metadata.json": "797802838e2f4d18d0bdcc551dc3d215bdd0098cf00c7bbcb546a24ab1ccc94c",
+      "Release/host-v0.6.3/captures/fpga_logs/20260928_025334_928936_01a2643c/telemetry.jsonl": "78099ffadbb7e87a4a4ace849e1cf5305ce22d9a8f86a6010e377319d077d8b0",
+      "Release/host-v0.6.3/captures/fpga_logs/20260928_025334_928936_01a2643c/control.jsonl": "d01f906f95a64a160e030e8959bc4bcda3dd8dc42bd421c28a8bef5260f38c1b",
+      "Release/host-v0.6.3/captures/fpga_logs/20260928_025334_928936_01a2643c/metadata.json": "649d4cd31fb7f433e468d7750dc648abd87be78a5b68eea00889a9507211bcfd"
+    },
+    "report": {
+      "path": "Release/host-v0.6.3/validation/field_0247_0253.md",
+      "bytes": 5364,
+      "sha256": "d07d0250f00bd41390a9052e09fc4480d07db9c127add62b58cd7a54d80c1034"
+    },
+    "angle_scope": "1040 raw counts/revolution nominal, not measured; post-stop 1s observation includes coast, not guaranteed rest."
+  },
+  "official_comparison_user_report": {
+    "pid": "Same hardware: approach upright from either side, then press SW1, then hands-free balance. Does not prove valid telemetry during the approach.",
+    "interface": "Official tool approximately 1010 hanging; clockwise near horizontal low endpoint, then >4300, then ~3000 upright; opposite approach rises ~1000 to ~3000.",
+    "precision": "No raw official serial capture. Readable source scaling is raw_mean*4+135 (135..4227), so reported 0/>4300 are not asserted to match exact source behavior.",
+    "implication": "Similar endpoint discontinuity also reported with official interface; no basis to label it uniquely a project ADC algorithm error. Current idle sticky fault requires healthy/mature upright, explicit R, then a new H."
+  },
+  "reference_audit": "15 project files, 29 unique pads, 31/31 local Reference checksums passed",
+  "failure_provenance": [
+    "ADC quality/observability early old-contract assertion failures retained in adc_quality_adaptation_initial_failure.log; explicitly a tool-output transcript.",
+    "Production oracle attempt1 directed assertion rejected legitimate nonfatal raw-span warning from next source group; oracle itself matched. Failed and final direct logs retained.",
+    "Top-v2 expectations independently recalculated for new publication epoch (11970 and 0x016c); full golden telemetry checks retained.",
+    "Before-F/B-readiness host replay is historical only; final replay matches final app source hash.",
+    "First complete 253-test run exposed two old-firmware F/B compatibility regressions. Gate restricted to firmware>=0x20004; original failing tests unchanged. Failure log and superseded intermediate replay retained."
+  ],
+  "limits": [
+    "No physical balance, automatic swing-up, disturbance or long-duration serial acceptance performed.",
+    "Nominal nonlinear closed-loop simulation bypasses physical ADC capture and installed top-level MOTOR_SIGN; not HIL.",
+    "Field aggregates cannot reconstruct 5MHz ADC samples or prove PWM-induced analog noise.",
+    "Offline replay did not reproduce historical 3.227s GUI backlog; physical serial issue is not declared solved.",
+    "Manual commands ignore accumulated arm position; single-test time/travel guards remain. Fixed PWM is not constant speed or fixed angle."
+  ],
+  "next_hardware_checks": [
+    "Static telemetry for 30s, D/U; log both manual approach directions and separate actual OTR from ADC rail codes.",
+    "Short F/B: positive command increases encoder, reverse decreases; stop between directions. After manual rail crossing, hold upright until healthy/mature, explicitly R then H; do not bypass a persistent invalid measurement.",
+    "Return near original calibrated arm zero; verify H takeover and hands-free balance. G/SW2 testing explicitly deferred until H balance succeeds.",
+    "Measure counts per mechanical revolution and collect at least 15 minutes of physical serial logs."
+  ],
+  "source_sha256": {
+    "Attitude_Control/Attitude_Control.gprj": "5f35cf7a89e00002631f05ec3aaf4ec5247a6275016143df027068b361eb7932",
+    "Attitude_Control/build.tcl": "375156a061a058f4c4b10d19c9fd654305bde637250bd49b2345e2c6673f9298",
+    "Attitude_Control/src/adc_sampler.v": "1e5af785dedb3eed3ba5e1d2661e4cccaf7d0cac616c89f50def9c6de8992fed",
+    "Attitude_Control/src/attitude_control.cst": "3d68ed209bc75f8bc565b9458dcafad00bdb873f8a0e553d814e12e2cea02707",
+    "Attitude_Control/src/attitude_control.sdc": "9402f7049dfcf8cbc29688997cf9a63abc0b28154128a2c49c67f5dbbb056ef5",
+    "Attitude_Control/src/attitude_controller.v": "5131c5806e0efcee39404e935bf4ba5f9ea81fc9864349f918172f6ece04574b",
+    "Attitude_Control/src/calibration_divider.v": "25950cd80fd46c6a65c0000fdda495825575766e37e650be6bbc46b0e08ceeb9",
+    "Attitude_Control/src/key_debounce.v": "a4a648df7d506ea42b7253f4e91967803bdefbca4ead784935e57614e53681ea",
+    "Attitude_Control/src/motor_pwm.v": "4ad6398d76f74fc95842cff862c85312dd54d350b47247c284aa118f6ad2cf28",
+    "Attitude_Control/src/motor_test.v": "c13df05aeffe902e79bf20dfec826123970994b8880d8a5a0f36276076e385ff",
+    "Attitude_Control/src/quadrature_encoder.v": "2696604dd9fa20a7c336855dba596d1c8253f01688735e82ed3a5c6a2877bae1",
+    "Attitude_Control/src/reset_sync.v": "1219239a961487841c2ecb93ae9fab5758c2d234e468968eb04a50739ac05cea",
+    "Attitude_Control/src/state_estimator.v": "232a4e44dfeb714dd8fafac756f7e9c51b82bc41242529a7722ab7fa318abec8",
+    "Attitude_Control/src/telemetry.v": "b8a749902bd8d2b3072c52496382f41fc35f9f7ac1a13ec504fec3672913b33e",
+    "Attitude_Control/src/top.v": "06c906b3cb29e369a50010a2d7df0b68aaab32652de89c4ca47a32f5d4e1e6ba",
+    "Attitude_Control/src/uart_rx_byte.v": "764cb9640fec89a57851dd53af536dc93f779ad72f17167d84249d4d5a4ced4b",
+    "Attitude_Control/src/uart_tx_byte.v": "48e56ab342381cc012b8b607c40ecf43d1b91976474e799ebc29dd8e5b8709f3",
+    "host/__init__.py": "b7b8a08bd9d32550ee1d509aac087b2a7eb8ae4e6a7f05f867b8ab9814f090ff",
+    "host/app.py": "f5ef5ceb427051ebdec1f953379d5ee98a04cabf1e68f614670d2aad33d9d526",
+    "host/core.py": "6b468d14b4540740000c468c248e4f44cd65e9119a652331a4c16a24e898f826",
+    "host/diagnostics.py": "8f9d125b5abe0bfcea759b1ce7643e4ccb17a363cfce56c5d4320a2b87ba8d40",
+    "host/measurement_ui.py": "3575b4e33c0c4f27a394074c433a001b94357ddc459ceafb2d4029fd68301d7f",
+    "host/measurements.py": "1dc33cd605b74e1e346644e1af625ef8be6db2ae65b9adf27a5101f9cf2f16c6",
+    "host/operation_log.py": "912a85c441c5fbbd9ac40b61dab539415587e7b6766b6712d00f36217b7ed0d2",
+    "host/serial_config.py": "3fabcfe478f115781027b506ca95778ce151528378c40879cb0df7fd1004ea8d",
+    "host/serial_ui.py": "c73a7c1256432fb96047d03226b4d923d6e9891cc8a73fbe94a813c21c9d99cc",
+    "host/settings.py": "bc66606aca51af582ae94d553df58df27b49b70df7d8313cefdf15d57a1914e4",
+    "host/transport.py": "ac488dbca1b5a3f7b1418d169a3c33b7c09b0fcde00d7cd379eca1cc14f957a1",
+    "host/version.py": "f8ea0198d3ad9b0177834d62352919773c46ca7489115feea0d802a6bbe3aa89",
+    "tests/tb_adc_continuous.sv": "dd7594092be1054a25a51d743c102ed2d5378baa9ea8092a755233fa3bab0a15",
+    "tests/tb_adc_observability.sv": "460559d038f5bfd33b043af0018fdc3a1aba86a34a6f1f701f586d98a97b571f",
+    "tests/tb_adc_quality.sv": "9f525371244297787af428ce57982041be43b2ec22e5494c6c69f8d87260ed78",
+    "tests/tb_balance_entry.sv": "95f227283d8c1cb539ca268db78fec38683917bbd60cbf4f7b9bc3ee864888f1",
+    "tests/tb_closed_loop.sv": "4878e9f8295c009873ba31dba9081ee59c71cea0ded802b4c8d582e07096bbb5",
+    "tests/tb_controller.sv": "dc8328149cd2324b60abd65937631780e67e4805bc0b3ca5daa262e83ac0a3d7",
+    "tests/tb_estimator.sv": "0075cec7485e564acb0d0aeae0a07adac52a3eb159a0c9971605ee93ab259aa4",
+    "tests/tb_estimator_motion.sv": "9f994af800669167e982b07ce085728f9e5e462c40afc4b91d64d4e2af0c5b3e",
+    "tests/tb_fault_heartbeat.sv": "b2cb8201295e8ccf6831c0a1a1e9b6b58502b3167595d6c2bbf525badfd01fb5",
+    "tests/tb_interfaces.sv": "2dca05b1bd65a08c7b361f08ac569d49dbe280c604856b4dde8dda601738e016",
+    "tests/tb_motor_test.sv": "3997cef593745a77e3453825d2bc8078712efecc957d865c9b3abc218497d5f3",
+    "tests/tb_motor_test_top.sv": "7201710ab505157d8b75f141f5635a36552faa9629b30c31ef4117f1c8108ce2",
+    "tests/tb_sample_freshness.sv": "b309e4902f1e59423ff1ca54ce7f505c07a829e1d333cd10414aa512a21b94f6",
+    "tests/tb_sensor_recovery.sv": "91fdaaf9668d95a50fbc5c0ca29d5a51c7775578b7f01b1e572a93e3e0d9f0e0",
+    "tests/tb_start_diagnostics.sv": "3f6a90a29f1a24141ef11e1e6ab5ee160b8e2537b6007c989df1569a686abaad",
+    "tests/tb_start_runtime.sv": "913ab9481e2e0b5352d562d32ca2e73a70eced29ca21d4e435872cf535a89a06",
+    "tests/tb_telemetry_v2.sv": "3c8aabb86d2dfb98bbb060349f373bf28135bfcdb0608d813e60c74660dada43",
+    "tests/tb_top.sv": "3d2eb138d5345470ffc9e12f7f59ab531755196281acb1721809153fc1308504",
+    "tests/tb_top_v2.sv": "b2d1f467f6e42d0a68c4bdd77b0560115635bb8bcc1c71ab36dff85155ce1562",
+    "tests/test_cli_protocol_v2.py": "b5c21f491f07048e6624c850910e36d66016ee5b7c60d2bfdaac04a009cacc5b",
+    "tests/test_control_model.py": "52b685a8c072c7221614e5ffc96ea1f994cbcffa37c32469276833d012d7e187",
+    "tests/test_host_adc_diagnostics.py": "41b75657e8716282a7c137edf041c1e73f75c8a866c5d8333dfc2e293827f000",
+    "tests/test_host_adc_observability.py": "bf12d95e5f33700abce786be073ab73180ebf51234c724f9b8f56e7d61a95185",
+    "tests/test_host_adc_window_mean.py": "4b9cc0e89e05481e154738ff3f977e82f562d86906f2ac60d8b75527f64c7286",
+    "tests/test_host_core.py": "8092a7b8f9a78116933b288b749d6dea3a3b09f4a966b1d0a17ed4c99658fc54",
+    "tests/test_host_feedback.py": "ca8dee8c11d51ba581044ce248f6a111abf1988ad9eebb0472193a5dc07965e2",
+    "tests/test_host_measurement_ui.py": "e7676816126827986a6c07ad29d503b166414f694a38ff2f2d1a5b0bed307372",
+    "tests/test_host_measurements.py": "ded63e7d24c5bd78cb7a3beeb8d39a840924715180cd9092f51826174c93c54b",
+    "tests/test_host_motion_limits.py": "0f5c488d30bfa6bd48909c9c2da366aa1bb6bb5b468085f57967cbd033a08ee1",
+    "tests/test_host_motor_test.py": "06f49b3229be4b21a56c8c8a9fc909a4704f5de291ef02b143f80f1d47e718ee",
+    "tests/test_host_operation_log.py": "b1b371ccdf5b47558a22a80c063111a730648ac6f6c691050e1277a44d4c19c5",
+    "tests/test_host_render_budget.py": "871dd27276989c6e3ea17e73507bb08fcfb3120221a939d84e6b79b17a757dd2",
+    "tests/test_host_sensor_recovery.py": "dd382429d523025ddbd4b97e5fe6f0ec0fedeb5a2122b1981ae9688302d1f0b1",
+    "tests/test_host_serial.py": "95cb8db391029be97feca8193685ab34370e278ab9b1c5139b6de891118ab0a6",
+    "tests/test_host_serial_panel.py": "eba0a5c94d0bd65c1df6a7822b4a77c47cdc2075dcb9d79a1408cd9a8af7f1bb",
+    "tests/test_host_settings.py": "8ac91b50290f60d7b5e9781c3b11a4252de303e77546940f37e921265c241f02",
+    "tests/test_host_transport_delivery.py": "a45514f542da19d7d06800af3ae96a2c978c1dd85abe87215a8eb19539385c32",
+    "tests/test_host_transport_race.py": "55c4bdcf90f0306ce3d73a6136373c6b21322b3866cef942d7c0570d1ffe314b",
+    "tests/test_host_ui.py": "19b6a47994e812ed20c564b58a4db0f99c05a04428ad6b3c3e94080cf34d3fb0",
+    "tests/test_start_diagnostics_protocol.py": "1d87b5a956ceb99066e53f9cd14c4d4f982d1b82ce7931662a645af3989dfc6d",
+    "tests/test_telemetry.py": "42327303ce961de4145fc4299ef24ebc30ee53c05c071feba00c1c163c53aef1",
+    "tools/build.py": "5bea8c21195d18e608103675248ce511846e9d70cc49137b62798d9b56a069e6",
+    "tools/build_host.py": "509b82504b22f2ba783aaae8c0ff0eb902abb4f219f6124f3c40a2a10d2124d3",
+    "tools/control_model.py": "da0f6ee7d667b91aa9617ff2701d047af9c32654eeadd4174a4607e3de6522e2",
+    "tools/host_monitor.py": "b3c34136f63f1b12b42246fd891caf19c9911b056318134bb0dd9b645497dc54",
+    "tools/run_tests.py": "4e90156f8b8f4c4b37cd61e11131db51e4a8fbd209fadd7d0cacfff7ef9fd2c1",
+    "tools/telemetry_monitor.py": "e808cafa636a62b3ab20d8528152cadda837a295d7381863c387044738cfbb42",
+    "tools/update_project.py": "7b817374b58b5797487efcab8f209d7e4447748f8dae12fb8073398aaa7f9b49",
+    "tools/verify_project.py": "4358ad4f11a5d6f40d237be57f441ab68b3b660c967d95192f9639b00c77d49b"
+  },
+  "artifacts": [
+    {
+      "path": "Release/project-v0.2.4/Attitude_Control.fs",
+      "bytes": 18588969,
+      "sha256": "504aab52c6f7643004f27842982162328df9544385781a1bf58837ad00f0234e"
+    },
+    {
+      "path": "Release/host-v0.6.4/J280_Monitor.exe",
+      "bytes": 57704179,
+      "sha256": "c9dde1221e39ce823bad6403874d0b141aae1cbd39ae140cf9fbce58e3ad3b4f"
+    },
+    {
+      "path": "Release/project-v0.2.4/README.md",
+      "bytes": 1651,
+      "sha256": "da20a9fb471c3dd6daa447d1c9304c8eba1f6c79f09d17ab8c89636580b00cd8"
+    },
+    {
+      "path": "Release/host-v0.6.4/HOST_README.md",
+      "bytes": 23861,
+      "sha256": "5b1c8036cf9fe8849ad3e023aff67eea39b7eb095cb4a0e5fd6f45b7531d8992"
+    },
+    {
+      "path": "Release/host-v0.6.4/HOST_PROTOCOL.md",
+      "bytes": 24292,
+      "sha256": "c002bb2f6141352015c5f63b9ec4b1e98aba38ee4b959460baa0e64c2720ed78"
+    },
+    {
+      "path": "docs/双向手扶与ADC轨端.md",
+      "bytes": 5410,
+      "sha256": "6aa54dd82ee622dd45813142f3830bd0bb7a40590f4d8b68828665fc4f5cd650"
+    },
+    {
+      "path": "docs/方向限位与连续采样修复.md",
+      "bytes": 5674,
+      "sha256": "fb3661aeb5dbc8cb2009946fb9b2b928fb1908057c38740851bfdd9ede815bdd"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "Release/host-v0.6.3/validation/field_0247_0253.md",
+      "bytes": 5364,
+      "sha256": "d07d0250f00bd41390a9052e09fc4480d07db9c127add62b58cd7a54d80c1034"
+    },
+    {
+      "path": "Release/host-v0.6.3/validation/field_0247_0253_adc.json",
+      "bytes": 1044536,
+      "sha256": "035c6ca7e26e5048baf9a6525e66005d9cbef0961f696491c321a97007a67a1a"
+    },
+    {
+      "path": "Release/host-v0.6.3/validation/field_0247_0253_communication.json",
+      "bytes": 3423999,
+      "sha256": "36e0c78113ba612839b1acfafd3402b5ca4641f7ecbf505975eb972a42f99deb"
+    },
+    {
+      "path": "Release/host-v0.6.3/validation/field_0247_0253_communication.py",
+      "bytes": 13875,
+      "sha256": "c82f41211ca11921a2ed8883bd9d96d8302082b50d73285291c7d7574b27a766"
+    },
+    {
+      "path": "Release/host-v0.6.3/validation/field_0247_0253_motion.json",
+      "bytes": 203978,
+      "sha256": "08d604cc71063e28d8ba80bf0533c26a8eca009c5829f645a0de91d779781504"
+    },
+    {
+      "path": "Release/host-v0.6.3/validation/field_0247_0253_motion.py",
+      "bytes": 5418,
+      "sha256": "c24e5ce2d95f43273f9deb4f3d66482b6be861a17ed58054f56fa31ca760da4b"
+    },
+    {
+      "path": "Release/host-v0.6.3/validation/field_025110_025334_encoder_review.md",
+      "bytes": 10464,
+      "sha256": "3cda4d0c52b545ec0db456e77c685ad2d5363fe2dcb39e634fe6aca06631dc35"
+    },
+    {
+      "path": "Release/host-v0.6.3/validation/field_025334_control.png",
+      "bytes": 282237,
+      "sha256": "1385ecf7bcb6b0d03bb379993e52120a657cada5790afa940d2e19f6679a2cd4"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/build-host-before-legacy-fix.txt",
+      "bytes": 11129,
+      "sha256": "311b40f0a079753e3f7873e60f994a02bd974b6586255b4006cb59f678588206"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/build-host.txt",
+      "bytes": 11129,
+      "sha256": "00461ca26975c8dda0ba1d78df0ce573c24729c2dd32f8ebde573b08916c0e77"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/field_fixed_300s_1366_render.json",
+      "bytes": 5429,
+      "sha256": "17d53cad80feaa94c43c8f55e84c019db36cdaaf5d4e4f1aa86ff8a4d7cc645e"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/field_fixed_300s_1366_render_before_fb_readiness.json",
+      "bytes": 5411,
+      "sha256": "a8e4d9a57ec7a2cad86251c00666de2e3131fa7453bc44b52911736b5eac2878"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/field_fixed_300s_1366_render_console.txt",
+      "bytes": 4574,
+      "sha256": "4bd5eb2b1e1c7eff9c60d4ae45aa3e48baf12c3e01c71b4c79d64465d531732f"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/field_fixed_300s_1366_render_console_before_fb_readiness.txt",
+      "bytes": 4556,
+      "sha256": "1c6a24b2a044dd3d7978fa8b8d03e8bf01951570d584bcc0976090dbd5164a0b"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/field_fixed_300s_1366_render_console_superseded_intermediate_gate.txt",
+      "bytes": 4571,
+      "sha256": "cc87af62bea7245ec2c75e3a86fca90ffe1a25ad793d8e982a4adaeae2aaae9e"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/field_fixed_300s_1366_render_superseded_intermediate_gate.json",
+      "bytes": 5426,
+      "sha256": "63c305dd40ffce004c68dd4aeebddcf593904887576c0acfb25cb75a13566438"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/field_intermediate_gate_superseded_note.json",
+      "bytes": 681,
+      "sha256": "10fe485b4290ce488c101bddf3dcaf051281b84829d313827920ce4eaffc22c5"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/final-command-results.json",
+      "bytes": 775,
+      "sha256": "74d7bb84586cab72e07bb4920e1e658135ae807c76930317d8c8d28d86267faf"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/final-input-hashes.json",
+      "bytes": 4196,
+      "sha256": "7f554a0ee2cc0008270c65c8e3cd18834780192973ea2ddb71c5b8776b14e803"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/inputs-before-legacy-fix.json",
+      "bytes": 4196,
+      "sha256": "10e8f0e3fb3ef4db4f4ed71155fca0066577289a1af972a88a9a6ec8960f92de"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/offline_limits_controls_1000.png",
+      "bytes": 235892,
+      "sha256": "14155cd2cbf0ed0d6f20d3ecf5e18038999443b5e4845c46bf48550fb11c8774"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/offline_limits_controls_1366.png",
+      "bytes": 246537,
+      "sha256": "6136eaa2ab37b9052a268ca09a7c22760de749efce93908edd5d5a5588e9751f"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/offline_limits_main_1000.png",
+      "bytes": 218913,
+      "sha256": "a785a6faeb75914eadac58224143f8912465b1b21b665573e8388da882162fa1"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/offline_limits_main_1366.png",
+      "bytes": 228257,
+      "sha256": "d85031bcc37711a258fbbb9a6907d7a94bde81eb444e5625a07d73a145bb57e2"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/python-before-legacy-fix.txt",
+      "bytes": 43217,
+      "sha256": "e8bb7e5ef5aed05751e9169e864a3012a14b961277e6a2cea3c72dc422059940"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/python-final.txt",
+      "bytes": 42042,
+      "sha256": "55d4b1ed5a74b3e50826ea6242610e4eca4574c63da73513fd85ecaa34b982a8"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/replay_field_render.py",
+      "bytes": 15909,
+      "sha256": "50e4f9433e0082120910c497300b6249900c7bc12f32550f89587bcb8924dee1"
+    },
+    {
+      "path": "Release/host-v0.6.4/validation/source-smoke.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/adc_quality_adaptation_initial_failure.log",
+      "bytes": 1947,
+      "sha256": "bd1037745ec1e154ad65e99a0851aa6c4db0ad60e021bd8c9a3f4669ed5d8717"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/adc_specialist_validation.json",
+      "bytes": 9666,
+      "sha256": "6ea3528fb1b4a7b34718aa337a624abf2b98e32a2a8f5331125f6ac695d49c1f"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/assemble_release.py",
+      "bytes": 12541,
+      "sha256": "8b001b0575afe884720b51cba0bf3ccf48f26b124ab2632996fc26032ebae5ba"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/build-attempt1.txt",
+      "bytes": 6128,
+      "sha256": "90958a8f9bff72835ccd18e5a52302c93f5e15e8e03a1d673097aed79b94c129"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/build-input-hashes.json",
+      "bytes": 1884,
+      "sha256": "a52517e2bdce8b2b8fb1b9ac12f031a23c7eba7e934592c4f0452d22380c9ad3"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/build-verify-final.txt",
+      "bytes": 187,
+      "sha256": "0ed21d5c71e7ac1269c3c42cbac01ab078455820aa5c42109af0ad0cef090f4d"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/remaining-rtl-console.txt",
+      "bytes": 403,
+      "sha256": "d046fea4dd41d83089c1e7ca7643eb4fc3d6b537f46564a58de4c7895552a796"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/remaining_rtl.json",
+      "bytes": 40265,
+      "sha256": "3ed85c586a3b7aa1a10de4031cd3afbcba93240e3a76ef41c81272191529dbeb"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/run_remaining_rtl.py",
+      "bytes": 3597,
+      "sha256": "1271baa277ecee1d90d411d26181f2b8529a8fcdac34febce55eb54c980a7139"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_adc_continuous.log",
+      "bytes": 1963,
+      "sha256": "5acbe503fa89740a471c48e4ac7f13a2fcc5dfcd235de43527cc91dbc8e5c0b3"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_adc_continuous_attempt1.log",
+      "bytes": 340,
+      "sha256": "807884d09f90e3567ac82e046bb893ca46b895af31a1c7dfc0c46813a6276290"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_adc_continuous_attempt2.log",
+      "bytes": 1963,
+      "sha256": "c75869c15aca3af1254e2cc290796622f6b9e9d6b4da220bafed0a09bdd86ebf"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_adc_continuous_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_adc_continuous_validation.json",
+      "bytes": 8537,
+      "sha256": "ac99389a1221564e5a6942ab85a0b305c7eae94e3bb6d978ec010cb08c40519a"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_adc_observability_final.log",
+      "bytes": 2015,
+      "sha256": "ed969bc57f73fbb25bfab2efb195289c21f319af21683d3f719c27bf0a5669bc"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_adc_quality_final.log",
+      "bytes": 1967,
+      "sha256": "925f38b015e88c05e5ae14a17d133781720d3c7bae140dc6d17553e11980f51c"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_balance_entry-final.txt",
+      "bytes": 4934,
+      "sha256": "816c86abce01d07f1a189d568a12277dd196f914ee69068e92b520ccae531b0c"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_closed_loop-final.txt",
+      "bytes": 6362,
+      "sha256": "977076f274bdd7973a7ec5b38230c51cede7eb94f1499a916d9c0d28a343839a"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_controller-final.txt",
+      "bytes": 4860,
+      "sha256": "e4c7bc1a5b621f6654bcaa47bc2eff34230518484d1da23e76ccff14a73c0283"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_estimator-final.txt",
+      "bytes": 4846,
+      "sha256": "5839d274ee8645c82f8a326a0e4dfae06b5822e76e53d1b1c37de6c2ded1b270"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_estimator_motion-final.txt",
+      "bytes": 4903,
+      "sha256": "6b43c690fbc651aae5720f515706434a9c0253443f1aaa60c1e5c310f1a8d83c"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_fault_heartbeat-final.txt",
+      "bytes": 4899,
+      "sha256": "7f6e866e131d6f5e8cb0602ab6d7d89b8d3c7f689688c70c0336204e1cd4bbeb"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_interfaces-final.txt",
+      "bytes": 4837,
+      "sha256": "c40ed17e0b5dd3426df66dc9c2f18debca9a90bf61fee17050d56a17ecc59aa4"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_motor_test-final.txt",
+      "bytes": 4920,
+      "sha256": "d8ca1a26e6f92d43c23623ec0e003fb4eead6b225e79134feb92319e928386b9"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_motor_test_top-final.txt",
+      "bytes": 4982,
+      "sha256": "b58da1989bacf8210defce10e08aa3fd39ce832e16b44e4bff622ca78584b97c"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_sample_freshness-final.txt",
+      "bytes": 4904,
+      "sha256": "2d94123bcc9504968fc1905f8f5c05d932aff863a65668c7adb5512b1552843f"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_sensor_recovery-final.txt",
+      "bytes": 4897,
+      "sha256": "8a38061775725348a81dec70f354393fc4ba91adddd289de0e10d2cdc2ccdb49"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_start_diagnostics-final.txt",
+      "bytes": 4906,
+      "sha256": "87a9623426f85005073bd6a8c7f9906b67a9ecc419fa5a5ed259a65768033d0d"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_start_runtime-final.txt",
+      "bytes": 4899,
+      "sha256": "96f673d9fd019d08d458fe349ab65015534f644aa785910ea3a317a3ada522ca"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_telemetry_v2-final.txt",
+      "bytes": 5305,
+      "sha256": "17672a692db44f0a251d245a128bad09806a1520efe612f465e441a5fd411e29"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_top-final.txt",
+      "bytes": 4897,
+      "sha256": "8d425e7caef96114d8561475920fdc6ad63287a9c99686636c4eb65338cdbca8"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/tb_top_v2-specialist.txt",
+      "bytes": 3342,
+      "sha256": "ada1b567c0a6dbfbe58840f95c5a34540a977ff104ef257a10fbb475f283ad65"
+    },
+    {
+      "path": "Release/project-v0.2.4/validation/verilog2005_top-final.txt",
+      "bytes": 4406,
+      "sha256": "aa138ea55827f47d83f86243bc0dc47c0c0b4a0b046f1f67aab5601ff05c63be"
+    }
+  ]
+}

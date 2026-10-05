@@ -1,0 +1,215 @@
+{
+  "validated_at_utc": "2026-09-27T10:36:02.899898+00:00",
+  "project_version": "project-v0.1.3",
+  "host_version": "host-v0.5.0",
+  "python_regression": {
+    "tests": 172,
+    "skipped": 0,
+    "returncode": 0
+  },
+  "hardware_validation": {
+    "performed": false,
+    "physical_port_opened": false,
+    "fpga_programmed": false,
+    "motor_moved_by_this_validation": false,
+    "pending": [
+      "motor/encoder/pendulum signs",
+      "repeated physical swing-up",
+      "long-term balance",
+      "gentle push recovery",
+      "15-minute physical UART acquisition"
+    ]
+  },
+  "protocol": {
+    "version": 1,
+    "frame_bytes": 24,
+    "baud": 115200,
+    "format": "8N1"
+  },
+  "changes": [
+    "XH1 motor uses TB6612 B with encoder 1; XH2 A coasts",
+    "independent 20 ms coherent heartbeat",
+    "2 ms sample freshness protection in all states; telemetry fault 0x04",
+    "stale samples cannot start/jog/calibrate; recovery never restarts motion"
+  ],
+  "rtl_benches": {
+    "tb_closed_loop": "passed",
+    "tb_controller": "passed",
+    "tb_estimator": "passed",
+    "tb_fault_heartbeat": "passed",
+    "tb_interfaces": "passed",
+    "tb_sample_freshness": "passed",
+    "tb_start_diagnostics": "passed",
+    "tb_start_runtime": "passed",
+    "tb_top": "passed"
+  },
+  "production_timing_test": {
+    "bench": "tb_start_runtime",
+    "clock_hz": 50000000,
+    "button_debounce_ms": 20,
+    "adc_hz": 1000,
+    "uart_baud": 115200,
+    "adc_calibration_codes": [
+      240,
+      770
+    ],
+    "fault_injection": "suppress acquisition completion only; verify three live fault frames"
+  },
+  "build": {
+    "setup_violations": 0,
+    "hold_violations": 0,
+    "fmax_mhz": 50.395,
+    "placed_pins": {
+      "clk_50m": {
+        "pad": "M19",
+        "standard": "LVCMOS33"
+      },
+      "rst_n": {
+        "pad": "AB3",
+        "standard": "LVCMOS33"
+      },
+      "key_sw[0]": {
+        "pad": "T18",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[1]": {
+        "pad": "R18",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[2]": {
+        "pad": "U20",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[3]": {
+        "pad": "T20",
+        "standard": "LVCMOS15"
+      },
+      "uart_rx": {
+        "pad": "L20",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[0]": {
+        "pad": "L21",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[1]": {
+        "pad": "M21",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[2]": {
+        "pad": "J20",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[3]": {
+        "pad": "J19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[4]": {
+        "pad": "D19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[5]": {
+        "pad": "H18",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[6]": {
+        "pad": "H19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[7]": {
+        "pad": "G19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[8]": {
+        "pad": "G17",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[9]": {
+        "pad": "E19",
+        "standard": "LVCMOS33"
+      },
+      "adc_otr": {
+        "pad": "F18",
+        "standard": "LVCMOS33"
+      },
+      "enc1_a": {
+        "pad": "Y20",
+        "standard": "LVCMOS33"
+      },
+      "enc1_b": {
+        "pad": "AA20",
+        "standard": "LVCMOS33"
+      },
+      "uart_tx": {
+        "pad": "K20",
+        "standard": "LVCMOS33"
+      },
+      "adc_clk": {
+        "pad": "G18",
+        "standard": "LVCMOS33"
+      },
+      "adc_oe_n": {
+        "pad": "H20",
+        "standard": "LVCMOS33"
+      },
+      "AN1": {
+        "pad": "Y17",
+        "standard": "LVCMOS33"
+      },
+      "AN2": {
+        "pad": "Y19",
+        "standard": "LVCMOS33"
+      },
+      "PWMA": {
+        "pad": "Y18",
+        "standard": "LVCMOS33"
+      },
+      "BN1": {
+        "pad": "AA17",
+        "standard": "LVCMOS33"
+      },
+      "BN2": {
+        "pad": "V15",
+        "standard": "LVCMOS33"
+      },
+      "PWMB": {
+        "pad": "V14",
+        "standard": "LVCMOS33"
+      }
+    },
+    "device": "GW2A-LV55PG484C8/I7",
+    "tool": "V1.9.12.03 (64-bit)",
+    "bitstream_sha256": "32ac3cabfc3150a5e9d60339b0db2bda26d4b45460fdc722d7679e2f6ba620b2",
+    "dsp_usage": "14.5/20",
+    "logic_usage": "3052/54720",
+    "register_usage": "1462/42000",
+    "created_time": "Sun Sep 27 18:30:09 2026",
+    "source_sha256": {
+      "Attitude_Control/src/adc_sampler.v": "95073c1921f0e5f0b3fc086e9cbf7c0ff3dd6015a87fe0c939da70ac1ff8c671",
+      "Attitude_Control/src/attitude_control.cst": "3d68ed209bc75f8bc565b9458dcafad00bdb873f8a0e553d814e12e2cea02707",
+      "Attitude_Control/src/attitude_control.sdc": "7ce70d9d3fc11f1a7a053ace2fb988b87b716b4b2f1b96f3ad71ffd534d16c8f",
+      "Attitude_Control/src/attitude_controller.v": "83f3f2d586c9d2ef909294fc7e9db5191aa747b49d0e13b2e411cbf02024827b",
+      "Attitude_Control/src/calibration_divider.v": "25950cd80fd46c6a65c0000fdda495825575766e37e650be6bbc46b0e08ceeb9",
+      "Attitude_Control/src/key_debounce.v": "a4a648df7d506ea42b7253f4e91967803bdefbca4ead784935e57614e53681ea",
+      "Attitude_Control/src/motor_pwm.v": "4ad6398d76f74fc95842cff862c85312dd54d350b47247c284aa118f6ad2cf28",
+      "Attitude_Control/src/quadrature_encoder.v": "2696604dd9fa20a7c336855dba596d1c8253f01688735e82ed3a5c6a2877bae1",
+      "Attitude_Control/src/reset_sync.v": "1219239a961487841c2ecb93ae9fab5758c2d234e468968eb04a50739ac05cea",
+      "Attitude_Control/src/state_estimator.v": "c558dea58ae7c7beb400d497032bf30471a12be116be23bfebeca3767575929a",
+      "Attitude_Control/src/telemetry.v": "6332ed96cffa5d27fd4a8dc28bcc2342c741f9de8b071943fac1515fc75a6321",
+      "Attitude_Control/src/top.v": "88e6c519311a8726c7a3b04f408bd8ff33da85bb970f2d338568ccd131162798",
+      "Attitude_Control/src/uart_rx_byte.v": "764cb9640fec89a57851dd53af536dc93f779ad72f17167d84249d4d5a4ced4b",
+      "Attitude_Control/src/uart_tx_byte.v": "48e56ab342381cc012b8b607c40ecf43d1b91976474e799ebc29dd8e5b8709f3"
+    }
+  },
+  "test_sha256": {
+    "tests/tb_closed_loop.sv": "09534f0a17b33ea007a7c90ad338d0095b548f4278c653ced2ab67d2da44f8c7",
+    "tests/tb_controller.sv": "1690cb73819ae8602d6e6caf6688e73867db59aa7fe6a41aa61e2ecdfbeb6764",
+    "tests/tb_estimator.sv": "5556cabc06d676a8bf2a61044213f7127be5dcfee6fe6e6bc81313c0ef2622bf",
+    "tests/tb_fault_heartbeat.sv": "b70639428bb41d3f46e9fb5031e0a428b866f9f4e60663ed586439e9870f1d3a",
+    "tests/tb_interfaces.sv": "0097487e25a96b6a0a9dcbdff38a06b6b5fbfb7ac3d3b2586f4214a1b42f2209",
+    "tests/tb_sample_freshness.sv": "061d9fa94acc12eead5aaeee8e88fc742d99cbac62077417ed1b3fd88e361d79",
+    "tests/tb_start_diagnostics.sv": "eb52f5608cc6dc5c1085beacbf04c61159b9313ef86bc9cc25df55f407c100cd",
+    "tests/tb_start_runtime.sv": "62cf2776bbd398d74cda6fb6bd3364eb8ff67fa9d2fe54ec0d5c0554d0d6a503",
+    "tests/tb_top.sv": "1fcc51edcf6b9632482155780828b794e8844e5c7570972c32be81f7dba72226"
+  }
+}

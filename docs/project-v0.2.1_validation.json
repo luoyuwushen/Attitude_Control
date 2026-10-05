@@ -1,0 +1,318 @@
+{
+  "validated_at_utc": "2026-09-27T15:12:27.936581+00:00",
+  "project_version": "project-v0.2.1",
+  "host_version": "host-v0.6.1",
+  "previous_validation": "project-v0.2.0_validation.json",
+  "python_regression": {
+    "tests": 209,
+    "host_prefixed_tests": 191,
+    "skipped": 0,
+    "returncode": 0,
+    "log": "Release/project-v0.2.1/validation/regression.txt"
+  },
+  "rtl_regression": {
+    "benches": [
+      "tb_adc_quality",
+      "tb_balance_entry",
+      "tb_closed_loop",
+      "tb_controller",
+      "tb_estimator",
+      "tb_estimator_motion",
+      "tb_fault_heartbeat",
+      "tb_interfaces",
+      "tb_sample_freshness",
+      "tb_sensor_recovery",
+      "tb_start_diagnostics",
+      "tb_start_runtime",
+      "tb_telemetry_v2",
+      "tb_top",
+      "tb_top_v2"
+    ],
+    "count": 15,
+    "returncode": 0,
+    "verilog_2005_top": "passed",
+    "warnings": 0,
+    "log": "Release/project-v0.2.1/validation/regression.txt"
+  },
+  "closed_loop_model": {
+    "physical_hil": false,
+    "duration_s": 12,
+    "captures": 1,
+    "capture_s": 0.79,
+    "last_2s_max_deg": 0.683502,
+    "disturbance_Nm": 0.01,
+    "disturbance_duration_s": 0.05,
+    "disturbance_peak_deg": 3.781472,
+    "recovery_s": 0.493,
+    "max_arm_rad": 2.900234,
+    "limits": "Assumed nonlinear plant, quantized sensors and RTL controller; bypasses physical ADC capture and external wiring, friction and torque; not HIL"
+  },
+  "fpga_build": {
+    "setup_violations": 0,
+    "hold_violations": 0,
+    "fmax_mhz": 54.191,
+    "placed_pins": {
+      "clk_50m": {
+        "pad": "M19",
+        "standard": "LVCMOS33"
+      },
+      "rst_n": {
+        "pad": "AB3",
+        "standard": "LVCMOS33"
+      },
+      "key_sw[0]": {
+        "pad": "T18",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[1]": {
+        "pad": "R18",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[2]": {
+        "pad": "U20",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[3]": {
+        "pad": "T20",
+        "standard": "LVCMOS15"
+      },
+      "uart_rx": {
+        "pad": "L20",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[0]": {
+        "pad": "L21",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[1]": {
+        "pad": "M21",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[2]": {
+        "pad": "J20",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[3]": {
+        "pad": "J19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[4]": {
+        "pad": "D19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[5]": {
+        "pad": "H18",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[6]": {
+        "pad": "H19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[7]": {
+        "pad": "G19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[8]": {
+        "pad": "G17",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[9]": {
+        "pad": "E19",
+        "standard": "LVCMOS33"
+      },
+      "adc_otr": {
+        "pad": "F18",
+        "standard": "LVCMOS33"
+      },
+      "enc1_a": {
+        "pad": "Y20",
+        "standard": "LVCMOS33"
+      },
+      "enc1_b": {
+        "pad": "AA20",
+        "standard": "LVCMOS33"
+      },
+      "uart_tx": {
+        "pad": "K20",
+        "standard": "LVCMOS33"
+      },
+      "adc_clk": {
+        "pad": "G18",
+        "standard": "LVCMOS33"
+      },
+      "adc_oe_n": {
+        "pad": "H20",
+        "standard": "LVCMOS33"
+      },
+      "AN1": {
+        "pad": "Y17",
+        "standard": "LVCMOS33"
+      },
+      "AN2": {
+        "pad": "Y19",
+        "standard": "LVCMOS33"
+      },
+      "PWMA": {
+        "pad": "Y18",
+        "standard": "LVCMOS33"
+      },
+      "BN1": {
+        "pad": "AA17",
+        "standard": "LVCMOS33"
+      },
+      "BN2": {
+        "pad": "V15",
+        "standard": "LVCMOS33"
+      },
+      "PWMB": {
+        "pad": "V14",
+        "standard": "LVCMOS33"
+      }
+    },
+    "device": "GW2A-LV55PG484C8/I7",
+    "tool": "V1.9.12.03 (64-bit)",
+    "bitstream_sha256": "e88d3471c6e62ea05fc25f58512d5ad9cc64fce6e812493476200d00b9127387",
+    "dsp_usage": "15/20",
+    "logic_usage": "3775/54720",
+    "register_usage": "2059/42000",
+    "created_time": "Sun Sep 27 22:43:56 2026",
+    "source_sha256": {
+      "Attitude_Control/src/adc_sampler.v": "4437b7425255d81b2eed1e34671ef07b007377a281f8c2937b7453c7a386b218",
+      "Attitude_Control/src/attitude_control.cst": "3d68ed209bc75f8bc565b9458dcafad00bdb873f8a0e553d814e12e2cea02707",
+      "Attitude_Control/src/attitude_control.sdc": "9402f7049dfcf8cbc29688997cf9a63abc0b28154128a2c49c67f5dbbb056ef5",
+      "Attitude_Control/src/attitude_controller.v": "b0deaa99d13f002df248c9bae2c369089b791adda1d13dd1b736502c8dd1bc5e",
+      "Attitude_Control/src/calibration_divider.v": "25950cd80fd46c6a65c0000fdda495825575766e37e650be6bbc46b0e08ceeb9",
+      "Attitude_Control/src/key_debounce.v": "a4a648df7d506ea42b7253f4e91967803bdefbca4ead784935e57614e53681ea",
+      "Attitude_Control/src/motor_pwm.v": "4ad6398d76f74fc95842cff862c85312dd54d350b47247c284aa118f6ad2cf28",
+      "Attitude_Control/src/quadrature_encoder.v": "2696604dd9fa20a7c336855dba596d1c8253f01688735e82ed3a5c6a2877bae1",
+      "Attitude_Control/src/reset_sync.v": "1219239a961487841c2ecb93ae9fab5758c2d234e468968eb04a50739ac05cea",
+      "Attitude_Control/src/state_estimator.v": "f2b19f8b64f1607487b91703120d92757711d60826956e9cf361a9718116bb3a",
+      "Attitude_Control/src/telemetry.v": "b7f5395c2a1a85fc7d0faff987f2f13bbec9a0f4cc0ab73404e20dfd698428cd",
+      "Attitude_Control/src/top.v": "72d279e2cafcac82067815b583b2db8d01504258724ed5ac4a6c62b27e1f70af",
+      "Attitude_Control/src/uart_rx_byte.v": "764cb9640fec89a57851dd53af536dc93f779ad72f17167d84249d4d5a4ced4b",
+      "Attitude_Control/src/uart_tx_byte.v": "48e56ab342381cc012b8b607c40ecf43d1b91976474e799ebc29dd8e5b8709f3"
+    }
+  },
+  "fpga_build_log": "Release/project-v0.2.1/validation/build-final.txt",
+  "bitstream": {
+    "path": "Release/project-v0.2.1/Attitude_Control.fs",
+    "size": 18588969,
+    "sha256": "e88d3471c6e62ea05fc25f58512d5ad9cc64fce6e812493476200d00b9127387"
+  },
+  "host_executable": {
+    "path": "Release/host-v0.6.1/J280_Monitor.exe",
+    "size": 57693793,
+    "sha256": "d723dd46c8d17d7f3d22975d8b48de7486dcca0019036e022b18a0a0127db462"
+  },
+  "contract_checks": {
+    "adc": "two-stage registered median of three at unchanged 5 MHz capture phase; isolated nonrail spike rejection; raw rail/OTR hard fault; raw span warning only; full 5 MHz filtered window united with 16 contributors span/step checks; smooth between-contributor excursions rejected",
+    "recovery": "explicit R only stopped, current fresh/good window and 16 consecutive good windows; calibrated path additionally valid/ready; preserves D/U; no autostart or auto clear; bad/stale/running rejection",
+    "diagnostics": "TLV21 quality reason, 22 latched first sensor reason, 23/24 trigger raw min/max, 25 trigger filtered Q4 mean; later windows do not overwrite first sensor evidence",
+    "v2_wire_hex": "aa55026a0000fd0209fd0c007afe6000e803030121950104785634120204fffffeff0902e8030a0213000b02db000c02ff020d02ff030e0200000f02ff031002e01f110238ff120120130401000200140498badcfe15012916022913170211001802eb031902f1379436",
+    "v2_top": "real UART D/U/H/no SWING,106-byte snapshot/CRC/TLV, sensor first reason 0x012c and triggering window retained, watchdog/OTR/R rejection, healthy R retains D240/U800 and requires new H",
+    "controller": "no gain or motor mapping change this release; H admission/no-kick/G priority/SW3/readiness regression passed",
+    "production_timing": "50 MHz, 20 ms key debounce, 1 kHz ADC, 20 kHz PWM, UART115200 SW2/G XH1 and outage heartbeat tests passed",
+    "adc_sdc": "unchanged from project-v0.2.0; falling-edge launch, 9/end setup/hold; external max delay is budget not measured guaranteed ADC max"
+  },
+  "host_validation": "host_validation.json",
+  "render_replay_evidence": {
+    "path": "Release/host-v0.6.1/validation/fixed_300s_1366_render.json",
+    "size": 2457,
+    "sha256": "07ed90aaa7a6bdfd759bf3db7544835460270149c73df27247356c9ac53bd40e"
+  },
+  "hardware_validation": {
+    "performed": false,
+    "physical_port_opened": false,
+    "fpga_programmed": false,
+    "motor_moved_by_agent": false,
+    "official_pid_comparison": "user reports hands-off balance on same hardware/wiring/sensor installation; automatic swing-up untested",
+    "pending": [
+      "30-second uncalibrated stationary hanging test with device-reported project-v0.2.1; inspect latched sensor reason and trigger window if fault 0x01 recurs",
+      "physical ADC continuity and quality",
+      "motor/encoder/pendulum signs",
+      "H hands-off sustained balance",
+      "G repeated swing-up",
+      "push recovery",
+      "15-minute physical UART acquisition"
+    ]
+  },
+  "official_pid_bitstream": {
+    "size": 18588997,
+    "sha256": "f82db8cfdf808904bc0907b3b43e6d6d0b04488c93a2e72f0b6ebdce44278f63",
+    "source_available": false,
+    "reference_and_download_identical": true
+  },
+  "source_sha256": {
+    "Attitude_Control/src/adc_sampler.v": "4437b7425255d81b2eed1e34671ef07b007377a281f8c2937b7453c7a386b218",
+    "Attitude_Control/src/attitude_control.cst": "3d68ed209bc75f8bc565b9458dcafad00bdb873f8a0e553d814e12e2cea02707",
+    "Attitude_Control/src/attitude_control.sdc": "9402f7049dfcf8cbc29688997cf9a63abc0b28154128a2c49c67f5dbbb056ef5",
+    "Attitude_Control/src/attitude_controller.v": "b0deaa99d13f002df248c9bae2c369089b791adda1d13dd1b736502c8dd1bc5e",
+    "Attitude_Control/src/calibration_divider.v": "25950cd80fd46c6a65c0000fdda495825575766e37e650be6bbc46b0e08ceeb9",
+    "Attitude_Control/src/key_debounce.v": "a4a648df7d506ea42b7253f4e91967803bdefbca4ead784935e57614e53681ea",
+    "Attitude_Control/src/motor_pwm.v": "4ad6398d76f74fc95842cff862c85312dd54d350b47247c284aa118f6ad2cf28",
+    "Attitude_Control/src/quadrature_encoder.v": "2696604dd9fa20a7c336855dba596d1c8253f01688735e82ed3a5c6a2877bae1",
+    "Attitude_Control/src/reset_sync.v": "1219239a961487841c2ecb93ae9fab5758c2d234e468968eb04a50739ac05cea",
+    "Attitude_Control/src/state_estimator.v": "f2b19f8b64f1607487b91703120d92757711d60826956e9cf361a9718116bb3a",
+    "Attitude_Control/src/telemetry.v": "b7f5395c2a1a85fc7d0faff987f2f13bbec9a0f4cc0ab73404e20dfd698428cd",
+    "Attitude_Control/src/top.v": "72d279e2cafcac82067815b583b2db8d01504258724ed5ac4a6c62b27e1f70af",
+    "Attitude_Control/src/uart_rx_byte.v": "764cb9640fec89a57851dd53af536dc93f779ad72f17167d84249d4d5a4ced4b",
+    "Attitude_Control/src/uart_tx_byte.v": "48e56ab342381cc012b8b607c40ecf43d1b91976474e799ebc29dd8e5b8709f3",
+    "host/__init__.py": "b7b8a08bd9d32550ee1d509aac087b2a7eb8ae4e6a7f05f867b8ab9814f090ff",
+    "host/app.py": "76db3926868cec46691200ede2357cb73f13eb3245162b2eebf0a2a908db7872",
+    "host/core.py": "c7967a3f2c76e676a6fe8dcb7203fa1b31e3a145a644b7fb02449634a6a83225",
+    "host/diagnostics.py": "2710da33dea9173ff6a8f2bce210b58c613ef2ab7e9e4a1915aa8103b53d136c",
+    "host/measurement_ui.py": "3575b4e33c0c4f27a394074c433a001b94357ddc459ceafb2d4029fd68301d7f",
+    "host/measurements.py": "ec5d55ae43892cca434581eaac6535f619b17397097f3b6f64601ae5884ca0fe",
+    "host/operation_log.py": "912a85c441c5fbbd9ac40b61dab539415587e7b6766b6712d00f36217b7ed0d2",
+    "host/serial_config.py": "3fabcfe478f115781027b506ca95778ce151528378c40879cb0df7fd1004ea8d",
+    "host/serial_ui.py": "c73a7c1256432fb96047d03226b4d923d6e9891cc8a73fbe94a813c21c9d99cc",
+    "host/settings.py": "bc66606aca51af582ae94d553df58df27b49b70df7d8313cefdf15d57a1914e4",
+    "host/transport.py": "c7ed9b5902fcddfbed3eebd3f67953437a379af53be7012704ba46348185c03c",
+    "host/version.py": "eddd3c3217ab32c0cdb86b27d8729f13ea608595b048a28b1cbf9a141d40ad54",
+    "tests/tb_adc_quality.sv": "4568ada015be4e929913fba41e0e22f9fed8e8d80ff2d92de581a3bb34b129fa",
+    "tests/tb_balance_entry.sv": "8817c3a5d6da8fac8e1e83da500abdf3df2898d45981e03ce1074c7d3c709667",
+    "tests/tb_closed_loop.sv": "4878e9f8295c009873ba31dba9081ee59c71cea0ded802b4c8d582e07096bbb5",
+    "tests/tb_controller.sv": "f0d0b10b89738542189ee51e6b3a1ea534dc8ccf401356ed912f750bfb7f629f",
+    "tests/tb_estimator.sv": "4374cb060680e042c7cbb8bde2ff18ecf751208c322e64c27b71700f9a82848d",
+    "tests/tb_estimator_motion.sv": "9f994af800669167e982b07ce085728f9e5e462c40afc4b91d64d4e2af0c5b3e",
+    "tests/tb_fault_heartbeat.sv": "b2cb8201295e8ccf6831c0a1a1e9b6b58502b3167595d6c2bbf525badfd01fb5",
+    "tests/tb_interfaces.sv": "9eece22d7e20824585ed0ed91236f1cc36a4cff63b574d0afcfc9dcec17fdab5",
+    "tests/tb_sample_freshness.sv": "3e10aa5fda37b3540cc0d4d23c51811bf9b0c51b3617f76ff347f2d85f38ac59",
+    "tests/tb_sensor_recovery.sv": "91fdaaf9668d95a50fbc5c0ca29d5a51c7775578b7f01b1e572a93e3e0d9f0e0",
+    "tests/tb_start_diagnostics.sv": "3f6a90a29f1a24141ef11e1e6ab5ee160b8e2537b6007c989df1569a686abaad",
+    "tests/tb_start_runtime.sv": "698695c3259081c411f162674b064ebe93f6c3f9bb8f713ff61d451923968cd4",
+    "tests/tb_telemetry_v2.sv": "3ad266fe089a6f6abe5719f264720e036b2af1da08569cda5a723b6174b4be38",
+    "tests/tb_top.sv": "937e940271854bb9e5148077ec6a60bb8dae4b7f011513839ad0f11eb9d8baf2",
+    "tests/tb_top_v2.sv": "f348a830e63754dc923c64d53ab281172b51fb320b97855c70eeabcd32c8cf5a",
+    "tests/test_cli_protocol_v2.py": "f57ba5f65265c9393680490eaa2cb01a360c7ebd2177d8944ee1837ff5db508f",
+    "tests/test_control_model.py": "52b685a8c072c7221614e5ffc96ea1f994cbcffa37c32469276833d012d7e187",
+    "tests/test_host_adc_diagnostics.py": "41b75657e8716282a7c137edf041c1e73f75c8a866c5d8333dfc2e293827f000",
+    "tests/test_host_core.py": "8092a7b8f9a78116933b288b749d6dea3a3b09f4a966b1d0a17ed4c99658fc54",
+    "tests/test_host_feedback.py": "ca8dee8c11d51ba581044ce248f6a111abf1988ad9eebb0472193a5dc07965e2",
+    "tests/test_host_measurement_ui.py": "e7676816126827986a6c07ad29d503b166414f694a38ff2f2d1a5b0bed307372",
+    "tests/test_host_measurements.py": "ded63e7d24c5bd78cb7a3beeb8d39a840924715180cd9092f51826174c93c54b",
+    "tests/test_host_operation_log.py": "b1b371ccdf5b47558a22a80c063111a730648ac6f6c691050e1277a44d4c19c5",
+    "tests/test_host_render_budget.py": "871dd27276989c6e3ea17e73507bb08fcfb3120221a939d84e6b79b17a757dd2",
+    "tests/test_host_sensor_recovery.py": "c1a8324e31df12afb030e0c46c1f25ab1b8cce2709d85894e79ed3db171d1bf0",
+    "tests/test_host_serial.py": "95cb8db391029be97feca8193685ab34370e278ab9b1c5139b6de891118ab0a6",
+    "tests/test_host_serial_panel.py": "eba0a5c94d0bd65c1df6a7822b4a77c47cdc2075dcb9d79a1408cd9a8af7f1bb",
+    "tests/test_host_settings.py": "8ac91b50290f60d7b5e9781c3b11a4252de303e77546940f37e921265c241f02",
+    "tests/test_host_transport_delivery.py": "a45514f542da19d7d06800af3ae96a2c978c1dd85abe87215a8eb19539385c32",
+    "tests/test_host_transport_race.py": "55c4bdcf90f0306ce3d73a6136373c6b21322b3866cef942d7c0570d1ffe314b",
+    "tests/test_host_ui.py": "19b6a47994e812ed20c564b58a4db0f99c05a04428ad6b3c3e94080cf34d3fb0",
+    "tests/test_start_diagnostics_protocol.py": "1d87b5a956ceb99066e53f9cd14c4d4f982d1b82ce7931662a645af3989dfc6d",
+    "tests/test_telemetry.py": "42327303ce961de4145fc4299ef24ebc30ee53c05c071feba00c1c163c53aef1",
+    "tools/build.py": "5bea8c21195d18e608103675248ce511846e9d70cc49137b62798d9b56a069e6",
+    "tools/build_host.py": "509b82504b22f2ba783aaae8c0ff0eb902abb4f219f6124f3c40a2a10d2124d3",
+    "tools/control_model.py": "da0f6ee7d667b91aa9617ff2701d047af9c32654eeadd4174a4607e3de6522e2",
+    "tools/host_monitor.py": "b3c34136f63f1b12b42246fd891caf19c9911b056318134bb0dd9b645497dc54",
+    "tools/run_tests.py": "4e90156f8b8f4c4b37cd61e11131db51e4a8fbd209fadd7d0cacfff7ef9fd2c1",
+    "tools/telemetry_monitor.py": "1c386031e51b85b6eb2e51b3723318d13adc3f25e54a10e523d46c04921dcc0d",
+    "tools/verify_project.py": "4358ad4f11a5d6f40d237be57f441ab68b3b660c967d95192f9639b00c77d49b"
+  },
+  "validation_files_sha256": {
+    "build-final.txt": "1a624bb1bbb2326bf9bd0895a1e22f978ad433f3f232555493ba28134311b62f",
+    "python-regression.txt": "e5bff8eee95686ef1b92f7d5c12628ac2732e359a2abe7867b1453a89aaecb9e",
+    "regression.txt": "4e500000a0d0a84d8bceb505e018eba7045cff26dd7aa00cc273d0bbce7ee1fd"
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "validated_at_utc": "2026-09-27T13:14:16.557144+00:00",
+  "project_version": "project-v0.2.0",
+  "host_version": "host-v0.6.0",
+  "release_id": "host-v0.6.0",
+  "previous_validation": "host_validation_host-v0.5.1.json",
+  "python_regression": {
+    "tests": 200,
+    "host_prefixed_tests": 182,
+    "skipped": 0,
+    "returncode": 0,
+    "log": "Release/project-v0.2.0/validation/python-regression.txt"
+  },
+  "hardware_validation": {
+    "performed": false,
+    "physical_port_opened": false,
+    "fpga_programmed": false,
+    "motor_moved_by_this_validation": false,
+    "pending": [
+      "ADC continuity on physical unit",
+      "motor/encoder/pendulum signs",
+      "H hands-off balance",
+      "G repeated physical swing-up",
+      "long-term balance and push recovery",
+      "15-minute physical UART acquisition"
+    ]
+  },
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.5",
+  "dependencies": {
+    "PySide6-Essentials": "6.8.3",
+    "pyqtgraph": "0.13.7",
+    "pyserial": "3.5",
+    "PyInstaller": "6.20.0"
+  },
+  "checks": {
+    "source_smoke": "passed; offline startup/drawing/developer page/exit; screenshot saved",
+    "windows_exe_build_and_smoke": "passed; tools/build_host.py returned 0 including EXE --smoke-test",
+    "visual_review": "passed; final screenshots at 1000x750 and 1366x768 explicitly labelled offline mock; pinned stop visible",
+    "protocol": "v1/v2 mixed stream, CRC, all 86 splits and byte delivery of real RTL 87-byte v2 frame; TLVs 13..20 preserved in recorder/runtime log",
+    "controls": "H requires fresh project-v0.2.0 diagnostics, valid/mature measurement, calibrated IDLE, no fault, released SW3, operator direction checks and strict Q10 angle/speed bounds; rejection does not send G",
+    "diagnostics": "raw/mean/window/D/U/device time/sample window count/firmware/first fault/gated software command; v1 missing fields shown unavailable",
+    "control_evidence": "G/H/F/B availability and operator changes logged; write is not ACK; no automatic direction confirmation",
+    "serial_transport": "simulated-port delivery, stale frames, close/write races, slow writer, bounded backlog, stop and lifecycle tests passed",
+    "cli": "telemetry_monitor.py uses shared v1/v2 StreamDecoder and records stable extended CSV columns; H explicit only",
+    "project_pins_reference_checksums": "14 project files, 29 pads, 31/31 unchanged references; new FPGA evidence stored separately"
+  },
+  "executable": {
+    "path": "Release/host-v0.6.0/J280_Monitor.exe",
+    "size": 57691302,
+    "sha256": "242710a3609bd2c75dbdb6f30dbbd748bcb5349e11d3ee8387315ac91ff15ebc"
+  },
+  "source_sha256": {
+    "host/__init__.py": "b7b8a08bd9d32550ee1d509aac087b2a7eb8ae4e6a7f05f867b8ab9814f090ff",
+    "host/app.py": "618ffb368dafc3f9e2b483aa25473332cc8add03c30010473aa48e85a264ca87",
+    "host/core.py": "bca740042a25957e2821878435b4640b3be360928fb4fb592b141f89aef7a467",
+    "host/diagnostics.py": "4da2994c357f62c4f1598d0dc4191a42f611af0364600211140d1d89ce0608fb",
+    "host/measurement_ui.py": "3575b4e33c0c4f27a394074c433a001b94357ddc459ceafb2d4029fd68301d7f",
+    "host/measurements.py": "ec5d55ae43892cca434581eaac6535f619b17397097f3b6f64601ae5884ca0fe",
+    "host/operation_log.py": "912a85c441c5fbbd9ac40b61dab539415587e7b6766b6712d00f36217b7ed0d2",
+    "host/serial_config.py": "3fabcfe478f115781027b506ca95778ce151528378c40879cb0df7fd1004ea8d",
+    "host/serial_ui.py": "c73a7c1256432fb96047d03226b4d923d6e9891cc8a73fbe94a813c21c9d99cc",
+    "host/settings.py": "bc66606aca51af582ae94d553df58df27b49b70df7d8313cefdf15d57a1914e4",
+    "host/transport.py": "c7ed9b5902fcddfbed3eebd3f67953437a379af53be7012704ba46348185c03c",
+    "host/version.py": "0a79c346cebf9bb09ba3da9c9ba5d4d81f48f812a0bb073f94c37e0f5404e212",
+    "tests/test_cli_protocol_v2.py": "f57ba5f65265c9393680490eaa2cb01a360c7ebd2177d8944ee1837ff5db508f",
+    "tests/test_control_model.py": "52b685a8c072c7221614e5ffc96ea1f994cbcffa37c32469276833d012d7e187",
+    "tests/test_host_adc_diagnostics.py": "41b75657e8716282a7c137edf041c1e73f75c8a866c5d8333dfc2e293827f000",
+    "tests/test_host_core.py": "8092a7b8f9a78116933b288b749d6dea3a3b09f4a966b1d0a17ed4c99658fc54",
+    "tests/test_host_feedback.py": "ca8dee8c11d51ba581044ce248f6a111abf1988ad9eebb0472193a5dc07965e2",
+    "tests/test_host_measurement_ui.py": "e7676816126827986a6c07ad29d503b166414f694a38ff2f2d1a5b0bed307372",
+    "tests/test_host_measurements.py": "ded63e7d24c5bd78cb7a3beeb8d39a840924715180cd9092f51826174c93c54b",
+    "tests/test_host_operation_log.py": "b1b371ccdf5b47558a22a80c063111a730648ac6f6c691050e1277a44d4c19c5",
+    "tests/test_host_serial.py": "95cb8db391029be97feca8193685ab34370e278ab9b1c5139b6de891118ab0a6",
+    "tests/test_host_serial_panel.py": "eba0a5c94d0bd65c1df6a7822b4a77c47cdc2075dcb9d79a1408cd9a8af7f1bb",
+    "tests/test_host_settings.py": "8ac91b50290f60d7b5e9781c3b11a4252de303e77546940f37e921265c241f02",
+    "tests/test_host_transport_delivery.py": "a45514f542da19d7d06800af3ae96a2c978c1dd85abe87215a8eb19539385c32",
+    "tests/test_host_transport_race.py": "55c4bdcf90f0306ce3d73a6136373c6b21322b3866cef942d7c0570d1ffe314b",
+    "tests/test_host_ui.py": "19b6a47994e812ed20c564b58a4db0f99c05a04428ad6b3c3e94080cf34d3fb0",
+    "tests/test_start_diagnostics_protocol.py": "1d87b5a956ceb99066e53f9cd14c4d4f982d1b82ce7931662a645af3989dfc6d",
+    "tests/test_telemetry.py": "42327303ce961de4145fc4299ef24ebc30ee53c05c071feba00c1c163c53aef1",
+    "tools/build_host.py": "509b82504b22f2ba783aaae8c0ff0eb902abb4f219f6124f3c40a2a10d2124d3",
+    "tools/host_monitor.py": "b3c34136f63f1b12b42246fd891caf19c9911b056318134bb0dd9b645497dc54",
+    "tools/telemetry_monitor.py": "1c386031e51b85b6eb2e51b3723318d13adc3f25e54a10e523d46c04921dcc0d"
+  },
+  "validation_files_sha256": {
+    "build.txt": "99cbcf6eb6d1c514713d9492407c20ebeb2cac18ccc63dfc968e12b3527c9f18",
+    "offline_main_1000.png": "84c5fdecefb265b9252df601f4d120f25ffc3e9928cbac94eb8191eee3ec1746",
+    "offline_main_1366.png": "fb03ecdf70ceed5caf6a3391687633529e8ff99c2741de6393f6f6300b5b6d32",
+    "python-regression.txt": "33d69ce2ed1a5ace514614b9ff6f365365f78bfee93660aa0cd251c6e1dfa9e7",
+    "source-smoke.txt": "ef99edd3da6ca8a66fba953e4b855077152cc86057764b771fd0e051004ef3d7",
+    "source_smoke.png": "9017d9ea19b5cc2165405ae6e0a5a131e9c48d40047eae021f6cb0562a20feed"
+  }
+}

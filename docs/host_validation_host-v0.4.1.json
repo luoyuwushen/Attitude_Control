@@ -1,0 +1,84 @@
+{
+  "host_version": "host-v0.4.1",
+  "project_version": "project-v0.1.1",
+  "release_id": "host-v0.4.1",
+  "validated_at_utc": "2026-09-27T08:52:19.352635+00:00",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.5",
+  "dependencies": {
+    "PySide6-Essentials": "6.8.3",
+    "pyqtgraph": "0.13.7",
+    "pyserial": "3.5",
+    "PyInstaller": "6.20.0"
+  },
+  "previous_validation": "host_validation_host-v0.4.0.json",
+  "checks": {
+    "python_regression": {
+      "tests": 149,
+      "skipped": 0,
+      "returncode": 0,
+      "command": "python -m unittest discover -s tests -p test_*.py",
+      "added_terminal_long_run_tests": 5
+    },
+    "source_smoke": "passed; python tools/host_monitor.py --smoke-test returned 0",
+    "windows_exe_build_and_smoke": "passed; python tools/build_host.py returned 0",
+    "project_pins_reference_checksums": "passed: 14 files, 29 pads, 31/31 references",
+    "baseline_bitstream_verify_only": "passed; python tools/build.py --verify-only returned 0",
+    "accelerated_terminal_input": {
+      "equivalent_seconds": 750,
+      "frames_per_second": 50,
+      "frame_bytes": 24,
+      "input_bytes": 900000,
+      "real_hardware_test": false,
+      "full_raw_ring_preserved": true,
+      "flush_full_history_rebuilds": 0
+    },
+    "qt_thread_delivery_probe": {
+      "preloaded_history_records": 15000,
+      "preloaded_raw_ring_bytes": 262144,
+      "emitted_frames": 300,
+      "delivered_frames": 300,
+      "input_rate_hz": 50,
+      "maximum_observed_gui_frame_age_s": 0.032,
+      "mean_observed_gui_frame_age_s": 0.014476510067157847,
+      "display_document_characters": 23185,
+      "physical_serial_opened": false
+    },
+    "terminal_visual_review": "passed: Chinese labels, short HEX lines, bounded tail, raw save control; offline preview in local release directory",
+    "terminal_unicode_and_export": "passed: split UTF-8, whole-character UTF-16 trimming, mode-switch short lines, exact last-256-KiB raw export"
+  },
+  "hardware_serial_validation": "pending; no physical COM port was opened by these checks; continuous stopped hardware acquisition for at least 15 minutes remains to be verified",
+  "fpga_protocol": "project-v0.1.1 unchanged: v1 115200/8N1; new freshness or movement permissions were not added",
+  "executable": {
+    "path": "Release/host-v0.4.1/J280_Monitor.exe",
+    "bytes": 57674834,
+    "sha256": "7db25fdb45d262e1d3ac1ef9e50231b197bfdea8520aa0d950c718a2ab0fb846"
+  },
+  "source_sha256": {
+    "host/__init__.py": "b7b8a08bd9d32550ee1d509aac087b2a7eb8ae4e6a7f05f867b8ab9814f090ff",
+    "host/app.py": "edb937c62996cca70deca2e0400212935a6ef1b1ac0c04f0b76ee617d070ae02",
+    "host/core.py": "593e6dfd2b22962d7ccf79bc55a862fd416b34dcdc407f87c1610caab506128d",
+    "host/measurement_ui.py": "3575b4e33c0c4f27a394074c433a001b94357ddc459ceafb2d4029fd68301d7f",
+    "host/measurements.py": "ec5d55ae43892cca434581eaac6535f619b17397097f3b6f64601ae5884ca0fe",
+    "host/operation_log.py": "67159652ca42d15d10dfef3c4b36c47bcf8bb335b5e329cdf9e352528613e75f",
+    "host/serial_config.py": "3fabcfe478f115781027b506ca95778ce151528378c40879cb0df7fd1004ea8d",
+    "host/serial_ui.py": "c73a7c1256432fb96047d03226b4d923d6e9891cc8a73fbe94a813c21c9d99cc",
+    "host/settings.py": "bc66606aca51af582ae94d553df58df27b49b70df7d8313cefdf15d57a1914e4",
+    "host/transport.py": "e42c9ab6912cb16851c184ed3822b4985227fa9b3f5f5c73099c7f826474ed84",
+    "host/version.py": "818266dd2051860f8f6fe9652f20462eff950e3637ae88c81e6141b457529892",
+    "host/requirements.txt": "3e3b3e57f7c7119268b0fc864bfc38a6aa3dd2b493a0da37cfa77a5607b0a3b7",
+    "tests/test_control_model.py": "52b685a8c072c7221614e5ffc96ea1f994cbcffa37c32469276833d012d7e187",
+    "tests/test_host_core.py": "8092a7b8f9a78116933b288b749d6dea3a3b09f4a966b1d0a17ed4c99658fc54",
+    "tests/test_host_measurement_ui.py": "e7676816126827986a6c07ad29d503b166414f694a38ff2f2d1a5b0bed307372",
+    "tests/test_host_measurements.py": "ded63e7d24c5bd78cb7a3beeb8d39a840924715180cd9092f51826174c93c54b",
+    "tests/test_host_operation_log.py": "c8b94b1d03122f6463305d88b20a42e7147dfe20768e6dd2c6190ba053ea4724",
+    "tests/test_host_serial.py": "c5592e633cc106aa44aa71b22cf751fd649189b320c30e0db2d303ad486c9c1e",
+    "tests/test_host_settings.py": "8ac91b50290f60d7b5e9781c3b11a4252de303e77546940f37e921265c241f02",
+    "tests/test_host_transport_race.py": "c7f9ef6922825697095fe0b4ac16f8cd9081dcb6af0b0ea461d0c6dea467ef3d",
+    "tests/test_host_ui.py": "19b6a47994e812ed20c564b58a4db0f99c05a04428ad6b3c3e94080cf34d3fb0",
+    "tests/test_telemetry.py": "42327303ce961de4145fc4299ef24ebc30ee53c05c071feba00c1c163c53aef1",
+    "tools/build_host.py": "509b82504b22f2ba783aaae8c0ff0eb902abb4f219f6124f3c40a2a10d2124d3",
+    "tools/host_monitor.py": "b3c34136f63f1b12b42246fd891caf19c9911b056318134bb0dd9b645497dc54",
+    "tests/test_host_serial_panel.py": "eba0a5c94d0bd65c1df6a7822b4a77c47cdc2075dcb9d79a1408cd9a8af7f1bb"
+  }
+}

@@ -8,3 +8,6 @@
 *.gprj text eol=lf
 *.json text eol=lf
 *.pdf binary
+# Preserve exact bytes of SHA-bound historical reference fixtures.
+tests/fixtures/adc_sampler_v021_reference.v -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+tests/fixtures/trace_top_v029_wire.txt -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

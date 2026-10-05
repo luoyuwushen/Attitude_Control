@@ -2,8 +2,9 @@
 
 状态顺序为 [摆杆直立误差 rad, 摆杆速度 rad/s, 转臂位置 rad, 转臂速度 rad/s]。
 本地手册确认 ADC 10 bit、电气行程 345°、编码器 1040 四倍频计数/圈。
-杆长、质量、惯量、阻尼采用待辨识假设。电机采用官方标称堵转力矩和
-空载转速推导的简化线性模型，不包含电感、齿隙、驱动限流和温升。
+杆长、质量、惯量、阻尼采用待辨识假设。电机采用官方标称堵转力矩，
+并将标称减速后转速暂作空载转速来建立线性模型；手册未说明该转速的
+负载条件。模型不包含静摩擦、启动死区、电感、齿隙、驱动限流和温升。
 """
 from __future__ import annotations
 
@@ -26,7 +27,7 @@ class Parameters:
     pendulum_damping: float = 0.0001  # N m s/rad，待辨识
     supply: float = 12.0  # V，本地介绍手册 2.2
     stall_torque: float = 6.6 * 0.0980665  # N m，6.6 kgf cm
-    no_load_rpm: float = 549.0  # rpm，本地介绍手册 2.2
+    no_load_rpm: float = 549.0  # 假设：介绍手册2.2仅写减速后549±15 rpm，未标为空载
     dt: float = 0.001  # s，设计选择
     adc_codes: int = 1023
     adc_span_codes: float = 1023 * 3.3 / 5 / 2  # 前端 Vi/5+1 估计量程，非整10bit跨度
@@ -127,7 +128,7 @@ def integrate(x, voltage, p, push=0.0):
     return x
 
 
-def design_gain(p: Parameters = Parameters()):
+def design_gain(p: Parameters = Parameters(), control_penalty: float = 0.5):
     """ZOH 离散 LQR；控制代价以电压为单位，输出另转 permille。"""
     origin = np.zeros(4)
     eps = 1e-6
@@ -139,7 +140,44 @@ def design_gain(p: Parameters = Parameters()):
     augmented[:4, :4], augmented[:4, 4:] = a, b
     discrete = expm(augmented * p.dt)
     ad, bd = discrete[:4, :4], discrete[:4, 4:]
-    q, r = np.diag([60.0, 4.0, 1.0, 0.2]), np.array([[0.5]])
+    if not math.isfinite(control_penalty) or control_penalty <= 0:
+        raise ValueError('control_penalty must be finite and positive')
+    q, r = np.diag([60.0, 4.0, 1.0, 0.2]), np.array([[control_penalty]])
+    riccati = solve_discrete_are(ad, bd, q, r)
+    gain = np.linalg.solve(r + bd.T @ riccati @ bd, bd.T @ riccati @ ad).ravel()
+    gain_q10 = np.rint(gain * 1000 / p.supply * 1024).astype(np.int64)
+    poles = np.linalg.eigvals(ad - bd @ (gain_q10[None, :] / 1024 * p.supply / 1000))
+    return gain, gain_q10, poles
+
+
+def design_handover_gain(p: Parameters = Parameters()):
+    """H-only lower-bandwidth candidate; requires separate physical acceptance."""
+    return design_gain(p, control_penalty=32.0)
+
+
+def design_handover_lqi_gain(p: Parameters = Parameters(), integral_penalty: float = 1.0):
+    """H-only five-state LQI candidate, ordered [theta,omega,arm,speed,int_arm].
+
+    int_arm integrates arm error in rad*s. Returns voltage gains, all five
+    permille gains in Q10, and ideal ZOH poles, like design_gain. The fifth
+    Q10 coefficient describes the design only: production uses a separate
+    Q24 accumulator with delta=arm_q10*237, ki=237/16.384 permille/(rad*s).
+    Gates, saturation, derivative IIR and PWM timing require separate tests.
+    """
+    if not math.isfinite(integral_penalty) or integral_penalty <= 0:
+        raise ValueError('integral_penalty must be finite and positive')
+    origin = np.zeros(4)
+    eps = 1e-6
+    a = np.column_stack([(dynamics(origin + np.eye(4)[i] * eps, 0, p)
+                         - dynamics(origin - np.eye(4)[i] * eps, 0, p)) / (2 * eps)
+                         for i in range(4)])
+    b = ((dynamics(origin, eps, p) - dynamics(origin, -eps, p)) / (2 * eps))[:, None]
+    augmented = np.zeros((6, 6))
+    augmented[:4, :4], augmented[:4, 5:] = a, b
+    augmented[4, 2] = 1.0
+    discrete = expm(augmented * p.dt)
+    ad, bd = discrete[:5, :5], discrete[:5, 5:]
+    q, r = np.diag([60.0, 4.0, 1.0, 0.2, integral_penalty]), np.array([[32.0]])
     riccati = solve_discrete_are(ad, bd, q, r)
     gain = np.linalg.solve(r + bd.T @ riccati @ bd, bd.T @ riccati @ ad).ravel()
     gain_q10 = np.rint(gain * 1000 / p.supply * 1024).astype(np.int64)

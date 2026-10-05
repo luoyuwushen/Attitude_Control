@@ -6,7 +6,9 @@ from pathlib import Path
 import sys
 import time
 
-from PySide6.QtCore import Qt, QTimer, QCoreApplication, QEvent
+import numpy as np
+
+from PySide6.QtCore import Qt, QSignalBlocker, QTimer
 from PySide6.QtGui import QFont, QFontDatabase, QKeySequence, QShortcut
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
     QDialogButtonBox, QDoubleSpinBox, QFileDialog, QFormLayout, QFrame,
@@ -16,17 +18,24 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
 import pyqtgraph as pg
 from serial.tools import list_ports
 
-from host.core import Metrics, Replay, SessionRecorder, demo_record
+from host.core import Metrics, Replay, demo_record
+from host.recording import AsyncSessionRecorder
 from host.transport import SerialWorker
 from host.serial_config import SerialConfig
 from host.settings import SettingsDialog, load_preferences, save_preferences, load_log_preferences
 from host.serial_ui import SerialPanel
 from host.operation_log import OperationLog
+from host.diagnostics import (diagnostic_text, fault_names, recovery_hint,
+    adc_diagnostic_text, motor_diagnostic_text, has_measurement_diagnostics,
+    measurement_block_reason, adc_detail_text, motor_test_text, MOTOR_TEST_FIRMWARE_MIN,
+    motion_limit_reason, motion_limits_text, adc_contribution_title, JOG_MEASUREMENT_FIRMWARE_MIN,
+    handover_control_text)
 from host.version import HOST_VERSION, PROJECT_VERSION
+from host.handover_status import HANDOVER_STEPS, HandoverStatus
+from host.adc_status import in_blind_zone
 
-STATE_NAMES = {0: '待机', 1: '自动起摆', 2: '直立平衡', 3: '故障', 4: '限时点动'}
-FAULT_NAMES = {1: '传感器 / 接口异常', 2: '标定失效', 4: '采样丢失',
-               8: '位移 / 速度超限', 16: '起摆超时', 32: '平衡跌落'}
+STATE_NAMES = {0: '待机', 1: '自动起摆', 2: '直立平衡', 3: '故障', 4: '限时点动', 5: '定 PWM 测试'}
+MOTION_COMMANDS = 'GHFBJKLM'
 EXTENSIONS = [
     ('device_time_ms', '设备时间', 'ms'), ('encoder_count', '编码器累计计数', 'count'),
     ('target_arm_deg', '摆臂目标位置', '°'), ('target_speed_rad_s', '摆臂目标速度', 'rad/s'),
@@ -34,7 +43,51 @@ EXTENSIONS = [
     ('observer_confidence', '观测置信度', '0–1'), ('energy_error', '归一化能量误差', '1'),
     ('parameter_version', '参数版本', 'ID'), ('control_loop_us', '控制计算耗时', 'μs'),
     ('sensor_flags', '传感器诊断标志', 'bits'), ('adc_down', '下垂标定码', 'code'),
-    ('adc_up', '直立标定码', 'code')]
+    ('adc_up', '直立标定码', 'code'), ('adc_raw', 'ADC 原始采样码', 'code'),
+    ('adc_window_min', 'ADC 窗口最小码', 'code'), ('adc_window_max', 'ADC 窗口最大码', 'code'),
+    ('adc_mean_q4', 'ADC 均值 Q4', 'code × 16'),
+    ('adc_control_q4', 'ADC 去尖峰控制均值 Q4', 'code × 16'),
+    ('motor_command_permille', '门控后电机命令（非实测）', '‰'),
+    ('first_fault', 'FPGA 锁存首次故障', 'bits'),
+    ('firmware_version', 'FPGA 固件版本', 'ID'), ('sample_counter', '采样窗口计数', 'count'),
+    ('adc_quality_reason', '当前 ADC 质量原因', 'bits'),
+    ('sensor_fault_reason', '锁存传感器故障原因', 'bits'),
+    ('adc_fault_window_min', '故障窗口最小原码', 'code'),
+    ('adc_fault_window_max', '故障窗口最大原码', 'code'),
+    ('adc_fault_mean_q4', '故障窗口均值 Q4', 'code × 16'),
+    ('adc_fault_time_ms', '首次传感器故障观测时刻', 'ms'),
+    ('adc_fault_sample_counter', '首次传感器故障观测时窗口计数', 'count'),
+    ('motor_test_status', '定 PWM 测试状态', 'ID'),
+    ('motor_test_delta', '电机测试相对编码器位移', 'count'),
+    ('h_integral_q8', '居中积分修正 Q8', '‰ × 256'),
+    ('h_capture_arm_q10', '接管摆臂参考 Q10', 'rad × 1024'),
+    ('h_control_age_ms', '位置渐入计时', 'ms'),
+    ('h_control_flags', 'H 居中控制标志', 'bits')]
+HANDOVER_TOOLTIP = ('居中积分修正是本次控制命令使用的积分项，非独立PWM或实测力矩；'
+    'Q8除以256为‰，截断精度为1/256‰。参考位置按名义1040计数/圈换算。'
+    '位置渐入计时最大512ms，不是H总运行时长。标志bit0为H运行，bit1为本样本允许积分更新，'
+    'bit2为抗饱和冻结，bit3为本次积分已到±100‰限幅；允许更新不等于实际发生非零增量。'
+    '停止、故障或非H时这些值清零，不保留上次接管结果。')
+ADC_DETAIL_COLUMNS = [
+    ('reference_q4', '上一完整窗均值', 'code × 16'),
+    ('filtered_min', '滤后最小码', 'code'), ('filtered_max', '滤后最大码', 'code'),
+    ('contribution_min', '贡献最小码', 'code'), ('contribution_max', '贡献最大码', 'code'),
+    ('max_step', '最大相邻阶跃', 'code'), ('outlier_count', '滤后离群数', 'count'),
+    ('outlier_longest', '滤后连续离群最长', '0.2 μs / count'),
+    ('first_outlier_index', '首离群中值输出索引', 'index'),
+    ('first_outlier_edge_ticks', '首离群距观测边沿', '20 ns / tick'),
+    ('max_step_index', '最大阶跃中值输出索引', 'index'),
+    ('max_step_edge_ticks', '最大阶跃距观测边沿', '20 ns / tick'),
+    ('edge_outlier_count', '近驱动边沿离群数', 'count'),
+    ('conversion_count', '中值输出数', 'count'),
+    ('detail_flags', '转换统计标志（悬停查看）', 'bits'),
+    ('filtered_sum', '连续中值总和', 'code'),
+]
+ADC_DETAIL_PREFIXES = {}
+for _prefix, _title in (('adc_', '当前'), ('adc_fault_', '首次异常')):
+    EXTENSIONS.extend((_prefix + key, _title + ' · ' + name, unit)
+                      for key, name, unit in ADC_DETAIL_COLUMNS)
+    ADC_DETAIL_PREFIXES.update((_prefix + key, _prefix) for key, _, _ in ADC_DETAIL_COLUMNS)
 
 STYLE = """
 QWidget { background:#101923; color:#dce6ef; font-family:'Microsoft YaHei UI'; font-size:13px; }
@@ -86,16 +139,26 @@ def fmt(value, precision=2):
 
 
 class Window(QMainWindow):
+    PLOT_INTERVAL_MS = 100
+
     def __init__(self, output_root=None):
         super().__init__()
         self.setWindowTitle('J280 姿态控制 · 测量工作站')
         self.resize(1440, 960)
-        self.setMinimumSize(1120, 760)
+        self.setMinimumSize(1000, 750)
         self.output_root = Path(output_root or default_output())
         self.preferences_path = self.output_root / 'host_preferences.json'
         self.serial_config, self.serial_mode, self.baud_presets = load_preferences(self.preferences_path)
         self.developer_page = None
         self.operation_log = None
+        self.runtime_log = None
+        self.runtime_error = None
+        self.runtime_path = None
+        self.link_fresh = None
+        self.connected_monotonic = None
+        self.operator_checks_snapshot = None
+        self.control_availability_snapshot = None
+        self.exit_pending = False
         self.log_preferences = load_log_preferences(self.preferences_path)
         self.logging_error = None
         self.measurement_panel = None
@@ -106,8 +169,11 @@ class Window(QMainWindow):
         self.last_received = 0.0
         self.metrics = Metrics()
         self.history = deque(maxlen=15000)
+        self.plot_dirty = True
+        self.plotted_window_seconds = None
         self.rate_history = deque()
         self.recorder = None
+        self.closing_recorder = None
         self.stats = {}
         self.replay_rows = []
         self.replay_index = 0
@@ -121,11 +187,19 @@ class Window(QMainWindow):
         self.cards = {}
         self.command_buttons = {}
         self.last_transition = None
+        self.trace_busy = False
+        self.trace_export_status = 'idle'
+        self.handover = HandoverStatus()
         self.build_ui()
         self.refresh_ports()
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.tick)
         self.timer.start(40)
+        # Receiving, logging and command gates keep their own cadence. Plotting
+        # is a bounded display task, never part of a telemetry/command callback.
+        self.plot_timer = QTimer(self)
+        self.plot_timer.timeout.connect(self.refresh_plots)
+        self.plot_timer.start(self.PLOT_INTERVAL_MS)
         self.shortcut = QShortcut(QKeySequence('Esc'), self)
         self.shortcut.activated.connect(lambda: self.send_command('S'))
 
@@ -157,6 +231,13 @@ class Window(QMainWindow):
         self.global_stop = button('停止 S / Esc', lambda: self.send_command('S'), 'stop')
         title_row.addWidget(self.global_stop)
         layout.addLayout(title_row)
+        self.handover_steps = label(HANDOVER_STEPS)
+        layout.addWidget(self.handover_steps)
+        self.handover_status_label = label('H 接管：等待连接')
+        self.handover_status_label.setToolTip(
+            '已排队或已发送均不代表接管。仅依据新鲜实时遥测显示 H 运行；'
+            '设备最近启动结果可能属于先前请求，不能对应本次 H。')
+        layout.addWidget(self.handover_status_label)
         self.pages = QStackedWidget()
         self.main_page = QWidget()
         main_layout = QVBoxLayout(self.main_page)
@@ -193,19 +274,52 @@ class Window(QMainWindow):
         self.board_controls = QWidget()
         board_layout = QVBoxLayout(self.board_controls)
         board_layout.setContentsMargins(0, 0, 0, 0)
+        self.jog_check = QCheckBox('已确认点动空间，准备按 SW3')
+        board_layout.addWidget(self.jog_check)
         self.direction_check = QCheckBox('已核验方向、盲区与运动范围')
         board_layout.addWidget(self.direction_check)
         for command, text in [('D', 'SW1 · 下垂点标定'), ('U', 'SW4 · 直立点标定'),
-                              ('G', 'SW2 · 自动起摆与平衡'), ('F', '正向点动 · 150 ms'),
-                              ('B', '反向点动 · 150 ms'), ('R', '清控制器故障')]:
+                              ('G', 'SW2 · 自动起摆与平衡'), ('H', 'H · 手扶近直立接管'),
+                              ('F', '正向点动 · 10% / 150 ms'),
+                              ('B', '反向点动 · 10% / 150 ms'), ('R', '清除故障 R')]:
             b = button(text, lambda checked=False, c=command: self.send_command(c),
                        'primary' if command == 'G' else None)
             b.setToolTip(f'发送单字节 {command}；以设备遥测确认执行结果')
             board_layout.addWidget(b)
             self.command_buttons[command] = b
+            if command == 'G':
+                self.start_gate = label('起摆条件：等待连接', 'muted')
+                board_layout.addWidget(self.start_gate)
+                board_layout.addWidget(label('未勾选不等于未标定；完成实际方向、盲区与运动范围核验后再勾选。', 'muted'))
+            elif command == 'H':
+                self.capture_gate = label('直立接管条件：等待连接', 'muted')
+                board_layout.addWidget(self.capture_gate)
+                board_layout.addWidget(label('H 用于手扶至近直立、低速后接管；自然下垂时使用 G 自动起摆。', 'muted'))
         self.stop_button = button('SW3 · 停止 S / Esc', lambda: self.send_command('S'), 'stop')
         board_layout.addWidget(self.stop_button)
-        board_layout.addWidget(label('自然下垂记录 D；停机扶至直立记录 U。点动指令为 10%。SW5 系统复位请使用板上按键。', 'muted'))
+        self.trace_button = button('导出连续控制记录', lambda: self.send_command('T'))
+        self.command_buttons['T'] = self.trace_button
+        board_layout.addWidget(self.trace_button)
+        self.trace_progress = label('H 停止后可导出最近的连续控制记录。', 'muted')
+        self.trace_progress.setToolTip('历史记录单独保存为 JSON 和 CSV，不更新实时曲线。导出完整性、采样间断和磁盘保存结果分别显示。')
+        board_layout.addWidget(self.trace_progress)
+        board_layout.addWidget(label('定 PWM 电机测试'))
+        board_layout.addWidget(label('最多 0.5 s / 相对位移 128 count；启动后 0.3 s 仍无编码器变化则停止。固定 PWM 不保证转速。', 'subtitle'))
+        self.motor_test_level = QComboBox()
+        self.motor_test_level.addItem('15% PWM', 150)
+        self.motor_test_level.addItem('22% PWM', 220)
+        board_layout.addWidget(self.motor_test_level)
+        self.motor_test_buttons = {}
+        for forward, text in ((True, '正向测试'), (False, '反向测试')):
+            b = button(text, lambda checked=False, f=forward: self.send_motor_test(f))
+            board_layout.addWidget(b)
+            self.motor_test_buttons[forward] = b
+        self.motor_test_gate = label('电机测试条件：等待连接', 'muted')
+        board_layout.addWidget(self.motor_test_gate)
+        self.motor_test_result = label(motor_test_text(None), 'muted')
+        self.motor_test_result.setToolTip('位移为最近一次成功接纳测试起点的原始编码器相对计数；拒收请求不建立新起点。停止后继续更新，便于观察滑行。输出为零不代表机械静止。摆臂速度的编码器每转计数尚待实测核验。')
+        board_layout.addWidget(self.motor_test_result)
+        board_layout.addWidget(label('自然下垂记录 D；停机扶至直立记录 U。首次核验方向可先确认点动安全，再用 F / B（10%，150 ms）；核验完成后勾选方向项并起摆。SW5 为板上系统复位。', 'muted'))
         left_layout.addWidget(self.board_controls)
         left_layout.addStretch()
         self.health = label('等待数据', 'muted')
@@ -217,7 +331,7 @@ class Window(QMainWindow):
         right_layout.setContentsMargins(8, 8, 0, 0)
         card_row = QHBoxLayout()
         for key, text, unit in [('theta_deg', '摆杆角度', '°'), ('arm_deg', '摆臂角度', '°'),
-                               ('command_permille', '控制指令', '‰'), ('state', '运行状态', '')]:
+                               ('command_permille', '请求输出', '‰'), ('state', '运行状态', '')]:
             card = QFrame()
             card.setObjectName('panel')
             box = QVBoxLayout(card)
@@ -231,6 +345,12 @@ class Window(QMainWindow):
         right_layout.addLayout(card_row)
         self.fault_label = label('标定：—   故障：—   ADC：—', 'subtitle')
         right_layout.addWidget(self.fault_label)
+        self.diagnostic_label = label('启动诊断：等待 FPGA 遥测', 'subtitle')
+        right_layout.addWidget(self.diagnostic_label)
+        self.adc_diagnostic_label = label(adc_diagnostic_text(None), 'subtitle')
+        right_layout.addWidget(self.adc_diagnostic_label)
+        self.motor_diagnostic_label = label(motor_diagnostic_text(None), 'subtitle')
+        right_layout.addWidget(self.motor_diagnostic_label)
         self.tabs = QTabWidget()
         self.tabs.addTab(self.build_plots(), '实时曲线')
         self.tabs.addTab(self.build_experiments(), '实验与记录')
@@ -248,6 +368,12 @@ class Window(QMainWindow):
         self.log_status = label('日志保留：未开启', 'muted')
         self.log_status.setTextInteractionFlags(Qt.TextSelectableByMouse)
         layout.addWidget(self.log_status)
+        self.runtime_status = label('FPGA 运行日志：项目连接后自动记录', 'muted')
+        self.runtime_status.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        layout.addWidget(self.runtime_status)
+        self.direction_check.toggled.connect(self.update_control_availability)
+        self.jog_check.toggled.connect(self.update_control_availability)
+        self.motor_test_level.currentIndexChanged.connect(self.update_control_availability)
 
     def open_settings(self):
         dialog = SettingsDialog(self.serial_config, self.serial_mode, self.baud_presets,
@@ -352,6 +478,7 @@ class Window(QMainWindow):
         self.log_status.setText(f'日志异常：{error}；本次日志可能不完整。采集和控制继续，请在设置中重新保存日志选项以重试。')
 
     def control_log(self, event, **details):
+        self.runtime_event(event, **details)
         if self.source != 'serial' or not self.log_preferences['control'] or self.logging_error:
             return
         context = {key: self.latest.get(key) for key in ('sequence', 'state', 'calibrated', 'fault')} if self.latest else {}
@@ -360,9 +487,65 @@ class Window(QMainWindow):
         except (OSError, ValueError) as error:
             self.logging_failed(error)
 
+    def ensure_runtime_log(self):
+        if self.runtime_log is None:
+            self.runtime_log = OperationLog(self.output_root, {
+                'host_version': HOST_VERSION, 'compatible_project_version': PROJECT_VERSION,
+                'source': 'serial', 'mode': self.serial_mode,
+                'port': getattr(self.worker, 'port_name', self.ports.currentText()),
+                'serial_config': self.serial_config.as_dict(),
+                'command_acknowledgements': False,
+                'purpose': 'FPGA telemetry and control evidence'}, directory_name='fpga_logs')
+        return self.runtime_log
+
+    def runtime_failed(self, error):
+        self.runtime_error = str(error)
+        logger, self.runtime_log = self.runtime_log, None
+        if logger:
+            self.runtime_path = logger.directory
+            try:
+                logger.close(timeout=0)
+            except OSError:
+                pass
+        self.runtime_status.setText(f'FPGA 运行日志不完整：{error}；排除磁盘问题后重新连接。')
+
+    def runtime_event(self, event, **details):
+        if (self.source != 'serial' or self.serial_mode != 'project' or
+                not self.serial_config.is_project_default or self.runtime_error):
+            return
+        context = {key: self.latest[key] for key in
+                   ('sequence', 'state', 'calibrated', 'fault', 'diagnostic_status',
+                    'first_fault', 'sensor_flags', 'firmware_version') if key in self.latest} if self.latest else {}
+        try:
+            self.ensure_runtime_log().write_control(event, telemetry=context, **details)
+        except (OSError, ValueError) as error:
+            self.runtime_failed(error)
+
+    def runtime_sample(self, record):
+        if (self.source != 'serial' or self.serial_mode != 'project' or
+                not self.serial_config.is_project_default or self.runtime_error):
+            return
+        try:
+            self.ensure_runtime_log().write_telemetry(record)
+        except (OSError, ValueError) as error:
+            self.runtime_failed(error)
+
+    def close_runtime_log(self):
+        logger, self.runtime_log = self.runtime_log, None
+        if logger:
+            try:
+                logger.close()
+            except OSError as error:
+                self.runtime_failed(error)
+            self.runtime_path = logger.directory
+
     def wire_activity(self, activity):
         if self.sender() is not self.worker or self.source != 'serial':
             return
+        if activity.get('direction') == 'TX':
+            tx = dict(activity)
+            tx['hex'] = tx.pop('data').hex()
+            self.runtime_event('serial_tx', **tx)
         if not self.log_preferences['serial'] or self.logging_error:
             return
         details = dict(activity)
@@ -409,12 +592,17 @@ class Window(QMainWindow):
         toolbar.addStretch()
         toolbar.addWidget(button('保存曲线截图', self.save_screenshot))
         box.addLayout(toolbar)
-        grid = QGridLayout()
-        pg.setConfigOptions(antialias=True, background='#14202d', foreground='#b9cddd')
+        plot_scroll = QScrollArea()
+        plot_scroll.setWidgetResizable(True)
+        plot_content = QWidget()
+        grid = QGridLayout(plot_content)
+        plot_scroll.setWidget(plot_content)
+        pg.setConfigOptions(antialias=False, background='#14202d', foreground='#b9cddd')
         definitions = [
             ('姿态与位置', '°', [('theta_deg', '摆杆', '#6de0c7'), ('arm_deg', '摆臂', '#77abff')]),
             ('角速度', 'rad/s', [('omega_rad_s', '摆杆', '#6de0c7'), ('arm_speed_rad_s', '摆臂', '#77abff')]),
-            ('电机控制指令', '‰', [('command_permille', '控制量', '#e9b86e')]),
+            ('电机命令（非物理输出实测）', '‰', [('command_permille', '请求', '#e9b86e'),
+                ('motor_command_permille', '门控后', '#77abff')]),
             ('原始采集', 'code', [('adc', 'ADC', '#be9ef4')])]
         self.plots = []
         for index, (title, unit, series) in enumerate(definitions):
@@ -428,16 +616,16 @@ class Window(QMainWindow):
             plot.addLegend(offset=(10, 10))
             plot.setMinimumHeight(200)
             for key, name, color in series:
-                self.plot_curves[key] = plot.plot(name=name, pen=pg.mkPen(color, width=2),
-                                                connect='finite')
+                self.plot_curves[key] = plot.plot(name=name, pen=pg.mkPen(color, width=1),
+                                                antialias=False, connect='finite')
             if index == 0:
                 for bound in [-2, 2]:
                     plot.addItem(pg.InfiniteLine(bound, angle=0,
                         pen=pg.mkPen('#42635f', style=Qt.DashLine)))
             grid.addWidget(plot, index // 2, index % 2)
             self.plots.append(plot)
-        box.addLayout(grid)
-        box.addWidget(label('角速度来自 FPGA 状态估计；控制量是 PWM 指令。虚线为 ±2° 参考带。冻结曲线期间继续采集与记录。', 'muted'))
+        box.addWidget(plot_scroll, 1)
+        box.addWidget(label('角速度来自 FPGA 状态估计；电机命令非物理输出实测。虚线为 ±2° 参考带。冻结曲线期间继续采集与记录。', 'muted'))
         return widget
 
     def build_experiments(self):
@@ -490,7 +678,7 @@ class Window(QMainWindow):
         widget = QWidget()
         box = QVBoxLayout(widget)
         box.addWidget(label('位置与速度目标、状态观测、在线辨识和运行诊断'))
-        box.addWidget(label('设备上报后显示并写入实验记录；当前固件未提供的量显示“未提供”。', 'muted'))
+        box.addWidget(label('设备上报后显示并写入实验记录；未上报的量显示“未提供”。转换统计值可悬停查看解释；近驱动边沿仅表示数字时序相关，不证明模拟干扰。', 'muted'))
         self.ext_table = QTableWidget(len(EXTENSIONS), 3)
         self.ext_table.setHorizontalHeaderLabels(['测量量', '数值', '单位'])
         self.ext_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
@@ -512,14 +700,34 @@ class Window(QMainWindow):
 
     def reset_data(self, source):
         self.close_operation_log()
+        self.close_runtime_log()
+        self.runtime_error = None
+        self.runtime_path = None
+        self.link_fresh = None
+        self.connected_monotonic = None
+        self.operator_checks_snapshot = None
+        self.control_availability_snapshot = None
+        self.last_received = 0.0
+        self.trace_busy = False
+        self.trace_export_status = 'idle'
+        self.handover.reset()
+        self.trace_progress.setText('H 停止后可导出最近的连续控制记录。')
+        self.serial_ready = False
         self.source = source
         self.latest = None
         self.history.clear()
+        self.plot_dirty = True
+        self.plotted_window_seconds = None
         self.rate_history.clear()
         self.metrics = Metrics()
         self.stats = {}
         self.last_transition = None
-        self.direction_check.setChecked(False)
+        # Reconnect resets are one initial snapshot of the new connection,
+        # not operator changes emitted into the previous or half-built one.
+        with QSignalBlocker(self.direction_check), QSignalBlocker(self.jog_check), QSignalBlocker(self.motor_test_level):
+            self.direction_check.setChecked(False)
+            self.jog_check.setChecked(False)
+            self.motor_test_level.setCurrentIndex(0)
         self.recovery = self.recovery_start = self.recovery_result = None
         self.event_history.clear()
         self.events_text.clear()
@@ -542,7 +750,8 @@ class Window(QMainWindow):
         self.finish_recording()
         self.reset_data('serial')
         self.serial_ready = False
-        self.worker = SerialWorker(port, self, config=self.serial_config, mode=self.serial_mode)
+        self.worker = SerialWorker(port, self, config=self.serial_config, mode=self.serial_mode,
+                                   buffered_delivery=True, trace_directory=self.output_root / 'control_traces')
         self.worker.records.connect(self.receive_serial)
         self.worker.raw_received.connect(self.receive_raw)
         self.worker.raw_sent.connect(self.raw_sent)
@@ -550,11 +759,13 @@ class Window(QMainWindow):
         self.worker.status.connect(self.serial_status)
         self.worker.statistics.connect(self.set_stats)
         self.worker.command_sent.connect(self.command_sent)
+        self.worker.trace_status.connect(self.receive_trace_status)
         self.worker.failed.connect(self.serial_failed)
-        self.worker.finished.connect(self.worker_finished)
+        self.worker.delivery_finished.connect(self.worker_finished)
         self.connect_button.setText('正在连接…')
         self.connect_button.setEnabled(False)
         self.control_log('connect_requested')
+        self.update_control_availability()
         self.worker.start()
 
     def serial_status(self, status):
@@ -562,6 +773,14 @@ class Window(QMainWindow):
             return
         self.control_log('connection', status=status)
         self.serial_ready = status == 'connected'
+        if not self.serial_ready:
+            self.handover.reset()
+        if not self.serial_ready and self.trace_export_status in ('queued', 'waiting_metadata', 'receiving'):
+            self.trace_busy = False
+            self.trace_export_status = 'disconnected'
+            self.trace_progress.setText('导出未完成：连接已断开。已接收的失败证据将单独保存。')
+        if self.serial_ready:
+            self.connected_monotonic = time.monotonic()
         self.connect_button.setText('断开串口' if self.serial_ready else '连接串口')
         self.connect_button.setEnabled(True)
         if self.serial_ready:
@@ -569,10 +788,15 @@ class Window(QMainWindow):
             self.message.setText('通用收发已连接，可在串口收发页发送文本或 HEX；此模式断开不发送停止字节。' if self.serial_mode == 'raw' else
                 '连接后只接收数据。操作命令发送后，请以状态和标定遥测确认结果。' if self.serial_config.is_project_default else
                 '当前设置与 J280 固件的 115200 / 8N1 不同，项目命令已禁用。')
+        self.update_control_availability()
 
     def set_stats(self, stats):
         if self.sender() is not None and self.sender() is not self.worker:
             return
+        counters = ('crc_errors', 'discarded_bytes', 'unsupported_frames', 'missing_frames',
+                    'duplicates', 'resets', 'delivery_overflows')
+        if any(stats.get(key, 0) != self.stats.get(key, 0) for key in counters):
+            self.runtime_event('communication_diagnostics', counters=stats)
         self.stats = stats
 
     def serial_failed(self, text):
@@ -582,25 +806,37 @@ class Window(QMainWindow):
         self.control_log('serial_error', message=text)
         self.message.setText(f'串口异常：{text}。如机构正在运动，请按 SW3。')
         self.log_event('serial_error', text)
+        self.serial_ready = False
+        self.handover.reset()
+        self.update_control_availability()
 
     def worker_finished(self):
         if self.sender() is not None and self.sender() is not self.worker:
             return
         self.control_log('connection_finished')
         self.close_operation_log()
+        self.close_runtime_log()
         self.finish_recording()
         if self.worker:
             self.worker.deleteLater()
         self.worker = None
         self.serial_ready = False
+        self.handover.reset()
         self.source = 'idle'
+        with QSignalBlocker(self.motor_test_level):
+            self.motor_test_level.setCurrentIndex(0)
+        self.update_control_availability()
+        if self.exit_pending:
+            QTimer.singleShot(0, self.close)
 
     def disconnect_source(self):
         if self.worker:
             self.connect_button.setEnabled(False)
             self.worker.request_close(self.stop_on_close.isChecked())
+            self.handover.reset()
             self.control_log('disconnect_requested', stop_requested=self.stop_on_close.isChecked() and
                 self.serial_mode == 'project' and self.serial_config.is_project_default)
+            self.update_control_availability()
         else:
             self.finish_recording()
             self.source = 'idle'
@@ -648,39 +884,188 @@ class Window(QMainWindow):
         age = time.monotonic() - self.last_received
         return bool(self.latest and math.isfinite(age) and 0 <= age < 1.0)
 
+    def waiting_for_first_frame(self):
+        return (self.source == 'serial' and self.serial_mode == 'project' and
+                self.serial_ready and self.latest is None and
+                self.connected_monotonic is not None and
+                0 <= time.monotonic() - self.connected_monotonic < 1.0)
+
+    def record_control_availability(self, reasons=None):
+        if (self.source != 'serial' or self.worker is None or self.serial_mode != 'project' or
+                not self.serial_config.is_project_default):
+            return
+        checks = dict(direction_verified=self.direction_check.isChecked(),
+                      jog_clearance=self.jog_check.isChecked())
+        if checks != self.operator_checks_snapshot:
+            self.control_log('operator_checks', **checks, device_confirmed=False,
+                             initial_snapshot=self.operator_checks_snapshot is None)
+            self.operator_checks_snapshot = dict(checks)
+        reasons = reasons if reasons is not None else {
+            command: self.command_block_reason(command) for command in MOTION_COMMANDS}
+        snapshot = dict(checks, commands={command: dict(available=not reasons[command],
+                            reason=reasons[command]) for command in MOTION_COMMANDS},
+                        motor_test_permille=self.motor_test_level.currentData())
+        if snapshot != self.control_availability_snapshot:
+            self.control_log('control_availability', **snapshot, device_confirmed=False,
+                             initial_snapshot=self.control_availability_snapshot is None)
+            self.control_availability_snapshot = snapshot
+
+    def update_control_availability(self, *_):
+        reasons = {command: self.command_block_reason(command)
+                   for command in set(self.command_buttons) | set(MOTION_COMMANDS)}
+        for command, b in self.command_buttons.items():
+            b.setEnabled(not reasons[command])
+            b.setToolTip(reasons[command] or f'发送 {command}，执行结果以 FPGA 遥测为准')
+        self.start_gate.setText('起摆条件：' + (reasons['G'] or '已满足，可发送 G'))
+        self.capture_gate.setText('直立接管条件：' + (reasons['H'] or '已满足，可发送 H；保持近直立、低速'))
+        for forward, b in self.motor_test_buttons.items():
+            command = self.motor_test_command(forward)
+            b.setEnabled(not reasons[command])
+            b.setToolTip(reasons[command] or f'发送 {command}；固定 PWM {self.motor_test_level.currentData() / 10:g}%，最多 0.5 s')
+        self.motor_test_level.setEnabled(not (self.source == 'serial' and self.worker is not None
+            and self.latest and self.latest.get('state') == 5))
+        self.motor_test_gate.setText('电机测试条件：' +
+            (reasons[self.motor_test_command(True)] or '已满足；准备按 SW3 / S 停止'))
+        stop_allowed = self.allowed('S')
+        self.stop_button.setEnabled(stop_allowed)
+        self.global_stop.setEnabled(stop_allowed)
+        self.record_control_availability(reasons)
+        self.update_handover_status()
+
+    def update_handover_status(self):
+        live = (self.source not in ('demo', 'replay') and self.serial_mode == 'project'
+                and self.serial_config.is_project_default)
+        connected = bool(self.source == 'serial' and self.serial_ready and self.worker
+                         and not self.worker.closing.is_set())
+        status, text, severity = self.handover.presentation(
+            time.monotonic(), connected=connected, live=live)
+        self.handover_status_label.setProperty('handoverStatus', status)
+        self.handover_status_label.setText(text)
+        color = {'success': '#74e6ce', 'warning': '#ffd184', 'error': '#ff929b',
+                 'neutral': '#b8ccd9'}[severity]
+        self.handover_status_label.setStyleSheet(
+            f'color:{color}; font-weight:700; padding:6px 0;')
+
     def allowed(self, command):
+        return not self.command_block_reason(command)
+
+    def command_block_reason(self, command):
+        if command not in ('D', 'U', 'G', 'H', 'S', 'R', 'F', 'B', 'J', 'K', 'L', 'M', 'T'):
+            return '未知命令'
         if self.serial_mode != 'project' or not self.serial_config.is_project_default:
-            return False
+            return '请使用 J280 模式及 115200 / 8N1'
         if self.source != 'serial' or not self.serial_ready or not self.worker or self.worker.closing.is_set():
-            return False
+            return '请连接 FPGA 串口'
         if command == 'S':
-            return True
+            return ''
         if not self.is_fresh():
-            return False
+            if self.waiting_for_first_frame():
+                return '等待 FPGA 首帧遥测'
+            return '等待有效遥测；数据超时，必要时按 SW3 停机'
         state = self.latest.get('state')
-        if command in 'DU':
-            return state in (0, 3)
-        if command == 'R':
-            return state in (0, 3)
-        if command in 'GFB':
-            return (state == 0 and self.latest.get('calibrated') == 1 and
-                    self.latest.get('fault') == 0 and self.direction_check.isChecked())
-        return False
+        if command == 'T':
+            if self.trace_busy:
+                return '连续记录正在导出或保存，请等待结果'
+            if self.latest.get('firmware_version') not in (0x00020009, 0x00030000):
+                return '连续控制记录需要已知 FPGA project-v0.2.9 / project-v0.3.0 固件'
+            if state not in (0, 3) or self.latest.get('motor_test_status') == 1:
+                return '请先停止，等待待机或故障状态'
+            flags = self.latest.get('trace_flags')
+            count, capture = self.latest.get('trace_row_count'), self.latest.get('trace_capture_id')
+            if (type(flags) is not int or flags & ~15 or type(count) is not int or
+                    not 0 <= count <= 4096 or type(capture) is not int or not 0 <= capture <= 65535):
+                return '等待完整有效的连续记录状态'
+            if flags & 5:
+                return '设备正在采集或导出，请先等待冻结'
+            return '' if flags & 2 else '尚无冻结记录；完成一次 H 并停止后可导出'
+        if command in 'DUR':
+            if command in 'DU' and in_blind_zone(self.latest):
+                return '盲区内角度不可用，不能标定；扶离盲区并等待测量就绪'
+            return '' if state in (0, 3) else '请先停止，等待待机或故障状态'
+        if command in MOTION_COMMANDS:
+            if self.latest.get('stop_pressed'):
+                return '请释放 SW3 停止按键'
+            if state != 0:
+                return '当前状态：' + STATE_NAMES.get(state, '未知') + '；请先回到待机'
+            if self.latest.get('fault') != 0:
+                return recovery_hint(self.latest)
+            if self.latest.get('calibrated') != 1:
+                return '请完成 D 下垂、U 直立两点标定'
+            modern = has_measurement_diagnostics(self.latest)
+            if command == 'H' and not modern:
+                return '直立接管需要 FPGA project-v0.2.0 或更新版本的诊断遥测'
+            if command in 'JKLM' and (not modern or self.latest['firmware_version'] < MOTOR_TEST_FIRMWARE_MIN):
+                return '定 PWM 电机测试需要 FPGA project-v0.2.3 或更新版本'
+            if modern and (command in 'GHJKLM' or
+                           self.latest['firmware_version'] >= JOG_MEASUREMENT_FIRMWARE_MIN):
+                reason = measurement_block_reason(self.latest)
+                if reason:
+                    return reason
+            reason = motion_limit_reason(self.latest, command)
+            if reason:
+                return reason
+            if command in 'GH' and not self.direction_check.isChecked():
+                return '请核验并勾选方向、盲区与运动范围'
+            if command == 'H':
+                # Match the FPGA's strict Q10 capture envelope. Legacy replay
+                # may lack Q10 fields; it remains non-controlling regardless.
+                for raw_key, value_key, scale, limit in (
+                        ('theta_q10', 'theta_deg', math.pi / 180 * 1024, 268),
+                        ('omega_q10', 'omega_rad_s', 1024, 3584)):
+                    value = self.latest.get(raw_key)
+                    if value is None:
+                        value = self.latest.get(value_key)
+                        value = value * scale if type(value) in (int, float) else None
+                    if type(value) not in (int, float) or not math.isfinite(value) or abs(value) >= limit:
+                        return '直立接管需 |摆杆角| < 约15°、|摆杆速度| < 3.5 rad/s'
+            if command in 'FBJKLM' and not (self.jog_check.isChecked() or self.direction_check.isChecked()):
+                return '请先确认点动运动空间，并准备按 SW3 停止'
+        return ''
+
+    def motor_test_command(self, forward):
+        return ('J' if forward else 'K') if self.motor_test_level.currentData() == 150 else ('L' if forward else 'M')
+
+    def send_motor_test(self, forward):
+        return self.send_command(self.motor_test_command(forward))
 
     def send_command(self, command):
         if not self.allowed(command):
-            self.message.setText('操作未发送：请检查连接、最新遥测、待机 / 标定状态和方向核验。')
-            self.control_log('command_rejected', command=command, reason='connection_or_telemetry_or_state_gate')
+            reason = self.command_block_reason(command)
+            self.message.setText('操作未发送：' + reason)
+            self.control_log('command_rejected', command=command, reason=reason)
+            self.log_event('command_rejected', f'{command} 未发送：{reason}')
+            if command == 'H':
+                self.handover.rejected(reason)
+                self.update_handover_status()
             return False
+        if command == 'T' and hasattr(self.worker, 'set_trace_context'):
+            runtime_directory = self.runtime_log.directory if self.runtime_log else self.runtime_path
+            self.worker.set_trace_context(dict(
+                runtime_log_directory=str(runtime_directory) if runtime_directory else None,
+                request_host_monotonic=time.monotonic(),
+                request_device_time_ms=self.latest.get('device_time_ms'),
+                request_sequence=self.latest.get('sequence')))
+        requested_at = time.monotonic()
         if self.worker.send(command):
+            self.handover.queued(command, requested_at)
+            self.update_handover_status()
+            if command == 'T':
+                self.trace_busy = True
+                self.trace_export_status = 'queued'
+                self.trace_progress.setText('导出请求已排队，等待发送与设备元信息。')
+                self.update_control_availability()
             self.message.setText(f'命令 {command} 已排队；设备状态以遥测为准。')
             self.control_log('command_queued', command=command, acknowledged=False,
+                             jog_clearance=self.jog_check.isChecked(),
                              direction_verified=self.direction_check.isChecked())
             if self.measurement_panel and command in 'DU':
                 self.measurement_panel.notify_command(command)
             return True
         self.message.setText('操作未发送：串口正在关闭或命令队列已满。')
         self.control_log('command_rejected', command=command, reason='closing_or_full_queue')
+        if command == 'H':
+            self.handover.rejected('串口正在关闭或命令队列已满')
+            self.update_handover_status()
         return False
 
     def command_sent(self, command):
@@ -688,8 +1073,42 @@ class Window(QMainWindow):
             return
         self.control_log('command_written', command=command, acknowledged=False)
         self.log_event('command_sent', f'已写入 {command}；未代表设备确认')
+        self.handover.sent(command)
+        self.update_handover_status()
         if self.measurement_panel:
             self.measurement_panel.notify_command(command)
+
+    def receive_trace_status(self, status):
+        """Only small summaries cross into the GUI; historical rows stay off it."""
+        if self.sender() is not None and self.sender() is not self.worker:
+            return
+        state = status.get('status')
+        self.trace_export_status = state
+        self.trace_busy = state in ('waiting_metadata', 'receiving', 'saving', 'failed_receiving_tail')
+        received, total = status.get('received_rows', 0), status.get('total_rows')
+        progress = f'{received}/{total}' if total is not None else str(received)
+        if state == 'waiting_metadata':
+            text = '请求已写入，等待连续记录元信息。'
+        elif state == 'receiving':
+            text = f'正在接收连续记录：{progress} 行。'
+        elif state == 'failed_receiving_tail':
+            text = f'导出校验失败：已可信接收 {progress} 行；正在保留本次剩余证据。'
+        elif state == 'saving':
+            integrity = '导出校验完整' if status.get('complete') else '导出不完整'
+            text = f'{integrity}，{progress} 行；正在后台保存，尚未确认写盘成功。'
+        elif state == 'request_cancelled':
+            text = '停止命令优先，尚未发送的导出请求已取消。'
+        elif state == 'saved' and status.get('storage_complete'):
+            integrity = '导出完整' if status.get('complete') else '导出不完整，失败证据'
+            gaps = status.get('sample_gap_count', 0)
+            continuity = f'；采样序号有 {gaps} 处间断' if gaps else ''
+            text = f'{integrity}已保存：{received} 行{continuity}\n{status.get("json_path", "")}'
+            self.runtime_event('control_trace_saved', **status)
+        else:
+            text = '连续记录保存失败：' + str(status.get('error', '未确认文件保存成功'))
+            self.runtime_event('control_trace_storage_failed', **status)
+        self.trace_progress.setText(text)
+        self.update_control_availability()
 
     def receive_serial(self, records):
         # Ignore queued signals from a connection that has already ended.
@@ -702,6 +1121,7 @@ class Window(QMainWindow):
             if self.source in ('demo', 'replay'):
                 record['source'] = self.source
             self.latest = record
+            self.runtime_sample(record)
             now = time.monotonic()
             if self.source == 'serial':
                 # GUI/disk stalls must not make old worker telemetry fresh again.
@@ -711,8 +1131,14 @@ class Window(QMainWindow):
                     and 0 < received <= now else 0.0)
             else:
                 self.last_received = now
+            if (self.source == 'serial' and self.serial_mode == 'project'
+                    and self.serial_config.is_project_default and self.serial_ready
+                    and self.worker and not self.worker.closing.is_set()):
+                self.handover.observe(record, now)
+            self.record_control_availability()
             self.rate_history.append(self.last_received)
             self.history.append(record)
+            self.plot_dirty = True
             if self.measurement_panel and self.measurement_source() != 'idle':
                 self.measurement_panel.ingest(record)
             self.metrics.add(record)
@@ -722,11 +1148,18 @@ class Window(QMainWindow):
                 except (OSError, ValueError) as error:
                     self.message.setText(f'记录失败：{error}。采集继续，请检查磁盘。')
                     self.finish_recording()
-            transition = (record.get('state'), record.get('calibrated'), record.get('fault'))
+            transition = (record.get('state'), record.get('calibrated'), record.get('fault'),
+                          record.get('diagnostic_status'), record.get('first_fault'),
+                          record.get('motor_test_status'))
             if transition != self.last_transition:
                 self.control_log('telemetry_state', device_confirmed_command=False,
+                                 state_name=STATE_NAMES.get(record.get('state'), '未知'),
+                                 diagnostic=diagnostic_text(record),
+                                 faults=fault_names(record.get('fault')),
+                                 motor_test_status=record.get('motor_test_status'),
+                                 motor_test_delta=record.get('motor_test_delta'),
                                  worker_received_monotonic=record.get('host_monotonic'))
-                self.log_event('state', f"{STATE_NAMES.get(transition[0], '未知')} / 标定 {transition[1]} / 故障 {transition[2]}")
+                self.log_event('state', f"{STATE_NAMES.get(transition[0], '未知')} / 标定 {transition[1]} / 故障 {transition[2]} / {diagnostic_text(record)}")
                 self.last_transition = transition
             self.update_recovery(record)
         if self.measurement_panel:
@@ -781,11 +1214,17 @@ class Window(QMainWindow):
         self.event_history.append(text)
         self.events_text.setPlainText('\n'.join(self.event_history))
         self.events_text.verticalScrollBar().setValue(self.events_text.verticalScrollBar().maximum())
+        if (kind in ('marker', 'disturbance_end') and self.source == 'serial' and
+                self.worker is not None and self.serial_ready and not self.worker.closing.is_set()):
+            context = {key: self.latest.get(key) if self.latest else None
+                       for key in ('sequence', 'device_time_ms', 'elapsed_s')}
+            self.control_log(kind, kind=kind, detail=detail, frame_is_fresh=self.is_fresh(), **context)
         if self.recorder:
             try:
                 self.recorder.event(kind, detail, self.latest)
             except OSError as error:
                 self.message.setText(f'事件记录失败：{error}')
+                self.finish_recording()
 
     def metadata_dialog(self):
         dialog = QDialog(self)
@@ -823,17 +1262,20 @@ class Window(QMainWindow):
             self.start_recording(metadata)
 
     def start_recording(self, metadata):
+        if self.recorder or self.closing_recorder or self.exit_pending:
+            self.message.setText('请等待当前记录保存完成后再开始新记录。')
+            return False
         try:
             metadata = dict(metadata, source=self.source, host_version=HOST_VERSION,
                             project_version=PROJECT_VERSION,
                             baud=self.serial_config.baudrate, serial_config=self.serial_config.as_dict(),
                             serial_mode=self.serial_mode, stop_on_disconnect=self.stop_on_close.isChecked() and self.serial_mode == 'project' and self.serial_config.is_project_default,
                             direction_verified=self.direction_check.isChecked())
-            self.recorder = SessionRecorder(self.output_root, metadata)
+            self.recorder = AsyncSessionRecorder(self.output_root, metadata)
             self.metrics = Metrics()
             self.recovery = self.recovery_start = self.recovery_result = None
             self.record_button.setText('结束记录并生成摘要')
-            self.record_path.setText(f'正在记录：{getattr(self.recorder, "directory", self.output_root)}')
+            self.record_path.setText('正在创建实验记录；采集继续。')
             self.log_event('record_start', '实验记录开始')
             return True
         except OSError as error:
@@ -843,18 +1285,49 @@ class Window(QMainWindow):
     def finish_recording(self):
         if self.recorder:
             recorder, self.recorder = self.recorder, None
-            try:
-                recorder.extra_summary = {
-                    'communication': dict(self.stats),
-                    'recovery_delay_s': self.recovery_result,
-                    'recovery_criterion': self.recovery,
-                }
-                path = recorder.close()
-                self.record_path.setText(f'记录已保存：{path}')
-                self.message.setText(f'实验已保存：{path}')
-            except (OSError, ValueError) as error:
-                self.message.setText(f'结束记录失败：{error}')
-            self.record_button.setText('开始实验记录')
+            self.closing_recorder = recorder
+            recorder.request_close({
+                'communication': dict(self.stats),
+                'recovery_delay_s': self.recovery_result,
+                'recovery_criterion': self.recovery,
+            })
+            self.record_button.setText('正在保存实验记录…')
+            self.record_button.setEnabled(False)
+            self.record_path.setText('正在保存尾部记录；采集与停止按钮仍可使用。')
+        self.poll_recording()
+
+    def poll_recording(self):
+        """Observe writer state only; never wait for files or a writer thread."""
+        if self.recorder:
+            status = self.recorder.poll()
+            if status['error']:
+                # Also reached on idle flush/init failures with no further frames.
+                self.finish_recording()
+                return
+            if status['directory'] is not None:
+                self.record_path.setText(f'正在记录：{status["directory"]}')
+        recorder = self.closing_recorder
+        if recorder is None:
+            return
+        status = recorder.poll()
+        if status['error']:
+            self.record_path.setText(f'记录不完整：{status["directory"] or self.output_root}')
+            self.message.setText(f'结束记录失败：{status["error"]}。采集继续，请检查磁盘。')
+        if not recorder.done.is_set():
+            return
+        # Completion can race the first snapshot; read the final state after done.
+        status = recorder.poll()
+        if status['error']:
+            self.record_path.setText(f'记录不完整：{status["directory"] or self.output_root}')
+            self.message.setText(f'结束记录失败：{status["error"]}。采集继续，请检查磁盘。')
+        self.closing_recorder = None
+        self.record_button.setText('开始实验记录')
+        self.record_button.setEnabled(True)
+        if not status['error'] and status['state'] == 'closed':
+            self.record_path.setText(f'记录已保存：{status["summary"]}')
+            self.message.setText(f'实验已保存：{status["summary"]}')
+        if self.exit_pending:
+            QTimer.singleShot(0, self.close)
 
     def tick(self):
         now = time.monotonic()
@@ -885,11 +1358,13 @@ class Window(QMainWindow):
         self.update_display()
 
     def update_display(self):
+        self.poll_recording()
         busy = self.worker is not None
         project_control = self.serial_mode == 'project' and self.serial_config.is_project_default
         self.serial_config_label.setText(f'{self.serial_config.display_label} · ' + ('J280 遥测' if self.serial_mode == 'project' else '通用收发'))
         self.stop_on_close.setEnabled(project_control)
         self.direction_check.setEnabled(project_control)
+        self.jog_check.setEnabled(project_control)
         self.serial_panel.set_send_enabled(bool(self.serial_mode == 'raw' and busy and self.serial_ready and not self.worker.closing.is_set()))
         self.serial_panel.flush()
         if self.measurement_panel:
@@ -898,10 +1373,7 @@ class Window(QMainWindow):
         self.replay_button.setEnabled(not busy)
         self.ports.setEnabled(not busy)
         self.refresh_button.setEnabled(not busy)
-        for command, b in self.command_buttons.items():
-            b.setEnabled(self.allowed(command))
-        self.stop_button.setEnabled(self.allowed('S'))
-        self.global_stop.setEnabled(self.allowed('S'))
+        self.update_control_availability()
         if self.operation_log and not self.logging_error:
             try:
                 self.operation_log.check()
@@ -914,34 +1386,71 @@ class Window(QMainWindow):
                 (f' · {path}' if path else ' · 等待串口事件')) if names else '日志保留：未开启')
         self.replay_pause.setEnabled(self.source == 'replay')
         self.replay_speed.setEnabled(self.source == 'replay')
-        stale = self.source == 'serial' and not self.is_fresh()
+        waiting = self.waiting_for_first_frame()
+        stale = self.source == 'serial' and self.serial_ready and not self.is_fresh() and not waiting
+        if self.source == 'serial' and self.serial_ready and self.serial_mode == 'project':
+            fresh = self.is_fresh()
+            if not waiting and fresh != self.link_fresh:
+                self.control_log('telemetry_restored' if fresh else 'telemetry_timeout',
+                                 last_received_monotonic=self.last_received)
+                self.link_fresh = fresh
+        if self.runtime_log and not self.runtime_error:
+            try:
+                self.runtime_log.check()
+            except OSError as error:
+                self.runtime_failed(error)
+        if not self.runtime_error:
+            path = self.runtime_log.directory if self.runtime_log else self.runtime_path
+            self.runtime_status.setText('FPGA 运行日志：' +
+                (f'{path}' if path else '项目连接后自动记录到 captures/fpga_logs'))
         self.source_badge.setText({'idle': '未连接', 'demo': '演示 · 非实测', 'replay': 'CSV 回放',
-                                  'serial': '串口 · 数据超时' if stale else '串口 · 实时采集'}[self.source])
+                                  'serial': '串口 · 连接中' if not self.serial_ready else
+                                  '串口 · 等待首帧' if waiting else
+                                  '串口 · 数据超时' if stale else '串口 · 实时采集'}[self.source])
         if self.source == 'serial' and self.serial_mode == 'raw':
             self.source_badge.setText('通用串口 · 已连接' if self.serial_ready else '通用串口 · 连接中')
         r = self.latest
+        self.diagnostic_label.setText(('上次遥测（已超时） · ' if stale else '') +
+            diagnostic_text(r) + '\n' + recovery_hint(r))
+        age_prefix = '上次遥测（已超时） · ' if stale else ''
+        self.adc_diagnostic_label.setText(age_prefix + adc_diagnostic_text(r))
+        self.adc_diagnostic_label.setToolTip(adc_detail_text(r or {},
+            'adc_fault_' if r and r.get('sensor_fault_reason') else 'adc_'))
+        self.motor_diagnostic_label.setText(age_prefix + motor_diagnostic_text(r))
+        self.motor_diagnostic_label.setToolTip(motion_limits_text(r) + '\n' + recovery_hint(r) +
+                                               '\n' + HANDOVER_TOOLTIP)
+        self.motor_test_result.setText(age_prefix + motor_test_text(r))
+        if waiting:
+            self.diagnostic_label.setText('等待 FPGA 首帧遥测；收到数据后显示标定、故障和启动诊断。')
         if r:
             for key in ['theta_deg', 'arm_deg', 'command_permille']:
                 self.cards[key][0].setText(fmt(r.get(key), 0 if key == 'command_permille' else 2))
             self.cards['state'][0].setText(STATE_NAMES.get(r.get('state'), '未知'))
             self.cards['state'][0].setStyleSheet('font-size:22px')
             self.cards['state'][1].setText('上次数据 · 超时' if stale else f"帧 {r.get('sequence', '—')} · v{r.get('protocol_version', 1)}")
-            fault = int(r.get('fault', 0))
-            faults = '、'.join(name for bit, name in FAULT_NAMES.items() if fault & bit)
-            if fault & ~63:
-                faults += ' 未知故障位'
-            self.fault_label.setText(f"标定：{'完成' if r.get('calibrated') else '未完成'}   ADC：{r.get('adc', '—')}   故障：0x{fault:02X} {faults or '无'}")
-            if r.get('state') in (0, 3):
+            fault = r.get('fault')
+            fault_code = f'0x{fault:02X}' if type(fault) is int and 0 <= fault <= 255 else '—'
+            faults = '、'.join(fault_names(fault))
+            self.fault_label.setText(f"标定：{'完成' if r.get('calibrated') == 1 else '未完成'}   ADC：{r.get('adc', '—')}   故障：{fault_code} {faults or '无'}")
+            if r.get('state') in (0, 3) and not has_measurement_diagnostics(r):
                 self.fault_label.setText(self.fault_label.text() + '   速度估计停机清零')
-            for index, (key, _, _) in enumerate(EXTENSIONS):
+            detail_tooltips = {prefix: adc_detail_text(r, prefix) for prefix in ('adc_', 'adc_fault_')}
+            for index, (key, name, _) in enumerate(EXTENSIONS):
+                if key.endswith(('contribution_min', 'contribution_max')):
+                    self.ext_table.item(index, 0).setText(name.replace('贡献', adc_contribution_title(r)))
                 value = r.get(key)
-                self.ext_table.item(index, 1).setText('未提供' if value is None else fmt(value, 0 if key in ['device_time_ms', 'encoder_count', 'parameter_version', 'control_loop_us', 'sensor_flags', 'adc_down', 'adc_up'] else 3))
+                self.ext_table.item(index, 1).setText('未提供' if value is None else fmt(value, 0 if type(value) is int else 3))
+                self.ext_table.item(index, 1).setToolTip(detail_tooltips.get(ADC_DETAIL_PREFIXES.get(key), ''))
+                if key.startswith('h_'):
+                    self.ext_table.item(index, 1).setToolTip(handover_control_text(r) + '\n' + HANDOVER_TOOLTIP)
         else:
             for value, _ in self.cards.values():
                 value.setText('—')
             self.fault_label.setText('标定：—   故障：—   ADC：—')
             for row in range(len(EXTENSIONS)):
+                self.ext_table.item(row, 0).setText(EXTENSIONS[row][1])
                 self.ext_table.item(row, 1).setText('未提供')
+                self.ext_table.item(row, 1).setToolTip('')
         now = time.monotonic()
         while self.rate_history and self.rate_history[0] < now - 2:
             self.rate_history.popleft()
@@ -951,8 +1460,18 @@ class Window(QMainWindow):
         if self.source == 'serial' and self.serial_mode == 'raw':
             self.health.setText(f"通用串口收发\nRX {self.stats.get('rx_bytes', 0)} B · TX {self.stats.get('tx_bytes', 0)} B")
         self.update_metrics()
-        if not self.pause_plots.isChecked():
-            self.update_plots()
+
+    def refresh_plots(self):
+        # Retain the dirty flag while frozen or hidden so returning to the
+        # curves shows the latest complete history, without replaying old draws.
+        if self.pause_plots.isChecked() or not self.plots[0].isVisible():
+            return
+        seconds = self.window_seconds.value()
+        if not self.plot_dirty and seconds == self.plotted_window_seconds:
+            return
+        self.update_plots()
+        self.plot_dirty = False
+        self.plotted_window_seconds = seconds
 
     def update_plots(self):
         if not self.history:
@@ -962,22 +1481,17 @@ class Window(QMainWindow):
         end = self.history[-1]['elapsed_s']
         start = max(0, end - self.window_seconds.value())
         rows = [r for r in self.history if r['elapsed_s'] >= start]
-        # Break curves at long receive gaps and sequence gaps instead of joining missing data.
-        times, values = [], {key: [] for key in self.plot_curves}
-        previous = None
-        for r in rows:
-            t = r['elapsed_s']
-            if previous and (t - previous['elapsed_s'] > 0.1 or
-                    ((int(r['sequence']) - int(previous['sequence'])) & 65535) != 1):
-                times.append(t)
-                for series in values.values():
-                    series.append(float('nan'))
-            times.append(t)
-            for key, series in values.items():
-                series.append(r.get(key, float('nan')))
-            previous = r
+        # Share numeric time/gap arrays across curves. Constructing every
+        # point through nested Python loops becomes expensive at 300 s.
+        times = np.fromiter((r['elapsed_s'] for r in rows), dtype=float, count=len(rows))
+        sequences = np.fromiter((r['sequence'] for r in rows), dtype=np.int64, count=len(rows))
+        gaps = np.flatnonzero((np.diff(times) > 0.1) |
+                              ((np.diff(sequences) & 65535) != 1)) + 1
+        # Keep explicit NaNs: finite connections must never bridge lost frames.
+        times = np.insert(times, gaps, times[gaps])
         for key, curve in self.plot_curves.items():
-            curve.setData(times, values[key])
+            values = np.fromiter((r.get(key, np.nan) for r in rows), dtype=float, count=len(rows))
+            curve.setData(times, np.insert(values, gaps, np.nan))
         for plot in self.plots:
             plot.setXRange(start, max(start + 1, end), padding=0.01)
 
@@ -1013,18 +1527,26 @@ class Window(QMainWindow):
                 self.message.setText(f'截图已保存：{filename}')
 
     def closeEvent(self, event):
-        if self.worker and self.worker.isRunning():
+        if self.worker and (self.worker.isRunning() or getattr(self.worker, 'delivery_pending', False)):
+            self.exit_pending = True
             self.worker.request_close(self.stop_on_close.isChecked())
-            # Bound waiting so the UI cannot hang; never destroy a running QThread.
-            if not self.worker.wait(1200):
-                event.ignore()
-                self.message.setText('正在关闭串口，请稍后关闭窗口；必要时按 SW3。')
-                return
-            # Drain the worker's final stop/write/finished signals before closing logs.
-            QCoreApplication.sendPostedEvents(None, QEvent.MetaCall)
+            event.ignore()
+            self.message.setText('正在停止并关闭串口，完成后自动退出；必要时按 SW3。')
+            return
         self.finish_recording()
+        if self.closing_recorder is not None:
+            self.exit_pending = True
+            event.ignore()
+            # Keep the regular UI timer alive until the writer has drained.
+            if not self.timer.isActive():
+                self.timer.start()
+            if not self.closing_recorder.poll()['error']:
+                self.message.setText('正在保存尾部记录，完成后自动退出。')
+            return
         self.close_operation_log()
+        self.close_runtime_log()
         self.timer.stop()
+        self.plot_timer.stop()
         event.accept()
 
 

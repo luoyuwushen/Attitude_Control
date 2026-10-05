@@ -239,21 +239,26 @@ class RecorderReplayTests(unittest.TestCase):
     def test_dynamic_column_rewrite_streams_rows_and_failure_keeps_old_csv(self):
         with tempfile.TemporaryDirectory() as tmp:
             recorder = SessionRecorder(tmp, {})
-            try:
-                recorder.write(demo_record(0, 0))
-                extended = demo_record(0.02, 1)
-                extended["new_counter"] = 42
-                with patch.object(Path, "replace", side_effect=OSError("simulated replace failure")):
-                    with self.assertRaises(OSError):
-                        recorder.write(extended)
+            recorder.write(demo_record(0, 0))
+            extended = demo_record(0.02, 1)
+            extended["new_counter"] = 42
+            with patch.object(Path, "replace", side_effect=OSError("simulated replace failure")):
+                with self.assertRaises(OSError):
+                    recorder.write(extended)
+            # The old CSV survives the atomic rewrite failure, but the failed
+            # requested sample was not recorded. A later close cannot claim a
+            # complete session merely because cleanup or the disk recovered.
+            with self.assertRaisesRegex(OSError, "simulated replace failure"):
                 recorder.write(demo_record(0.04, 2))
+            with self.assertRaisesRegex(OSError, "simulated replace failure"):
                 recorder.write(extended)
-            finally:
+            with self.assertRaisesRegex(OSError, "simulated replace failure"):
                 recorder.close()
             saved = Replay.load(recorder.directory / "samples.csv")
-            self.assertEqual(len(saved), 3)
-            self.assertEqual([r["sequence"] for r in saved], [0, 2, 1])
-            self.assertEqual(saved[2]["new_counter"], 42)
+            self.assertEqual(len(saved), 1)
+            self.assertEqual([r["sequence"] for r in saved], [0])
+            self.assertNotIn("new_counter", saved[0])
+            self.assertFalse((recorder.directory / "summary.json").exists())
             self.assertEqual(list(recorder.directory.glob(".samples_*.tmp")), [])
 
     def test_summary_failure_can_be_retried_after_samples_are_closed(self):

@@ -1,0 +1,184 @@
+{
+  "created_utc": "2026-09-28T11:39:40.136870+00:00",
+  "host": "host-v0.6.7",
+  "compatible_project": "project-v0.2.8; exact H profiles for IDs 0x20006/07/08",
+  "status": "offline_passed_field_candidate",
+  "hardware_access": false,
+  "executable": {
+    "path": "Release/host-v0.6.7/J280_Monitor.exe",
+    "bytes": 57719771,
+    "sha256": "3a9b41fff90f1c9ffe58c725fd8357eb90f553d47cab1bed77d8885d4d3bffed"
+  },
+  "python_tests": {
+    "command": [
+      "C:\\Program Files\\Python312\\python.exe",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "started_utc": "2026-09-28T11:14:16.651755+00:00",
+    "ended_utc": "2026-09-28T11:14:50.805034+00:00",
+    "wall_s": 34.15700000000652,
+    "returncode": 0,
+    "tests": 317,
+    "test_reported_s": 23.923,
+    "source_unchanged": true,
+    "log_sha256": "f7bbc429eeb3dd4ae72e790049918172956c9f9d5a91493de0addfcdadeb3bc7",
+    "log": "python_tests.log",
+    "scope": "Offline full Python regression; no physical COM or hardware acceptance",
+    "passed": true
+  },
+  "evidence": [
+    {
+      "path": "Release/host-v0.6.7/validation/build_manifest.json",
+      "sha256": "26b0ce4dd7b031ba0a38b7e53f9bf3f4ba0d6646dbee7c227716fd4948069ffc",
+      "bytes": 15557
+    },
+    {
+      "path": "Release/host-v0.6.7/validation/source_snapshot.json",
+      "sha256": "13b773eab4c88ef8a27c8d1a8b4f3c7c3bd4b851d8b959a14cf1c175a84211ec",
+      "bytes": 3621
+    },
+    {
+      "path": "Release/host-v0.6.7/validation/source_snapshot.zip",
+      "sha256": "89dc816b2a18bc0f6d40705fc78db0ea8216895ae5babf752be33124c7fd79dc",
+      "bytes": 99330
+    },
+    {
+      "path": "Release/host-v0.6.7/validation/python_tests.json",
+      "sha256": "102ca2f63fc931c7acb7596d26bab6283117ba2b8c06e7526d585ec8bb57f04b",
+      "bytes": 5019
+    },
+    {
+      "path": "Release/host-v0.6.7/validation/python_tests.log",
+      "sha256": "f7bbc429eeb3dd4ae72e790049918172956c9f9d5a91493de0addfcdadeb3bc7",
+      "bytes": 53829
+    },
+    {
+      "path": "Release/host-v0.6.7/validation/release_crosscheck.json",
+      "sha256": "8326ec71084a104ff0277993977289d304585a86395496295c34d5509e7055e3",
+      "bytes": 41479
+    },
+    {
+      "path": "Release/host-v0.6.7/validation/release_crosscheck.md",
+      "sha256": "3478584e6a54e301efc0ec9238c9083264dd1662f375ea781775aef02ee0c2fb",
+      "bytes": 675
+    },
+    {
+      "path": "Release/host-v0.6.7/validation/finalize_documents_crosscheck.py",
+      "sha256": "cc144ce1ec1ac17f2eb722584d781cd8fa77c6ad0b63c5342ebf1f6e4c57384f",
+      "bytes": 10059
+    },
+    {
+      "path": "Release/host-v0.6.7/validation/before_document_refresh/note.json",
+      "sha256": "d6c13f0d79234907dc650ca3b9781183fe9a917c08596b0c374ad35afda1a570",
+      "bytes": 1017
+    },
+    {
+      "path": "Release/host-v0.6.7/validation/before_document_refresh/build_manifest.json",
+      "sha256": "69d47e61bfd7db5c9423dc5793bf133d6f323bef97484dc66609433404cf8b7d",
+      "bytes": 11458
+    },
+    {
+      "path": "Release/host-v0.6.6/validation/experiment_fixed_300s_1366_render.json",
+      "sha256": "6164561f4eaf925db2cbea68eeda533fa9320e0aceee36ae6d26934883f777f6",
+      "bytes": 7848
+    },
+    {
+      "path": "Release/reports/h_183649_audit/independent.py",
+      "sha256": "dc1a6573af5671dc9c08936f489ac49cdc4695213838f75c704c5b889c4f61a7",
+      "bytes": 22177
+    },
+    {
+      "path": "Release/reports/h_183649_audit/independent.json",
+      "sha256": "77156c9bfc26ec16f6afe3e422850dba8e462ac880e03be6d0876ee494ddd78c",
+      "bytes": 315222
+    },
+    {
+      "path": "Release/reports/h_183649_audit/independent.md",
+      "sha256": "9e8b94d318c9974c95f9fc986840ec08a2b672d729ed23a74b856ffc144474d2",
+      "bytes": 5563
+    },
+    {
+      "path": "Release/reports/h_183649_audit/root_compare.py",
+      "sha256": "c7ec0f7374586b246184cf6113667fda1c644493f74068d8b0ec5a5d8014dccc",
+      "bytes": 5455
+    },
+    {
+      "path": "Release/reports/h_183649_audit/root_compare.json",
+      "sha256": "fdbd2c66bba77e510662aa2846de40035ceff9bbc96ac4872a675b5247640784",
+      "bytes": 12573
+    }
+  ],
+  "crosscheck_count": 168,
+  "post_build_documentation_refresh": {
+    "completed_utc": "2026-09-28T11:38:42.446131+00:00",
+    "changed_paths": [
+      "host/README.md"
+    ],
+    "executable_rebuilt": false,
+    "executable_sources_unchanged": true,
+    "build_time_inputs_preserved": {
+      "path": "Release/host-v0.6.7/validation/before_document_refresh/build_manifest.json",
+      "bytes": 11458,
+      "sha256": "69d47e61bfd7db5c9423dc5793bf133d6f323bef97484dc66609433404cf8b7d"
+    },
+    "preservation_note": {
+      "path": "Release/host-v0.6.7/validation/before_document_refresh/note.json",
+      "bytes": 1017,
+      "sha256": "d6c13f0d79234907dc650ca3b9781183fe9a917c08596b0c374ad35afda1a570"
+    },
+    "scope": "Two README version corrections after build; no executable source changes. inputs_before/after and inputs_unchanged describe the original completed build only."
+  },
+  "load": {
+    "passed": true,
+    "rerun_this_release": false,
+    "inherited_from": "host-v0.6.6",
+    "frames": 4500,
+    "seconds": 90,
+    "physical_port_opened": false,
+    "synthetic_firmware": "0x00020006",
+    "experiment_and_automatic_logging": true,
+    "slow_flush_max_ms": 312.9999999946449,
+    "gui_delivery_max_ms": 77.9999999795109,
+    "stop_callback_max_ms": 46.999999991385266,
+    "current_io_and_gui_sources_match": true,
+    "later_changed_files": [
+      "diagnostics.py",
+      "version.py",
+      "tuning.py"
+    ],
+    "provenance": "Historical timed run, not repeated on 6.7. Only identity/profile files differ; final 317 tests and EXE smoke cover the extension."
+  },
+  "field_source": {
+    "session": "20260928_183649_692774_cdf4875d",
+    "host": "host-v0.6.6",
+    "source_sha256": {
+      "telemetry.jsonl": "a52eeb5a75525cc31d8c7eff815a6a5b96ba55b677fa23d4ba09db2e37a16a20",
+      "control.jsonl": "626f8767e8c83cd154ee9ba87d8f20a4c528eadb323fe3f50cc6e661265a5fa3",
+      "metadata.json": "10822bf64e947f56e9f07da695f0ffc3583ada7c668c5083a0bfd484192c71d1",
+      "tuning.csv": "112801683f9599e1a9f2ad4866e1e05b0bd6ca2a035bba1712802adc05ec8315"
+    },
+    "originals_unchanged": true,
+    "comparison_session": "20260928_175126_801625_a456a66e"
+  },
+  "user_report": {
+    "source": "User messages relayed by root, not inferred from telemetry",
+    "v027": "按H即松手，全程未接触；摆臂周期晃动且没有稳定区间。",
+    "v026": "按H即松手，全程未接触；当时目测摆臂约0.25圈多一点。",
+    "hardware_timed_release_marker": false
+  },
+  "limitations": [
+    "No physical COM, programming or motor action in this development phase.",
+    "Historical GUI callback delay is not physical motor-stop latency.",
+    "OperationLog.close retains its previous bounded writer join.",
+    "Firmware profiles are static known definitions, not device parameter readback.",
+    "New S120 physical effect, long-term small-motion balance, light-push recovery and G remain unaccepted."
+  ]
+}

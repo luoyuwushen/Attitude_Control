@@ -29,7 +29,7 @@ module tb_closed_loop;
     reg start = 0, stop = 0;
     reg [13:0] sample_q4 = 0;
     reg signed [31:0] position = 0;
-    wire calibrated, sensor_fault, estimator_valid;
+    wire calibrated, sensor_fault, estimator_valid, measurement_ready;
     wire signed [15:0] theta, omega, arm, arm_speed, command;
     wire [2:0] state;
     wire [7:0] fault;
@@ -38,12 +38,14 @@ module tb_closed_loop;
 
     state_estimator #(.THETA_SIGN(-1), .COUNTS_PER_REV(1040)) estimator (
         .clk(clk), .rst_n(rst_n), .sample_valid(sample_valid), .sample_q4(sample_q4),
-        .position(position), .cal_down(cal_down), .cal_up(cal_up), .stopped(stopped),
+        .sample_bad(1'b0), .measurement_ready(measurement_ready),
+        .sample_blind(1'b0),.sample_fault(1'b0),.sample_quality_reason(8'd0), .clear_fault(1'b0), .position(position), .cal_down(cal_down), .cal_up(cal_up), .stopped(stopped),
         .calibrated(calibrated), .sensor_fault(sensor_fault), .valid(estimator_valid),
         .theta(theta), .omega(omega), .arm(arm), .arm_speed(arm_speed));
     attitude_controller controller (
         .clk(clk), .rst_n(rst_n), .sample_valid(estimator_valid), .calibrated(calibrated),
         .sensor_fault(sensor_fault), .start(start), .stop(stop), .clear(1'b0),
+        .start_balance(1'b0), .measurement_ready(measurement_ready),
         .theta(theta), .omega(omega), .arm(arm), .arm_speed(arm_speed),
         .state(state), .fault(fault), .command(command), .enable(enable));
     motor_pwm #(.PERIOD_CYCLES(50), .DEAD_CYCLES(2)) motor (
@@ -131,16 +133,25 @@ module tb_closed_loop;
         tick(5);
         @(negedge clk); rst_n = 1;
         tick(3);
-        @(negedge clk); sample_q4 = code_down*16; cal_down = 1;
+        @(negedge clk); sample_q4 = code_down*16; sample_valid = 1;
+        @(negedge clk); sample_valid = 0; cal_down = 1;
         @(negedge clk); cal_down = 0;
         tick(3);
-        @(negedge clk); sample_q4 = code_up*16; cal_up = 1;
+        @(negedge clk); sample_q4 = code_up*16; sample_valid = 1;
+        @(negedge clk); sample_valid = 0; cal_up = 1;
         @(negedge clk); cal_up = 0;
         tick(40);
         if (!calibrated || sensor_fault) $fatal(1,"closed-loop calibration failed");
         @(negedge clk); sample_q4 = code_down*16; sample_valid = 1;
         @(negedge clk); sample_valid = 0;
         tick(15);
+        // Warm continuous velocity estimates while genuinely stationary.
+        repeat (20) begin
+            @(negedge clk); sample_valid = 1;
+            @(negedge clk); sample_valid = 0;
+            tick(998);
+        end
+        if (!measurement_ready) $fatal(1,"measurement maturity missing before start");
         if (magnitude($itor($signed(theta))/1024.0) < 3.0 || omega != 0)
             $fatal(1,"model must start at stationary hanging-down position");
         @(negedge clk); start = 1;

@@ -1,0 +1,370 @@
+{
+  "created_utc": "2026-09-28T09:33:30.697540+00:00",
+  "project": "project-v0.2.6",
+  "host": "host-v0.6.5",
+  "status": "offline_validated_hardware_pending",
+  "scope": "H bounded-LQI candidate and automatic tuning evidence; not completed contest acceptance",
+  "hardware_access": false,
+  "bitstream": {
+    "path": "Release/project-v0.2.6/Attitude_Control.fs",
+    "bytes": 18588969,
+    "sha256": "aecb1724c2c8ca51d832e161a1bc99f7a3a9f4e69ec857217a1ed3394633eb50"
+  },
+  "executable": {
+    "path": "Release/host-v0.6.5/J280_Monitor.exe",
+    "bytes": 57711902,
+    "sha256": "ca5d92b9ece711e047d8028bf164c2dfabba6255335644c9b078efb3cdbb6879"
+  },
+  "build": {
+    "setup_violations": 0,
+    "hold_violations": 0,
+    "fmax_mhz": 51.889,
+    "placed_pins": {
+      "clk_50m": {
+        "pad": "M19",
+        "standard": "LVCMOS33"
+      },
+      "rst_n": {
+        "pad": "AB3",
+        "standard": "LVCMOS33"
+      },
+      "key_sw[0]": {
+        "pad": "T18",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[1]": {
+        "pad": "R18",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[2]": {
+        "pad": "U20",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[3]": {
+        "pad": "T20",
+        "standard": "LVCMOS15"
+      },
+      "uart_rx": {
+        "pad": "L20",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[0]": {
+        "pad": "L21",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[1]": {
+        "pad": "M21",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[2]": {
+        "pad": "J20",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[3]": {
+        "pad": "J19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[4]": {
+        "pad": "D19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[5]": {
+        "pad": "H18",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[6]": {
+        "pad": "H19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[7]": {
+        "pad": "G19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[8]": {
+        "pad": "G17",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[9]": {
+        "pad": "E19",
+        "standard": "LVCMOS33"
+      },
+      "adc_otr": {
+        "pad": "F18",
+        "standard": "LVCMOS33"
+      },
+      "enc1_a": {
+        "pad": "Y20",
+        "standard": "LVCMOS33"
+      },
+      "enc1_b": {
+        "pad": "AA20",
+        "standard": "LVCMOS33"
+      },
+      "uart_tx": {
+        "pad": "K20",
+        "standard": "LVCMOS33"
+      },
+      "adc_clk": {
+        "pad": "G18",
+        "standard": "LVCMOS33"
+      },
+      "adc_oe_n": {
+        "pad": "H20",
+        "standard": "LVCMOS33"
+      },
+      "AN1": {
+        "pad": "Y17",
+        "standard": "LVCMOS33"
+      },
+      "AN2": {
+        "pad": "Y19",
+        "standard": "LVCMOS33"
+      },
+      "PWMA": {
+        "pad": "Y18",
+        "standard": "LVCMOS33"
+      },
+      "BN1": {
+        "pad": "AA17",
+        "standard": "LVCMOS33"
+      },
+      "BN2": {
+        "pad": "V15",
+        "standard": "LVCMOS33"
+      },
+      "PWMB": {
+        "pad": "V14",
+        "standard": "LVCMOS33"
+      }
+    },
+    "device": "GW2A-LV55PG484C8/I7",
+    "tool": "V1.9.12.03 (64-bit)",
+    "bitstream_sha256": "aecb1724c2c8ca51d832e161a1bc99f7a3a9f4e69ec857217a1ed3394633eb50",
+    "dsp_usage": "18.5/20",
+    "logic_usage": "7667/54720",
+    "register_usage": "5499/42000",
+    "created_time": "Mon Sep 28 17:05:38 2026",
+    "source_sha256": {
+      "Attitude_Control/src/adc_sampler.v": "1e5af785dedb3eed3ba5e1d2661e4cccaf7d0cac616c89f50def9c6de8992fed",
+      "Attitude_Control/src/attitude_control.cst": "3d68ed209bc75f8bc565b9458dcafad00bdb873f8a0e553d814e12e2cea02707",
+      "Attitude_Control/src/attitude_control.sdc": "9402f7049dfcf8cbc29688997cf9a63abc0b28154128a2c49c67f5dbbb056ef5",
+      "Attitude_Control/src/attitude_controller.v": "5f430120a77388461ea08780a70bd933363a144116d2ae106fa0982a4395be48",
+      "Attitude_Control/src/calibration_divider.v": "25950cd80fd46c6a65c0000fdda495825575766e37e650be6bbc46b0e08ceeb9",
+      "Attitude_Control/src/key_debounce.v": "a4a648df7d506ea42b7253f4e91967803bdefbca4ead784935e57614e53681ea",
+      "Attitude_Control/src/motor_pwm.v": "4ad6398d76f74fc95842cff862c85312dd54d350b47247c284aa118f6ad2cf28",
+      "Attitude_Control/src/motor_test.v": "c13df05aeffe902e79bf20dfec826123970994b8880d8a5a0f36276076e385ff",
+      "Attitude_Control/src/quadrature_encoder.v": "2696604dd9fa20a7c336855dba596d1c8253f01688735e82ed3a5c6a2877bae1",
+      "Attitude_Control/src/reset_sync.v": "1219239a961487841c2ecb93ae9fab5758c2d234e468968eb04a50739ac05cea",
+      "Attitude_Control/src/state_estimator.v": "232a4e44dfeb714dd8fafac756f7e9c51b82bc41242529a7722ab7fa318abec8",
+      "Attitude_Control/src/telemetry.v": "a56ad67720590b4f324274336702ae10bb95e0d1843acf21fcfc8f3b274e28dc",
+      "Attitude_Control/src/top.v": "79076d9cb709e63233883c1448907bf260473a95a66ee19307ac5b37776a3728",
+      "Attitude_Control/src/uart_rx_byte.v": "764cb9640fec89a57851dd53af536dc93f779ad72f17167d84249d4d5a4ced4b",
+      "Attitude_Control/src/uart_tx_byte.v": "48e56ab342381cc012b8b607c40ecf43d1b91976474e799ebc29dd8e5b8709f3"
+    }
+  },
+  "python_tests": 284,
+  "rtl_benches": [
+    "tb_balance_entry",
+    "tb_closed_loop",
+    "tb_controller",
+    "tb_fault_heartbeat",
+    "tb_handover_closed_loop",
+    "tb_handover_feedback",
+    "tb_handover_integral",
+    "tb_interfaces",
+    "tb_motor_test_top",
+    "tb_sample_freshness",
+    "tb_sensor_recovery",
+    "tb_start_diagnostics",
+    "tb_start_runtime",
+    "tb_telemetry_v2",
+    "tb_top",
+    "tb_top_v2"
+  ],
+  "rtl_bench_count": 16,
+  "verilog2005_top_passed": true,
+  "not_rerun_unchanged_rtl": [
+    "tb_adc_continuous",
+    "tb_adc_observability",
+    "tb_adc_quality",
+    "tb_estimator",
+    "tb_estimator_motion",
+    "tb_motor_test"
+  ],
+  "nominal_real_rtl_model": {
+    "runs": 3,
+    "duration_s_each": 30,
+    "parameter_bias_deg": [
+      0,
+      5,
+      -5
+    ],
+    "physical_acceptance": false
+  },
+  "load": {
+    "duration_s": 90.0,
+    "frames": 4500,
+    "tuning_rows": 4500,
+    "source": "offline_synthetic_208B",
+    "delivery_overflows": 0,
+    "timeouts": 0,
+    "delivery_ms": {
+      "count": 4500,
+      "mean": 15.771555555602795,
+      "p95": 46.999999991385266,
+      "p99": 62.999999994644895,
+      "max": 141.00000000325963
+    }
+  },
+  "evidence": [
+    {
+      "path": "Release/project-v0.2.6/validation/integration.json",
+      "bytes": 43121,
+      "sha256": "ebfe4d4299d8cd93c45c29127276c360205729fab872cab12620c1ac434239ec"
+    },
+    {
+      "path": "Release/project-v0.2.6/validation/handover_rtl_validation.json",
+      "bytes": 5391,
+      "sha256": "43a5ae466350183c0a90fe98106632f3e5d9a8de9f60ec20a30cf9cce56d8db8"
+    },
+    {
+      "path": "Release/project-v0.2.6/validation/h_lqi_quantized_rtl.json",
+      "bytes": 9458,
+      "sha256": "1e1e667f59a315ecfcb0f0b11b92a1d1a11be25006d50f0847e499cf1626bcdd"
+    },
+    {
+      "path": "Release/project-v0.2.6/validation/h_lqi_quantized_manifest.json",
+      "bytes": 5582,
+      "sha256": "89cd8e3fadc95b19297a452152664a63485a39cc78cd3ce9c281c0e243b25eba"
+    },
+    {
+      "path": "Release/project-v0.2.6/validation/h_lqi_quantized_rtl_compile.json",
+      "bytes": 1926,
+      "sha256": "d4f661ef7441366e731581c5adf0f50fe3852ff416df994bd9fbc1f3db9616fc"
+    },
+    {
+      "path": "Release/project-v0.2.6/validation/h_lqi_quantized.json",
+      "bytes": 90359,
+      "sha256": "75c836c34643a7eec8d4029ac8fedaac9ebdb07ac84ef190cfc41608ab0a5220"
+    },
+    {
+      "path": "Release/host-v0.6.5/validation/python_tests_release.json",
+      "bytes": 4185,
+      "sha256": "10166eef19494fd279c9563a77603281bfeb63041ccc74b112c612a28578868d"
+    },
+    {
+      "path": "Release/host-v0.6.5/validation/python_tests_release.log",
+      "bytes": 47555,
+      "sha256": "0dacccfd766d0b19e13e4946c078271e33eb67c0fda94f92a0fb4a8d693fd3cd"
+    },
+    {
+      "path": "Release/host-v0.6.5/validation/tuning_fixed_300s_1366_render.json",
+      "bytes": 6334,
+      "sha256": "beb77d45118d80692353f11ad72899ffd383adf85c6ccd2397367740278d7198"
+    },
+    {
+      "path": "Release/host-v0.6.5/validation/build_manifest.json",
+      "bytes": 10586,
+      "sha256": "fbcf6fa48d045126e3bcedd8c8ffef2e3574263c5a752827040bed6ff9a2a219"
+    },
+    {
+      "path": "Release/host-v0.6.5/validation/tuning_independent_review.md",
+      "bytes": 6008,
+      "sha256": "a76425070ac0c62f11676ad25004ea2089df9b117135ff5fd44228061b30a9d2"
+    },
+    {
+      "path": "Release/host-v0.6.5/validation/session_sticky_validation.json",
+      "bytes": 1646,
+      "sha256": "58782a8f034401fd271ded637eb864f16e4b1a97903eb4756b84a135b92bf575"
+    }
+  ],
+  "source_snapshot_sha256": {
+    "Attitude_Control/Attitude_Control.gprj": "5f35cf7a89e00002631f05ec3aaf4ec5247a6275016143df027068b361eb7932",
+    "Attitude_Control/build.tcl": "375156a061a058f4c4b10d19c9fd654305bde637250bd49b2345e2c6673f9298",
+    "Attitude_Control/src/adc_sampler.v": "1e5af785dedb3eed3ba5e1d2661e4cccaf7d0cac616c89f50def9c6de8992fed",
+    "Attitude_Control/src/attitude_control.cst": "3d68ed209bc75f8bc565b9458dcafad00bdb873f8a0e553d814e12e2cea02707",
+    "Attitude_Control/src/attitude_control.sdc": "9402f7049dfcf8cbc29688997cf9a63abc0b28154128a2c49c67f5dbbb056ef5",
+    "Attitude_Control/src/attitude_controller.v": "5f430120a77388461ea08780a70bd933363a144116d2ae106fa0982a4395be48",
+    "Attitude_Control/src/calibration_divider.v": "25950cd80fd46c6a65c0000fdda495825575766e37e650be6bbc46b0e08ceeb9",
+    "Attitude_Control/src/key_debounce.v": "a4a648df7d506ea42b7253f4e91967803bdefbca4ead784935e57614e53681ea",
+    "Attitude_Control/src/motor_pwm.v": "4ad6398d76f74fc95842cff862c85312dd54d350b47247c284aa118f6ad2cf28",
+    "Attitude_Control/src/motor_test.v": "c13df05aeffe902e79bf20dfec826123970994b8880d8a5a0f36276076e385ff",
+    "Attitude_Control/src/quadrature_encoder.v": "2696604dd9fa20a7c336855dba596d1c8253f01688735e82ed3a5c6a2877bae1",
+    "Attitude_Control/src/reset_sync.v": "1219239a961487841c2ecb93ae9fab5758c2d234e468968eb04a50739ac05cea",
+    "Attitude_Control/src/state_estimator.v": "232a4e44dfeb714dd8fafac756f7e9c51b82bc41242529a7722ab7fa318abec8",
+    "Attitude_Control/src/telemetry.v": "a56ad67720590b4f324274336702ae10bb95e0d1843acf21fcfc8f3b274e28dc",
+    "Attitude_Control/src/top.v": "79076d9cb709e63233883c1448907bf260473a95a66ee19307ac5b37776a3728",
+    "Attitude_Control/src/uart_rx_byte.v": "764cb9640fec89a57851dd53af536dc93f779ad72f17167d84249d4d5a4ced4b",
+    "Attitude_Control/src/uart_tx_byte.v": "48e56ab342381cc012b8b607c40ecf43d1b91976474e799ebc29dd8e5b8709f3",
+    "host/__init__.py": "b7b8a08bd9d32550ee1d509aac087b2a7eb8ae4e6a7f05f867b8ab9814f090ff",
+    "host/app.py": "6ce2a16086570bac09f923e5ab8ab45b5f84a1103af5b9d3ceb8e65a30360cbd",
+    "host/core.py": "38ce4d9a7b7a772a7dedb5afbd88052d6252f54deb7e8c92b9b2716ba62a6b65",
+    "host/diagnostics.py": "0f52b744b4f2c7987314a353d1db4adad17859812bd058bf42a7dfcb712b004c",
+    "host/measurement_ui.py": "3575b4e33c0c4f27a394074c433a001b94357ddc459ceafb2d4029fd68301d7f",
+    "host/measurements.py": "1dc33cd605b74e1e346644e1af625ef8be6db2ae65b9adf27a5101f9cf2f16c6",
+    "host/operation_log.py": "b73761850db9edac23d4685fc753a67c628099e32e001907ba5b10648c727708",
+    "host/serial_config.py": "3fabcfe478f115781027b506ca95778ce151528378c40879cb0df7fd1004ea8d",
+    "host/serial_ui.py": "c73a7c1256432fb96047d03226b4d923d6e9891cc8a73fbe94a813c21c9d99cc",
+    "host/settings.py": "bc66606aca51af582ae94d553df58df27b49b70df7d8313cefdf15d57a1914e4",
+    "host/transport.py": "ac488dbca1b5a3f7b1418d169a3c33b7c09b0fcde00d7cd379eca1cc14f957a1",
+    "host/tuning.py": "c0ab4623f26f99d52255ad1381595ab7c4fcb621081325735250139c075b4307",
+    "host/version.py": "88779ad59ff58742476b24c9c63f47e688ca674643810834e9d282cb0a930f23",
+    "tests/tb_balance_entry.sv": "31dd94cfd23ea3405993ef55e1f427a4806827b26514cdabc9cad730ea1d93ec",
+    "tests/tb_closed_loop.sv": "4878e9f8295c009873ba31dba9081ee59c71cea0ded802b4c8d582e07096bbb5",
+    "tests/tb_controller.sv": "dc8328149cd2324b60abd65937631780e67e4805bc0b3ca5daa262e83ac0a3d7",
+    "tests/tb_fault_heartbeat.sv": "b2cb8201295e8ccf6831c0a1a1e9b6b58502b3167595d6c2bbf525badfd01fb5",
+    "tests/tb_handover_closed_loop.sv": "b18768e9f19606c27e2186b4160d0de7c505dff84478597adfe50fa51faa2c82",
+    "tests/tb_handover_feedback.sv": "b3b74046b5a01b25140c38d95c538cdc47aed99f32516de3ecafc5e6d1b77cd4",
+    "tests/tb_handover_integral.sv": "c90a703ec6e29e11b7d9b2edd8122fd1165252018f8f11ff3b1167f80d563cee",
+    "tests/tb_interfaces.sv": "29b53f04043b5edcdb9ec9dd4f7e341bb15d9547a8c353673dc0f11b321f7927",
+    "tests/tb_motor_test_top.sv": "3c322be99e95f2f9d52b93453b78c23d5e8b728bc32bf09527ec2aaeafb7c4d3",
+    "tests/tb_sample_freshness.sv": "b309e4902f1e59423ff1ca54ce7f505c07a829e1d333cd10414aa512a21b94f6",
+    "tests/tb_sensor_recovery.sv": "91fdaaf9668d95a50fbc5c0ca29d5a51c7775578b7f01b1e572a93e3e0d9f0e0",
+    "tests/tb_start_diagnostics.sv": "3f6a90a29f1a24141ef11e1e6ab5ee160b8e2537b6007c989df1569a686abaad",
+    "tests/tb_start_runtime.sv": "913ab9481e2e0b5352d562d32ca2e73a70eced29ca21d4e435872cf535a89a06",
+    "tests/tb_telemetry_v2.sv": "cbb41b992fec44719b060b9d147f2a46f3ddb85020d65d95879cdc968f839fbd",
+    "tests/tb_top.sv": "3d2eb138d5345470ffc9e12f7f59ab531755196281acb1721809153fc1308504",
+    "tests/tb_top_v2.sv": "aef70108a0d0491a6df7e5651756daaa4b14843a797f76d348b73202e3e74b12",
+    "tests/test_cli_protocol_v2.py": "b5c21f491f07048e6624c850910e36d66016ee5b7c60d2bfdaac04a009cacc5b",
+    "tests/test_control_model.py": "52b685a8c072c7221614e5ffc96ea1f994cbcffa37c32469276833d012d7e187",
+    "tests/test_host_adc_diagnostics.py": "41b75657e8716282a7c137edf041c1e73f75c8a866c5d8333dfc2e293827f000",
+    "tests/test_host_adc_observability.py": "bf12d95e5f33700abce786be073ab73180ebf51234c724f9b8f56e7d61a95185",
+    "tests/test_host_adc_window_mean.py": "4b9cc0e89e05481e154738ff3f977e82f562d86906f2ac60d8b75527f64c7286",
+    "tests/test_host_core.py": "4897c7487e824ae106ee451a04a2597ca93fd1e33dfc420f87777af0c830fd56",
+    "tests/test_host_feedback.py": "ca8dee8c11d51ba581044ce248f6a111abf1988ad9eebb0472193a5dc07965e2",
+    "tests/test_host_handover_control.py": "3806377746df2ece525fd6e88da755754a1262c7d1289b7fca5c109b6c5aec5e",
+    "tests/test_host_measurement_ui.py": "e7676816126827986a6c07ad29d503b166414f694a38ff2f2d1a5b0bed307372",
+    "tests/test_host_measurements.py": "ded63e7d24c5bd78cb7a3beeb8d39a840924715180cd9092f51826174c93c54b",
+    "tests/test_host_motion_limits.py": "0f5c488d30bfa6bd48909c9c2da366aa1bb6bb5b468085f57967cbd033a08ee1",
+    "tests/test_host_motor_test.py": "06f49b3229be4b21a56c8c8a9fc909a4704f5de291ef02b143f80f1d47e718ee",
+    "tests/test_host_operation_log.py": "b1b371ccdf5b47558a22a80c063111a730648ac6f6c691050e1277a44d4c19c5",
+    "tests/test_host_render_budget.py": "871dd27276989c6e3ea17e73507bb08fcfb3120221a939d84e6b79b17a757dd2",
+    "tests/test_host_sensor_recovery.py": "dd382429d523025ddbd4b97e5fe6f0ec0fedeb5a2122b1981ae9688302d1f0b1",
+    "tests/test_host_serial.py": "95cb8db391029be97feca8193685ab34370e278ab9b1c5139b6de891118ab0a6",
+    "tests/test_host_serial_panel.py": "eba0a5c94d0bd65c1df6a7822b4a77c47cdc2075dcb9d79a1408cd9a8af7f1bb",
+    "tests/test_host_session_write_failure.py": "8adbd74dcbfe19267b5daca915be4b1456115c7931cd5fed7aaa0d24bc467f97",
+    "tests/test_host_settings.py": "8ac91b50290f60d7b5e9781c3b11a4252de303e77546940f37e921265c241f02",
+    "tests/test_host_transport_delivery.py": "a45514f542da19d7d06800af3ae96a2c978c1dd85abe87215a8eb19539385c32",
+    "tests/test_host_transport_race.py": "55c4bdcf90f0306ce3d73a6136373c6b21322b3866cef942d7c0570d1ffe314b",
+    "tests/test_host_ui.py": "19b6a47994e812ed20c564b58a4db0f99c05a04428ad6b3c3e94080cf34d3fb0",
+    "tests/test_start_diagnostics_protocol.py": "1d87b5a956ceb99066e53f9cd14c4d4f982d1b82ce7931662a645af3989dfc6d",
+    "tests/test_telemetry.py": "42327303ce961de4145fc4299ef24ebc30ee53c05c071feba00c1c163c53aef1",
+    "tools/build.py": "5bea8c21195d18e608103675248ce511846e9d70cc49137b62798d9b56a069e6",
+    "tools/build_host.py": "509b82504b22f2ba783aaae8c0ff0eb902abb4f219f6124f3c40a2a10d2124d3",
+    "tools/control_model.py": "666723c9a8d09e30c93cd1ecf77e2f1ddb7fe84c06749580e28b1e247e1d0318",
+    "tools/host_monitor.py": "b3c34136f63f1b12b42246fd891caf19c9911b056318134bb0dd9b645497dc54"
+  },
+  "historical_artifacts_unchanged": {
+    "Release/project-v0.2.4/Attitude_Control.fs": "504aab52c6f7643004f27842982162328df9544385781a1bf58837ad00f0234e",
+    "Release/project-v0.2.5/Attitude_Control.fs": "9aab9c62cd8a30252575f1ee80fdc80a74a608a6b13db5e082d7c2d1c02ff11b",
+    "Release/host-v0.6.4/J280_Monitor.exe": "c9dde1221e39ce823bad6403874d0b141aae1cbd39ae140cf9fbce58e3ad3b4f"
+  },
+  "field_source": "20260928_160847_787102_5343da97",
+  "field_originals_unchanged": true,
+  "limitations": [
+    "No project-v0.2.6 hardware balance, swing-up, disturbance or long serial acceptance yet.",
+    "Motor friction, effective dynamics and true angle zero remain unidentified; nonlinear negative cases are preserved.",
+    "50Hz telemetry is not a recording of all 1kHz control updates.",
+    "Automatic operation/tuning logs use a bounded background queue; optional SessionRecorder disk writes/flush lock can still delay GUI on slow storage."
+  ]
+}

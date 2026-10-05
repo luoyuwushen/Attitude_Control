@@ -154,7 +154,7 @@ class DispatchRaceTests(unittest.TestCase):
             sender.start()
             try:
                 self.assertTrue(attempted.wait(2))
-                self.assertFalse(accepted.wait(.05), 'action accepted during earlier write')
+                self.assertTrue(accepted.wait(.2), 'UI action blocked behind driver I/O')
             finally:
                 release.set()
             self.assertTrue(accepted.wait(2))
@@ -166,11 +166,34 @@ class DispatchRaceTests(unittest.TestCase):
         self.assertFalse(port.is_open)
         self.assertEqual(port.writes, [b'G', b'S'])
 
-    def test_stop_acceptance_waits_for_already_started_write(self):
+    def test_stop_acceptance_never_waits_for_already_started_write(self):
         self.started_write_race(close=False)
 
-    def test_close_acceptance_waits_for_started_write_and_discards_next_motion(self):
+    def test_close_acceptance_never_waits_for_write_and_discards_next_motion(self):
         self.started_write_race(close=True)
+
+    def test_wire_activity_callback_can_request_stop_without_deadlock(self):
+        worker = SerialWorker('TEST-NO-DEVICE')
+        self.assertTrue(worker.send('G'))
+        self.assertTrue(worker.send('F'))
+        actions = []
+
+        def received(activity):
+            if activity['direction'] == 'TX' and activity['data'] == b'G':
+                actions.append(worker.send('S'))
+
+        # A direct callback is deliberately used to exercise reentrancy. Real
+        # GUI delivery also uses this path after its bounded inbox is drained.
+        from PySide6.QtCore import Qt
+        worker.wire_activity.connect(received, Qt.ConnectionType.DirectConnection)
+        port = MemoryPort(worker)
+        with patch('host.transport.serial.Serial', return_value=port):
+            thread = threading.Thread(target=worker.run, daemon=True)
+            thread.start()
+            thread.join(2)
+        self.assertFalse(thread.is_alive(), 'wire activity emitted under dispatch lock')
+        self.assertEqual(actions, [True])
+        self.assertEqual(port.writes, [b'G', b'S'])
 
 
 if __name__ == '__main__':

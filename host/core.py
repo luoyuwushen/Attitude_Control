@@ -1,6 +1,6 @@
 """Incremental telemetry decoding, loss diagnostics and durable session files.
 
-Version 1 matches the current RTL. Version 2 reserves optional TLV measurements;
+Version 1 carries the legacy frame. Version 2 adds optional TLV measurements;
 no extended measurement exists in a record unless the device transmitted it.
 """
 from __future__ import annotations
@@ -14,6 +14,9 @@ import threading
 import time
 from datetime import datetime
 from pathlib import Path
+from host.diagnostics import DIAGNOSTIC_FIELDS, decode_diagnostics
+from host.tuning import TUNING_FIELDS, TUNING_SCHEMA, tuning_values
+from host.control_trace import TraceCaptureCollector
 
 
 BASE_FIELDS = [
@@ -22,7 +25,7 @@ BASE_FIELDS = [
     "calibrated", "fault", "protocol_version", "source", "sequence_gap",
     "sequence_reset", "sequence_duplicate", "raw_hex", "theta_q10", "omega_q10",
     "arm_q10", "arm_speed_q10",
-]
+] + DIAGNOSTIC_FIELDS
 # TLV type, public name, little-endian format, conversion factor.
 TLV_FIELDS = {
     1: ("device_time_ms", "<I", 1),
@@ -37,8 +40,45 @@ TLV_FIELDS = {
     10: ("sensor_flags", "<H", 1),
     11: ("adc_down", "<H", 1),
     12: ("adc_up", "<H", 1),
+    13: ("adc_raw", "<H", 1),
+    14: ("adc_window_min", "<H", 1),
+    15: ("adc_window_max", "<H", 1),
+    16: ("adc_mean_q4", "<H", 1),
+    17: ("motor_command_permille", "<h", 1),
+    18: ("first_fault", "<B", 1),
+    19: ("firmware_version", "<I", 1),
+    20: ("sample_counter", "<I", 1),
+    21: ("adc_quality_reason", "<B", 1),
+    22: ("sensor_fault_reason", "<H", 1),
+    23: ("adc_fault_window_min", "<H", 1),
+    24: ("adc_fault_window_max", "<H", 1),
+    25: ("adc_fault_mean_q4", "<H", 1),
+    28: ("adc_fault_time_ms", "<I", 1),
+    29: ("adc_fault_sample_counter", "<I", 1),
+    30: ("motor_test_status", "<B", 1),
+    31: ("motor_test_delta", "<i", 1),
+    34: ("adc_control_q4", "<H", 1),
 }
-EXTENDED_FIELDS = [value[0] for value in TLV_FIELDS.values()]
+ADC_DETAIL_FIELDS = (
+    "reference_q4", "filtered_min", "filtered_max", "contribution_min",
+    "contribution_max", "max_step", "outlier_count", "outlier_longest",
+    "first_outlier_index", "first_outlier_edge_ticks", "max_step_index",
+    "max_step_edge_ticks", "edge_outlier_count", "conversion_count",
+    "detail_flags", "filtered_sum",
+)
+TLV_GROUP_FIELDS = {
+    kind: (tuple(prefix + field for field in ADC_DETAIL_FIELDS), "<15HI")
+    for kind, prefix in ((26, "adc_"), (27, "adc_fault_"))
+}
+HANDOVER_CONTROL_FIELDS = (
+    "h_integral_q8", "h_capture_arm_q10", "h_control_age_ms", "h_control_flags",
+)
+TLV_GROUP_FIELDS[32] = (HANDOVER_CONTROL_FIELDS, "<hhHB")
+TRACE_STATUS_FIELDS = ("trace_flags", "trace_row_count", "trace_capture_id")
+TLV_GROUP_FIELDS[33] = (TRACE_STATUS_FIELDS, "<BHH")
+EXTENDED_FIELDS = ([value[0] for value in TLV_FIELDS.values()] +
+                   [name for names, _ in TLV_GROUP_FIELDS.values() for name in names] +
+                   list(TUNING_FIELDS))
 
 
 def crc16(data):
@@ -85,6 +125,7 @@ def _decode_frame(frame):
         "state": frame[18], "calibrated": frame[19] & 1, "fault": frame[20],
         "protocol_version": version, "raw_hex": frame.hex(),
     }
+    record.update(decode_diagnostics(frame[21]))
     if version == 2:
         cursor, end, seen = 22, len(frame) - 2, set()
         while cursor < end:
@@ -96,7 +137,13 @@ def _decode_frame(frame):
                 raise ValueError("Truncated TLV value")
             value_bytes = frame[cursor:cursor + length]
             cursor += length
-            if kind in TLV_FIELDS:
+            if kind in TLV_GROUP_FIELDS:
+                names, fmt = TLV_GROUP_FIELDS[kind]
+                if kind in seen or length != struct.calcsize(fmt):
+                    raise ValueError("Duplicate TLV or invalid group size")
+                seen.add(kind)
+                record.update(zip(names, struct.unpack(fmt, value_bytes)))
+            elif kind in TLV_FIELDS:
                 name, fmt, factor = TLV_FIELDS[kind]
                 if kind in seen or length != struct.calcsize(fmt):
                     raise ValueError("Duplicate TLV or invalid field size")
@@ -105,6 +152,7 @@ def _decode_frame(frame):
                 if not _finite(value):
                     raise ValueError("Non-finite TLV measurement")
                 record[name] = value if factor == 1 else value * factor
+    record.update(tuning_values(record))
     return record
 
 
@@ -124,10 +172,126 @@ class StreamDecoder:
              "missing_frames", "duplicates", "resets"), 0)
         self._first_time = None
         self._sequence = None
+        self.trace_collector = TraceCaptureCollector()
+        self.trace_events = []
+        self.trace_stats = dict(frames=0, crc_errors=0, discarded_bytes=0, unsupported_frames=0)
+        self._trace_waiting = False
+        self._trace_last_activity = None
+        self._trace_resync = False
+        self._failed_trace_capture = None
+        self._ignore_trace_until_metadata = False
+
+    def take_trace_events(self):
+        events, self.trace_events = self.trace_events, []
+        return events
+
+    def begin_trace(self, now=None):
+        self.finish_trace("export_restarted")
+        self._trace_waiting = True
+        self._trace_last_activity = time.monotonic() if now is None else now
+        self.trace_events.append(dict(type="progress", status="waiting_metadata", received_rows=0,
+                                      total_rows=None, capture_id=None))
+
+    def _trace_results(self, results):
+        self.trace_events.extend(dict(type="result", capture=result) for result in results)
+
+    def _trace_failed_tail(self, frame):
+        capture = self._failed_trace_capture
+        capture["failed_tail_frames_seen"] += 1
+        capture["failed_tail_bytes_seen"] += len(frame)
+        if capture["failed_tail_bytes_stored"] + len(frame) <= 262144:
+            capture["failed_tail_raw_frames_hex"].append(frame.hex())
+            capture["failed_tail_bytes_stored"] += len(frame)
+        else:
+            capture["failed_tail_truncated"] = True
+
+    def _flush_failed_trace(self, reason=None):
+        capture = self._failed_trace_capture
+        if capture is not None:
+            if reason:
+                capture["errors"].append(reason)
+            self._trace_results([capture])
+        self._failed_trace_capture = None
+        self._ignore_trace_until_metadata = True
+        self._trace_waiting = False
+        self._trace_last_activity = None
+
+    def finish_trace(self, reason="disconnected", *, include_partial=True):
+        if self._failed_trace_capture is not None:
+            if include_partial and self.buffer.startswith(b"\xaa\x55\x03"):
+                self._trace_failed_tail(bytes(self.buffer))
+                self.trace_stats["discarded_bytes"] += len(self.buffer)
+                self.buffer.clear()
+            self._flush_failed_trace(reason)
+        elif include_partial and self.buffer.startswith(b"\xaa\x55\x03"):
+            self._trace_results(self.trace_collector.fail(reason + ":truncated_packet", bytes(self.buffer)))
+            self.trace_stats["discarded_bytes"] += len(self.buffer)
+            self.buffer.clear()
+        elif self.trace_collector.active:
+            self._trace_results(self.trace_collector.finish(reason))
+        elif self._trace_waiting:
+            self._trace_results(self.trace_collector.fail(reason, evidence=b""))
+        self._trace_waiting = False
+        self._trace_last_activity = None
+        self._ignore_trace_until_metadata = True
+
+    def check_trace_timeout(self, now=None, timeout=2.0):
+        now = time.monotonic() if now is None else now
+        if (self._trace_last_activity is not None and
+                now - self._trace_last_activity >= timeout and
+                (self._trace_waiting or self.trace_collector.active)):
+            self.finish_trace("trace_timeout_missing_end_or_metadata")
+
+    def _trace_packet(self, frame):
+        self.trace_stats["frames"] += 1
+        envelope_valid = (len(frame) >= 16 and frame[3] == len(frame) and
+                          crc16(frame[:-2]) == int.from_bytes(frame[-2:], "little"))
+        metadata = envelope_valid and frame[4] == 1 and frame[5] == 1
+        end = envelope_valid and frame[4] == 3 and frame[5] == 1 and len(frame) == 18
+        if metadata:
+            if self._failed_trace_capture is not None:
+                self._flush_failed_trace("retry_metadata_before_valid_end")
+            self._ignore_trace_until_metadata = False
+        elif self._failed_trace_capture is not None:
+            self._trace_last_activity = time.monotonic()
+            self._trace_failed_tail(frame)
+            capture_id = int.from_bytes(frame[6:8], "little") if envelope_valid else None
+            if end and self._failed_trace_capture["capture_id"] in (None, capture_id):
+                self._failed_trace_capture["failed_tail_end_seen"] = True
+                self._flush_failed_trace()
+            return
+        elif self._ignore_trace_until_metadata:
+            return
+        self._trace_last_activity = time.monotonic()
+        results = self.trace_collector.feed(frame)
+        progress = self.trace_collector.progress()
+        for result in results:
+            if result["complete"] or progress is not None:
+                self._trace_results([result])
+            else:
+                result.update(failed_tail_frames_seen=0, failed_tail_bytes_seen=0,
+                              failed_tail_bytes_stored=0, failed_tail_raw_frames_hex=[],
+                              failed_tail_truncated=False, failed_tail_end_seen=False)
+                self._failed_trace_capture = result
+                self._trace_waiting = True
+                self.trace_events.append(dict(type="progress", status="failed_receiving_tail",
+                    capture_id=result["capture_id"], received_rows=result["received_rows"],
+                    total_rows=result["total_rows"], errors=list(result["errors"])))
+                if end:
+                    self._flush_failed_trace()
+                return
+        self._trace_waiting = progress is not None
+        if progress:
+            self.trace_events.append(dict(type="progress", **progress))
+        else:
+            self._trace_last_activity = None
 
     def _discard(self, count):
         del self.buffer[:count]
-        self.stats["discarded_bytes"] += count
+        if self._trace_resync:
+            self.trace_stats["discarded_bytes"] += count
+        else:
+            self.stats["discarded_bytes"] += count
 
     def feed(self, data):
         self.buffer.extend(data)
@@ -142,24 +306,47 @@ class StreamDecoder:
             if len(self.buffer) < 4:
                 break
             version, length = self.buffer[2:4]
+            if version == 3:
+                if not 16 <= length <= 240:
+                    self._trace_packet(bytes(self.buffer[:4]))
+                    self._trace_resync = True
+                    self._discard(1)
+                    continue
+                if len(self.buffer) < length:
+                    if self._trace_last_activity is None:
+                        self._trace_last_activity = time.monotonic()
+                        self._trace_waiting = True
+                    break
+                frame = bytes(self.buffer[:length])
+                valid_crc = crc16(frame[:-2]) == int.from_bytes(frame[-2:], "little")
+                self._trace_packet(frame)
+                if not valid_crc:
+                    self.trace_stats["crc_errors"] += 1
+                    self._trace_resync = True
+                    self._discard(1)
+                else:
+                    del self.buffer[:length]
+                    self._trace_resync = False
+                continue
             if version not in (1, 2) or length < 24 or (version == 1 and length != 24):
-                self.stats["unsupported_frames"] += 1
+                (self.trace_stats if self._trace_resync else self.stats)["unsupported_frames"] += 1
                 self._discard(1)
                 continue
             if len(self.buffer) < length:
                 break
             frame = bytes(self.buffer[:length])
             if crc16(frame[:-2]) != int.from_bytes(frame[-2:], "little"):
-                self.stats["crc_errors"] += 1
+                (self.trace_stats if self._trace_resync else self.stats)["crc_errors"] += 1
                 self._discard(1)
                 continue
             try:
                 record = _decode_frame(frame)
             except ValueError:
-                self.stats["unsupported_frames"] += 1
+                (self.trace_stats if self._trace_resync else self.stats)["unsupported_frames"] += 1
                 self._discard(length)
                 continue
             del self.buffer[:length]
+            self._trace_resync = False
             received = time.monotonic()
             if self._first_time is None:
                 self._first_time = received
@@ -173,6 +360,8 @@ class StreamDecoder:
             self.stats["resets"] += int(reset)
             self.stats["duplicates"] += int(duplicate)
             records.append(record)
+            if record.get("state") in (1, 2, 4, 5) and (self._trace_waiting or self.trace_collector.active):
+                self.finish_trace("motion_interrupted_export", include_partial=False)
         return records
 
 
@@ -311,7 +500,7 @@ class SessionRecorder:
 
     FLUSH_INTERVAL_S = 1.0
 
-    def __init__(self, directory, metadata):
+    def __init__(self, directory, metadata, *, background_flush=True):
         root = Path(directory)
         root.mkdir(parents=True, exist_ok=True)
         stem = datetime.now().strftime("session_%Y%m%d_%H%M%S_%f")
@@ -325,29 +514,58 @@ class SessionRecorder:
                 number += 1
         self.directory = self.path = candidate
         self.metadata = _clean_json(dict(metadata))
+        self.metadata['tuning_schema'] = _clean_json(TUNING_SCHEMA)
         self.metadata.setdefault("created_at", datetime.now().isoformat(timespec="seconds"))
         self.metadata.setdefault("format_version", 1)
         (candidate / "metadata.json").write_text(json.dumps(self.metadata, ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
         self._csv_path = candidate / "samples.csv"
         self._fields = BASE_FIELDS + EXTENDED_FIELDS
-        self._csv = self._csv_path.open("w", encoding="utf-8-sig", newline="")
-        self._writer = csv.DictWriter(self._csv, fieldnames=self._fields)
-        self._writer.writeheader()
-        self._csv.flush()
-        self._raw = (candidate / "raw_frames.bin").open("wb")
-        self._events = (candidate / "events.jsonl").open("w", encoding="utf-8")
+        self._csv = self._raw = self._events = None
+        try:
+            self._csv = self._csv_path.open("w", encoding="utf-8-sig", newline="")
+            self._writer = csv.DictWriter(self._csv, fieldnames=self._fields)
+            self._writer.writeheader()
+            self._csv.flush()
+            self._raw = (candidate / "raw_frames.bin").open("wb")
+            self._events = (candidate / "events.jsonl").open("w", encoding="utf-8")
+        except Exception:
+            for stream in (self._csv, self._raw, self._events):
+                if stream is not None:
+                    try:
+                        stream.close()
+                    except OSError:
+                        pass
+            raise
         self.metrics = Metrics()
         self.extra_summary = {}
         self._closed = False
         self._summary_written = False
+        self._recording_error = None
         self._close_error = None
         self._raw_count = 0
         self._lock = threading.RLock()
         self._flush_stop = threading.Event()
         self._flush_error = None
-        self._flush_thread = threading.Thread(target=self._flush_worker,
-                                              name="telemetry-session-flush", daemon=True)
-        self._flush_thread.start()
+        self._flush_thread = None
+        if background_flush:
+            self._flush_thread = threading.Thread(target=self._flush_worker,
+                                                  name="telemetry-session-flush", daemon=True)
+            self._flush_thread.start()
+
+    def flush(self):
+        """Flush explicitly when a single external writer owns the session."""
+        with self._lock:
+            self._check_open()
+            try:
+                self._flush_files()
+            except OSError as error:
+                self._remember_recording_error(error)
+                raise
+
+    def invalidate(self, error):
+        """Keep partial data, but never certify a lost/rejected session as complete."""
+        with self._lock:
+            self._remember_recording_error(error)
 
     def _flush_worker(self):
         while not self._flush_stop.wait(self.FLUSH_INTERVAL_S):
@@ -360,17 +578,28 @@ class SessionRecorder:
                     # Surface disk failures to the main recorder call; never silently
                     # report a successful recording after a background flush failed.
                     self._flush_error = error
+                    self._remember_recording_error(error)
                     return
 
     def _flush_files(self):
         for stream in (self._csv, self._raw, self._events):
             stream.flush()
 
+    def _remember_recording_error(self, error):
+        # A failed sample/event is not retried by the GUI. Even an atomic
+        # column rewrite that leaves the old CSV intact loses that requested
+        # sample, so later successful cleanup must not certify completeness.
+        if self._recording_error is None:
+            self._recording_error = error
+
+    def _check_recording_error(self):
+        if self._recording_error is not None:
+            raise OSError(f"Session recording incomplete: {self._recording_error}") from self._recording_error
+
     def _check_open(self):
+        self._check_recording_error()
         if self._closed:
             raise ValueError("Session is already closed")
-        if self._flush_error is not None:
-            raise OSError("Session background flush failed") from self._flush_error
 
     def _extend_fields(self, new_fields):
         """Stream old CSV rows to a sibling file, then replace only when complete."""
@@ -389,66 +618,84 @@ class SessionRecorder:
                         writer.writerow(row)
             temporary.replace(self._csv_path)
             self._fields = fields
+        except OSError as error:
+            self._remember_recording_error(error)
+            raise
         finally:
-            if temporary is not None and temporary.exists():
-                temporary.unlink()
-            self._csv = self._csv_path.open("a", encoding="utf-8", newline="")
-            self._writer = csv.DictWriter(self._csv, fieldnames=self._fields)
+            try:
+                if temporary is not None and temporary.exists():
+                    temporary.unlink()
+                self._csv = self._csv_path.open("a", encoding="utf-8", newline="")
+                self._writer = csv.DictWriter(self._csv, fieldnames=self._fields)
+            except OSError as error:
+                self._remember_recording_error(error)
+                raise
 
     def write(self, record):
         with self._lock:
             self._check_open()
-            record = _clean_json(dict(record))
-            new_fields = [key for key in record if key not in self._fields]
-            if new_fields:
-                self._extend_fields(new_fields)
-            self._writer.writerow(record)
-            raw_hex = record.get("raw_hex")
-            if isinstance(raw_hex, str):
-                try:
-                    frame = bytes.fromhex(raw_hex)
-                    _decode_frame(frame)
-                except (ValueError, TypeError):
-                    pass
-                else:
-                    self._raw.write(frame)
-                    self._raw_count += 1
-            self.metrics.add(record)
+            try:
+                record = _clean_json(dict(record))
+                record.update(tuning_values(record))
+                new_fields = [key for key in record if key not in self._fields]
+                if new_fields:
+                    self._extend_fields(new_fields)
+                self._writer.writerow(record)
+                raw_hex = record.get("raw_hex")
+                if isinstance(raw_hex, str):
+                    try:
+                        frame = bytes.fromhex(raw_hex)
+                        _decode_frame(frame)
+                    except (ValueError, TypeError):
+                        pass
+                    else:
+                        self._raw.write(frame)
+                        self._raw_count += 1
+                self.metrics.add(record)
+            except OSError as error:
+                self._remember_recording_error(error)
+                raise
 
-    def event(self, kind, detail, record=None):
+    def event(self, kind, detail, record=None, *, timestamp=None):
         with self._lock:
             self._check_open()
-            event = {"time": time.time(), "kind": str(kind), "detail": detail}
+            event = {"time": time.time() if timestamp is None else timestamp,
+                     "kind": str(kind), "detail": detail}
             if record:
                 for key in ("sequence", "elapsed_s", "state", "fault", "source"):
                     if key in record:
                         event[key] = record[key]
-            self._events.write(json.dumps(_clean_json(event), ensure_ascii=False, allow_nan=False) + "\n")
+            try:
+                self._events.write(json.dumps(_clean_json(event), ensure_ascii=False, allow_nan=False) + "\n")
+            except OSError as error:
+                self._remember_recording_error(error)
+                raise
 
     def close(self):
         summary = self.directory / "summary.json"
-        with self._lock:
-            if not self._closed:
-                self._flush_stop.set()
-                for stream in (self._csv, self._raw, self._events):
-                    try:
-                        stream.close()
-                    except OSError as error:
-                        self._close_error = self._close_error or error
-                self._closed = True
-            if not self._summary_written:
-                if self._close_error is not None:
-                    raise OSError("Session close failed") from self._close_error
-                if self._flush_error is not None:
-                    raise OSError("Session background flush failed") from self._flush_error
-                result = self.metrics.snapshot()
-                result.update(self.extra_summary)
-                result.update(closed_at=datetime.now().isoformat(timespec="seconds"),
-                              raw_frames=self._raw_count, source=self.metadata.get("source"),
-                              data_file="samples.csv")
-                summary.write_text(json.dumps(_clean_json(result), ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
-                self._summary_written = True
-        self._flush_thread.join(timeout=self.FLUSH_INTERVAL_S)
+        try:
+            with self._lock:
+                if not self._closed:
+                    self._flush_stop.set()
+                    for stream in (self._csv, self._raw, self._events):
+                        try:
+                            stream.close()
+                        except OSError as error:
+                            self._close_error = self._close_error or error
+                            self._remember_recording_error(error)
+                    self._closed = True
+                self._check_recording_error()
+                if not self._summary_written:
+                    result = self.metrics.snapshot()
+                    result.update(self.extra_summary)
+                    result.update(closed_at=datetime.now().isoformat(timespec="seconds"),
+                                  raw_frames=self._raw_count, source=self.metadata.get("source"),
+                                  data_file="samples.csv")
+                    summary.write_text(json.dumps(_clean_json(result), ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
+                    self._summary_written = True
+        finally:
+            if self._flush_thread is not None:
+                self._flush_thread.join(timeout=self.FLUSH_INTERVAL_S)
         return summary
 
     def __enter__(self):
@@ -466,8 +713,8 @@ class Replay:
         previous_clock = previous_sequence = None
         elapsed = 0.0
         clock_key = None
-        text_fields = {"source", "original_source", "raw_hex"}
-        bool_fields = {"sequence_reset", "sequence_duplicate", "time_reset"}
+        text_fields = {"source", "original_source", "raw_hex", "algorithm", "parameter_profile"}
+        bool_fields = {"sequence_reset", "sequence_duplicate", "time_reset", "active", "actual_valid", "requested_saturated"}
         with Path(csv_path).open(encoding="utf-8-sig", newline="") as source:
             reader = csv.DictReader(source)
             required = {"sequence", "theta_deg", "state"}
@@ -514,9 +761,19 @@ class Replay:
                 record["sequence_reset"] = bool(record.get("sequence_reset")) or reset
                 record["sequence_duplicate"] = bool(record.get("sequence_duplicate")) or duplicate
                 record.setdefault("protocol_version", 1)
+                # Older CSVs retained the diagnostic byte only in the raw frame.
+                if "raw_hex" in record:
+                    try:
+                        decoded = _decode_frame(bytes.fromhex(record["raw_hex"]))
+                        record.update({key: decoded[key] for key in DIAGNOSTIC_FIELDS if key in decoded})
+                    except ValueError:
+                        pass
+                elif "diagnostic_status" in record:
+                    record.update(decode_diagnostics(record["diagnostic_status"]))
                 if "source" in record:
                     record.setdefault("original_source", record["source"])
                 record["source"] = "replay"
+                record.update(tuning_values(record))
                 records.append(record)
         return records
 

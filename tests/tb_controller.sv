@@ -13,6 +13,7 @@ module tb_controller;
     attitude_controller #(.WATCHDOG_CYCLES(30)) dut (
         .clk(clk), .rst_n(rst_n), .sample_valid(sample_valid), .calibrated(calibrated),
         .sensor_fault(sensor_fault), .start(start), .stop(stop), .clear(clear),
+        .start_balance(1'b0), .measurement_ready(1'b1),
         .theta(theta), .omega(omega), .arm(arm), .arm_speed(arm_speed),
         .state(state), .fault(fault), .command(command), .enable(enable));
     task tick(input integer cycles);
@@ -58,6 +59,7 @@ module tb_controller;
         end
     endtask
     integer k, expected_index, expected_cos;
+    reg signed [63:0] expected_arm_product, expected_arm_sum;
     real cosine_reference;
     initial begin #5000000; $fatal(1, "tb_controller timeout"); end
     initial begin
@@ -130,6 +132,20 @@ module tb_controller;
         stop_run;
 
         enter_balance;
+        // Exact signed arithmetic across all four capture-ramp regions after
+        // separating positive multiplication and coefficient sign restoration.
+        for (k=0; k<520; k=k+1) begin
+            sample(0,0,((k%127)-63)*91,0);
+            expected_arm_product = -64'sd109597 * (((k%127)-63)*91);
+            if (dut.p_arm !== expected_arm_product) $fatal(1,"arm product sign/width");
+            if (dut.catch_ms < 128) expected_arm_sum = expected_arm_product >>> 2;
+            else if (dut.catch_ms < 256) expected_arm_sum = expected_arm_product >>> 1;
+            else if (dut.catch_ms < 384) expected_arm_sum = (expected_arm_product >>> 1)+(expected_arm_product >>> 2);
+            else expected_arm_sum = expected_arm_product;
+            if (dut.balance_sum !== expected_arm_sum || command !== -(expected_arm_sum >>> 20))
+                $fatal(1,"arm ramp fixed-point rounding or pipeline age");
+        end
+        stop_run; enter_balance;
         sample(100,0,0,0);
         if (command < -230 || command > -220) $fatal(1, "positive theta feedback");
         sample(-100,0,0,0);
@@ -151,10 +167,10 @@ module tb_controller;
         @(negedge clk); clear = 0;
 
         start_run; sample(3217,0,6145,0); expect_fault(8'h08); stop_run;
-        start_run; sample(3217,0,-6145,0); expect_fault(8'h08); stop_run;
-        start_run; sample(3217,0,0,20481); expect_fault(8'h08); stop_run;
-        start_run; sample(3217,-30721,0,0); expect_fault(8'h08); stop_run;
-        start_run; @(negedge clk); sensor_fault = 1; tick(1);
+        arm=0; start_run; sample(3217,0,-6145,0); expect_fault(8'h08); stop_run;
+        arm=0; start_run; sample(3217,0,0,20481); expect_fault(8'h08); stop_run;
+        arm_speed=0; start_run; sample(3217,-30721,0,0); expect_fault(8'h08); stop_run;
+        omega=0; start_run; @(negedge clk); sensor_fault = 1; tick(1);
         expect_fault(8'h01); stop_run; sensor_fault = 0;
         start_run; @(negedge clk); calibrated = 0; tick(1);
         expect_fault(8'h02); stop_run; calibrated = 1;

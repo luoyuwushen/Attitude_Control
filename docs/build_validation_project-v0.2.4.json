@@ -1,0 +1,147 @@
+{
+  "setup_violations": 0,
+  "hold_violations": 0,
+  "fmax_mhz": 54.471,
+  "placed_pins": {
+    "clk_50m": {
+      "pad": "M19",
+      "standard": "LVCMOS33"
+    },
+    "rst_n": {
+      "pad": "AB3",
+      "standard": "LVCMOS33"
+    },
+    "key_sw[0]": {
+      "pad": "T18",
+      "standard": "LVCMOS15"
+    },
+    "key_sw[1]": {
+      "pad": "R18",
+      "standard": "LVCMOS15"
+    },
+    "key_sw[2]": {
+      "pad": "U20",
+      "standard": "LVCMOS15"
+    },
+    "key_sw[3]": {
+      "pad": "T20",
+      "standard": "LVCMOS15"
+    },
+    "uart_rx": {
+      "pad": "L20",
+      "standard": "LVCMOS33"
+    },
+    "adc_data_in[0]": {
+      "pad": "L21",
+      "standard": "LVCMOS33"
+    },
+    "adc_data_in[1]": {
+      "pad": "M21",
+      "standard": "LVCMOS33"
+    },
+    "adc_data_in[2]": {
+      "pad": "J20",
+      "standard": "LVCMOS33"
+    },
+    "adc_data_in[3]": {
+      "pad": "J19",
+      "standard": "LVCMOS33"
+    },
+    "adc_data_in[4]": {
+      "pad": "D19",
+      "standard": "LVCMOS33"
+    },
+    "adc_data_in[5]": {
+      "pad": "H18",
+      "standard": "LVCMOS33"
+    },
+    "adc_data_in[6]": {
+      "pad": "H19",
+      "standard": "LVCMOS33"
+    },
+    "adc_data_in[7]": {
+      "pad": "G19",
+      "standard": "LVCMOS33"
+    },
+    "adc_data_in[8]": {
+      "pad": "G17",
+      "standard": "LVCMOS33"
+    },
+    "adc_data_in[9]": {
+      "pad": "E19",
+      "standard": "LVCMOS33"
+    },
+    "adc_otr": {
+      "pad": "F18",
+      "standard": "LVCMOS33"
+    },
+    "enc1_a": {
+      "pad": "Y20",
+      "standard": "LVCMOS33"
+    },
+    "enc1_b": {
+      "pad": "AA20",
+      "standard": "LVCMOS33"
+    },
+    "uart_tx": {
+      "pad": "K20",
+      "standard": "LVCMOS33"
+    },
+    "adc_clk": {
+      "pad": "G18",
+      "standard": "LVCMOS33"
+    },
+    "adc_oe_n": {
+      "pad": "H20",
+      "standard": "LVCMOS33"
+    },
+    "AN1": {
+      "pad": "Y17",
+      "standard": "LVCMOS33"
+    },
+    "AN2": {
+      "pad": "Y19",
+      "standard": "LVCMOS33"
+    },
+    "PWMA": {
+      "pad": "Y18",
+      "standard": "LVCMOS33"
+    },
+    "BN1": {
+      "pad": "AA17",
+      "standard": "LVCMOS33"
+    },
+    "BN2": {
+      "pad": "V15",
+      "standard": "LVCMOS33"
+    },
+    "PWMB": {
+      "pad": "V14",
+      "standard": "LVCMOS33"
+    }
+  },
+  "device": "GW2A-LV55PG484C8/I7",
+  "tool": "V1.9.12.03 (64-bit)",
+  "bitstream_sha256": "504aab52c6f7643004f27842982162328df9544385781a1bf58837ad00f0234e",
+  "dsp_usage": "17/20",
+  "logic_usage": "7140/54720",
+  "register_usage": "5174/42000",
+  "created_time": "Mon Sep 28 03:39:09 2026",
+  "source_sha256": {
+    "Attitude_Control/src/adc_sampler.v": "1e5af785dedb3eed3ba5e1d2661e4cccaf7d0cac616c89f50def9c6de8992fed",
+    "Attitude_Control/src/attitude_control.cst": "3d68ed209bc75f8bc565b9458dcafad00bdb873f8a0e553d814e12e2cea02707",
+    "Attitude_Control/src/attitude_control.sdc": "9402f7049dfcf8cbc29688997cf9a63abc0b28154128a2c49c67f5dbbb056ef5",
+    "Attitude_Control/src/attitude_controller.v": "5131c5806e0efcee39404e935bf4ba5f9ea81fc9864349f918172f6ece04574b",
+    "Attitude_Control/src/calibration_divider.v": "25950cd80fd46c6a65c0000fdda495825575766e37e650be6bbc46b0e08ceeb9",
+    "Attitude_Control/src/key_debounce.v": "a4a648df7d506ea42b7253f4e91967803bdefbca4ead784935e57614e53681ea",
+    "Attitude_Control/src/motor_pwm.v": "4ad6398d76f74fc95842cff862c85312dd54d350b47247c284aa118f6ad2cf28",
+    "Attitude_Control/src/motor_test.v": "c13df05aeffe902e79bf20dfec826123970994b8880d8a5a0f36276076e385ff",
+    "Attitude_Control/src/quadrature_encoder.v": "2696604dd9fa20a7c336855dba596d1c8253f01688735e82ed3a5c6a2877bae1",
+    "Attitude_Control/src/reset_sync.v": "1219239a961487841c2ecb93ae9fab5758c2d234e468968eb04a50739ac05cea",
+    "Attitude_Control/src/state_estimator.v": "232a4e44dfeb714dd8fafac756f7e9c51b82bc41242529a7722ab7fa318abec8",
+    "Attitude_Control/src/telemetry.v": "b8a749902bd8d2b3072c52496382f41fc35f9f7ac1a13ec504fec3672913b33e",
+    "Attitude_Control/src/top.v": "06c906b3cb29e369a50010a2d7df0b68aaab32652de89c4ca47a32f5d4e1e6ba",
+    "Attitude_Control/src/uart_rx_byte.v": "764cb9640fec89a57851dd53af536dc93f779ad72f17167d84249d4d5a4ced4b",
+    "Attitude_Control/src/uart_tx_byte.v": "48e56ab342381cc012b8b607c40ecf43d1b91976474e799ebc29dd8e5b8709f3"
+  }
+}

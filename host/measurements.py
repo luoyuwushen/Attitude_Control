@@ -63,7 +63,7 @@ def validate_records(records, require_stopped=False, require_calibrated=True):
                 raise MeasurementError(f"{key} 包含非有限数值")
         time = _number(record.get("elapsed_s"), "elapsed_s")
         sequence = _integer(record.get("sequence"), "sequence", 0, 65535)
-        state = _integer(record.get("state"), "state", 0, 4)
+        state = _integer(record.get("state"), "state", 0, 5)
         _integer(record.get("fault"), "fault", 0, 255)
         calibrated = _integer(record.get("calibrated"), "calibrated", 0, 1)
         if require_calibrated and calibrated != 1:

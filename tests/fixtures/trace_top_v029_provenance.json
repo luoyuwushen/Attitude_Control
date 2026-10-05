@@ -1,0 +1,14 @@
+{
+  "evidence": "Actual RTL UART simulation, not field capture",
+  "origin": "Release/project-v0.2.9/validation/trace_top_rtl/wire.txt",
+  "firmware_id": "0x00020009",
+  "period_cycles": 1280,
+  "captures": 4,
+  "rows": 290,
+  "files": {
+    "tests/fixtures/trace_top_v029_wire.txt": "e3303e45a4c357dbd29f8e939704978c8c6cc53e8f2364d2e2634ab6542133eb",
+    "tests/tb_control_trace_top.sv": "6127d98bbc3186496741b058bc0a13db74a3ca57e2646434447e5a5df369dd0e",
+    "tests/run_control_trace_top.py": "6ce2bcd3a95782994afe218d2ee15430353e858b39ec7c3ddc410016110f16be",
+    "host/control_trace.py": "67847844e0326b38cf31c22db6333d7584c2f76c95f1ddf740b9733f33769e19"
+  }
+}

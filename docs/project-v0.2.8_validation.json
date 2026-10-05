@@ -1,0 +1,401 @@
+{
+  "created_utc": "2026-09-28T11:39:40.461153+00:00",
+  "project": "project-v0.2.8",
+  "host": "host-v0.6.7",
+  "status": "offline_passed_field_candidate",
+  "hardware_access": false,
+  "bitstream": {
+    "path": "Release/project-v0.2.8/Attitude_Control.fs",
+    "sha256": "f27dfa18749155c52a5fdea0502e8f964fe665a626b2b979404a3bd41ad63a38",
+    "bytes": 18588969
+  },
+  "executable": {
+    "path": "Release/host-v0.6.7/J280_Monitor.exe",
+    "bytes": 57719771,
+    "sha256": "3a9b41fff90f1c9ffe58c725fd8357eb90f553d47cab1bed77d8885d4d3bffed"
+  },
+  "build": {
+    "setup_violations": 0,
+    "hold_violations": 0,
+    "fmax_mhz": 52.217,
+    "placed_pins": {
+      "clk_50m": {
+        "pad": "M19",
+        "standard": "LVCMOS33"
+      },
+      "rst_n": {
+        "pad": "AB3",
+        "standard": "LVCMOS33"
+      },
+      "key_sw[0]": {
+        "pad": "T18",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[1]": {
+        "pad": "R18",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[2]": {
+        "pad": "U20",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[3]": {
+        "pad": "T20",
+        "standard": "LVCMOS15"
+      },
+      "uart_rx": {
+        "pad": "L20",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[0]": {
+        "pad": "L21",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[1]": {
+        "pad": "M21",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[2]": {
+        "pad": "J20",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[3]": {
+        "pad": "J19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[4]": {
+        "pad": "D19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[5]": {
+        "pad": "H18",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[6]": {
+        "pad": "H19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[7]": {
+        "pad": "G19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[8]": {
+        "pad": "G17",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[9]": {
+        "pad": "E19",
+        "standard": "LVCMOS33"
+      },
+      "adc_otr": {
+        "pad": "F18",
+        "standard": "LVCMOS33"
+      },
+      "enc1_a": {
+        "pad": "Y20",
+        "standard": "LVCMOS33"
+      },
+      "enc1_b": {
+        "pad": "AA20",
+        "standard": "LVCMOS33"
+      },
+      "uart_tx": {
+        "pad": "K20",
+        "standard": "LVCMOS33"
+      },
+      "adc_clk": {
+        "pad": "G18",
+        "standard": "LVCMOS33"
+      },
+      "adc_oe_n": {
+        "pad": "H20",
+        "standard": "LVCMOS33"
+      },
+      "AN1": {
+        "pad": "Y17",
+        "standard": "LVCMOS33"
+      },
+      "AN2": {
+        "pad": "Y19",
+        "standard": "LVCMOS33"
+      },
+      "PWMA": {
+        "pad": "Y18",
+        "standard": "LVCMOS33"
+      },
+      "BN1": {
+        "pad": "AA17",
+        "standard": "LVCMOS33"
+      },
+      "BN2": {
+        "pad": "V15",
+        "standard": "LVCMOS33"
+      },
+      "PWMB": {
+        "pad": "V14",
+        "standard": "LVCMOS33"
+      }
+    },
+    "device": "GW2A-LV55PG484C8/I7",
+    "tool": "V1.9.12.03 (64-bit)",
+    "bitstream_sha256": "f27dfa18749155c52a5fdea0502e8f964fe665a626b2b979404a3bd41ad63a38",
+    "dsp_usage": "18.5/20",
+    "logic_usage": "7597/54720",
+    "register_usage": "5499/42000",
+    "created_time": "Mon Sep 28 18:56:32 2026",
+    "source_sha256": {
+      "Attitude_Control/src/adc_sampler.v": "1e5af785dedb3eed3ba5e1d2661e4cccaf7d0cac616c89f50def9c6de8992fed",
+      "Attitude_Control/src/attitude_control.cst": "3d68ed209bc75f8bc565b9458dcafad00bdb873f8a0e553d814e12e2cea02707",
+      "Attitude_Control/src/attitude_control.sdc": "9402f7049dfcf8cbc29688997cf9a63abc0b28154128a2c49c67f5dbbb056ef5",
+      "Attitude_Control/src/attitude_controller.v": "7b30c5be42ad0a9fb2676b5eac2200ad811135ddd95220a1eb1ff1e93940ef8c",
+      "Attitude_Control/src/calibration_divider.v": "25950cd80fd46c6a65c0000fdda495825575766e37e650be6bbc46b0e08ceeb9",
+      "Attitude_Control/src/key_debounce.v": "a4a648df7d506ea42b7253f4e91967803bdefbca4ead784935e57614e53681ea",
+      "Attitude_Control/src/motor_pwm.v": "4ad6398d76f74fc95842cff862c85312dd54d350b47247c284aa118f6ad2cf28",
+      "Attitude_Control/src/motor_test.v": "c13df05aeffe902e79bf20dfec826123970994b8880d8a5a0f36276076e385ff",
+      "Attitude_Control/src/quadrature_encoder.v": "2696604dd9fa20a7c336855dba596d1c8253f01688735e82ed3a5c6a2877bae1",
+      "Attitude_Control/src/reset_sync.v": "1219239a961487841c2ecb93ae9fab5758c2d234e468968eb04a50739ac05cea",
+      "Attitude_Control/src/state_estimator.v": "232a4e44dfeb714dd8fafac756f7e9c51b82bc41242529a7722ab7fa318abec8",
+      "Attitude_Control/src/telemetry.v": "ce54451c447d5c67870807fec02f7b8af09cd6a7649e007bff0b23ab38f96a7b",
+      "Attitude_Control/src/top.v": "79076d9cb709e63233883c1448907bf260473a95a66ee19307ac5b37776a3728",
+      "Attitude_Control/src/uart_rx_byte.v": "764cb9640fec89a57851dd53af536dc93f779ad72f17167d84249d4d5a4ced4b",
+      "Attitude_Control/src/uart_tx_byte.v": "48e56ab342381cc012b8b607c40ecf43d1b91976474e799ebc29dd8e5b8709f3"
+    }
+  },
+  "python_tests": {
+    "command": [
+      "C:\\Program Files\\Python312\\python.exe",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "started_utc": "2026-09-28T11:14:16.651755+00:00",
+    "ended_utc": "2026-09-28T11:14:50.805034+00:00",
+    "wall_s": 34.15700000000652,
+    "returncode": 0,
+    "tests": 317,
+    "test_reported_s": 23.923,
+    "source_unchanged": true,
+    "log_sha256": "f7bbc429eeb3dd4ae72e790049918172956c9f9d5a91493de0addfcdadeb3bc7",
+    "log": "python_tests.log",
+    "scope": "Offline full Python regression; no physical COM or hardware acceptance",
+    "passed": true
+  },
+  "production_rtl_changed_from_v027": [
+    "attitude_controller.v",
+    "telemetry.v"
+  ],
+  "h_gain_q10": [
+    904758,
+    77909,
+    -34213,
+    -61768
+  ],
+  "rtl_benches": [
+    "tb_handover_feedback",
+    "tb_handover_integral",
+    "tb_telemetry_v2",
+    "tb_top_v2",
+    "tb_balance_entry",
+    "tb_controller",
+    "tb_closed_loop",
+    "tb_interfaces"
+  ],
+  "rtl_bench_count": 8,
+  "verilog2005_top_passed": true,
+  "nominal_real_rtl_model": {
+    "passed": true,
+    "runs": 3,
+    "seconds_each": 30,
+    "evidence": {
+      "path": "Release/project-v0.2.8/validation/h_speed120_rtl.json",
+      "sha256": "e63e664a3c204e140096d7dfdd1397bdad641346dc9ddf04cd485caa5da77ef1",
+      "bytes": 11261
+    }
+  },
+  "not_rerun_rtl": [
+    "tb_adc_continuous",
+    "tb_adc_observability",
+    "tb_adc_quality",
+    "tb_estimator",
+    "tb_estimator_motion",
+    "tb_fault_heartbeat",
+    "tb_motor_test",
+    "tb_motor_test_top",
+    "tb_sample_freshness",
+    "tb_sensor_recovery",
+    "tb_start_diagnostics",
+    "tb_start_runtime",
+    "tb_top"
+  ],
+  "full_rtl_suite_claim": false,
+  "load": {
+    "passed": true,
+    "rerun_this_release": false,
+    "inherited_from": "host-v0.6.6",
+    "frames": 4500,
+    "seconds": 90,
+    "physical_port_opened": false,
+    "synthetic_firmware": "0x00020006",
+    "experiment_and_automatic_logging": true,
+    "slow_flush_max_ms": 312.9999999946449,
+    "gui_delivery_max_ms": 77.9999999795109,
+    "stop_callback_max_ms": 46.999999991385266,
+    "current_io_and_gui_sources_match": true,
+    "later_changed_files": [
+      "diagnostics.py",
+      "version.py",
+      "tuning.py"
+    ],
+    "provenance": "Historical timed run, not repeated on 6.7. Only identity/profile files differ; final 317 tests and EXE smoke cover the extension."
+  },
+  "field_source": {
+    "session": "20260928_183649_692774_cdf4875d",
+    "host": "host-v0.6.6",
+    "source_sha256": {
+      "telemetry.jsonl": "a52eeb5a75525cc31d8c7eff815a6a5b96ba55b677fa23d4ba09db2e37a16a20",
+      "control.jsonl": "626f8767e8c83cd154ee9ba87d8f20a4c528eadb323fe3f50cc6e661265a5fa3",
+      "metadata.json": "10822bf64e947f56e9f07da695f0ffc3583ada7c668c5083a0bfd484192c71d1",
+      "tuning.csv": "112801683f9599e1a9f2ad4866e1e05b0bd6ca2a035bba1712802adc05ec8315"
+    },
+    "originals_unchanged": true,
+    "comparison_session": "20260928_175126_801625_a456a66e"
+  },
+  "user_report": {
+    "source": "User messages relayed by root, not inferred from telemetry",
+    "v027": "按H即松手，全程未接触；摆臂周期晃动且没有稳定区间。",
+    "v026": "按H即松手，全程未接触；当时目测摆臂约0.25圈多一点。",
+    "hardware_timed_release_marker": false
+  },
+  "field_result": "v0.2.7 H 29.36s to first IDLE, fault-free H, ended by S; persistent ~2.34s arm cycles, roughly33% smaller than prior comparison. Post-stop ADC fault separate.",
+  "requirements": {
+    "swing_up": "not accepted; field G fault and model coverage gap",
+    "long_term_balance": "not accepted; 29.36s H field record still periodic",
+    "low_oscillation": "not accepted; reduced but continuing arm motion",
+    "light_push_recovery": "not accepted; no new physical test"
+  },
+  "historical_artifacts_unchanged": {
+    "Release/project-v0.2.7/Attitude_Control.fs": "4d2ec9b108897c392f8b769f7923ba8beb4221e1b77e814eda45ed01781940c8",
+    "Release/host-v0.6.6/J280_Monitor.exe": "b9b2aa43f885a38571e82251f11fe3255bfc84f7e87fd379c176bc1183913b24",
+    "Release/project-v0.2.6/Attitude_Control.fs": "aecb1724c2c8ca51d832e161a1bc99f7a3a9f4e69ec857217a1ed3394633eb50",
+    "Release/host-v0.6.5/J280_Monitor.exe": "ca5d92b9ece711e047d8028bf164c2dfabba6255335644c9b078efb3cdbb6879"
+  },
+  "evidence": [
+    {
+      "path": "Release/project-v0.2.8/fpga_validation.json",
+      "sha256": "8736690613c8086c4073123e7fc2b1d959174883a2b9d6d4112d6b5a7f1a9e75",
+      "bytes": 13885
+    },
+    {
+      "path": "Release/host-v0.6.7/validation.json",
+      "sha256": "f06ea6347fc394453bca8fc51c9fddd81f0c38f0c16f69ff3097a712057b5bcc",
+      "bytes": 7275
+    },
+    {
+      "path": "Release/reports/h_183649_audit/independent.json",
+      "sha256": "77156c9bfc26ec16f6afe3e422850dba8e462ac880e03be6d0876ee494ddd78c",
+      "bytes": 315222
+    },
+    {
+      "path": "Release/reports/h_183649_audit/independent.md",
+      "sha256": "9e8b94d318c9974c95f9fc986840ec08a2b672d729ed23a74b856ffc144474d2",
+      "bytes": 5563
+    },
+    {
+      "path": "Release/reports/h_183649_audit/root_compare.json",
+      "sha256": "fdbd2c66bba77e510662aa2846de40035ceff9bbc96ac4872a675b5247640784",
+      "bytes": 12573
+    },
+    {
+      "path": "Release/reports/h_183649_audit/feedback_manifest.json",
+      "sha256": "ad528de7b41bf3566ce1721967369852ecb9e5f2e848b7d093bc1e6b6009dd30",
+      "bytes": 769
+    },
+    {
+      "path": "Release/reports/h_183649_audit/speed_followup_manifest.json",
+      "sha256": "47e95c7d3b4eded10b69b641811d8fd470f409746a06985e55ee827b6b74f507",
+      "bytes": 698
+    },
+    {
+      "path": "Release/reports/h_183649_audit/speed_followup_matrix.json",
+      "sha256": "2a2461457037b88b6fb190d0eb6c2bed189bb8f62d5472d30f891d6ca5686c4b",
+      "bytes": 74026
+    },
+    {
+      "path": "Release/reports/h_183649_audit/speed_followup_linear.json",
+      "sha256": "c75f7babee853a45fa871a7e64f17e768404cac996911affe30c3bec8a7c5728",
+      "bytes": 7516
+    },
+    {
+      "path": "Release/reports/h_183649_audit/speed_followup_report.md",
+      "sha256": "3a470b41e7fb7a75351bc4ed7359fc4b8ddf8f4353b9d768f9e57c18c89a2ef7",
+      "bytes": 4428
+    },
+    {
+      "path": "Release/reports/swing_path_audit_20260928/field_g_175126.json",
+      "sha256": "9ba9d6d368b06d8e6c8883568bcdeabc8eb9fbdb31f468e2c0bf896d06d035b7",
+      "bytes": 364212
+    },
+    {
+      "path": "Release/reports/swing_path_audit_20260928/field_g_175126.md",
+      "sha256": "11d750ba62967aa877a469f885530dab755ba135e0364013d3c0fcc43a040ba7",
+      "bytes": 8881
+    },
+    {
+      "path": "Release/reports/swing_path_audit_20260928/control_path_report.md",
+      "sha256": "fe73032b313e5deb3b86cd2cfe6007ec9cbed6659713716eaca75a26507dbabd",
+      "bytes": 6440
+    }
+  ],
+  "documentation": [
+    {
+      "path": "README.md",
+      "sha256": "3a95a844cd94492b656a66db70709fa0e68fb7898b34b01c6cb173528d57139c",
+      "bytes": 25395
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "894c1b125af8c15c5b79e68c9017e4a3196097964f6e3bcb0304ff66cb052ac8",
+      "bytes": 24368
+    },
+    {
+      "path": "开发项目技术文档.md",
+      "sha256": "7d2136d615e0c7619159bb7d08d066838f66bc3eeee0a36a4f8388aff5d6e79b",
+      "bytes": 52266
+    },
+    {
+      "path": "docs/H速度反馈第二次对照.md",
+      "sha256": "a33d11ec469718eb675423e4af9b0414132ca53d92f87bd5b048c7be3cae0956",
+      "bytes": 5482
+    },
+    {
+      "path": "docs/验证记录.md",
+      "sha256": "c2383281d4e108059586c9aeb0f4a5b05e6262292b41fff74f874f23186eb2c8",
+      "bytes": 55971
+    },
+    {
+      "path": "Release/project-v0.2.8/README.md",
+      "sha256": "e38cc75b28a652e298a6f2f608cd1760b1352153eb9b6bbfddf593609eecf5cb",
+      "bytes": 1573
+    }
+  ],
+  "limitations": [
+    "No adc_sampler raw5MHz or quality logic, PWM switching/pad dynamics, motor inductance, static friction, backlash or flexible mode.",
+    "Freshness/watchdog scaled to128RTL cycles to preserve2ms deadline under64cycles/window acceleration.",
+    "Only nominal plant vectors; all earlier weak/heavy/friction failures remain valid limitations.",
+    "Runtime wall times are measured with parallel simulator processes and are not performance claims.",
+    "Finite assumed-plant matrix retains weak/heavy failures; no physical identification.",
+    "No new hardware run, long-term balancing, physical push recovery or G swing-up acceptance.",
+    "Old field logs and previous releases retained; legacy root bitstream alias is not this candidate.",
+    "No physical COM, programming or motor action in this development phase.",
+    "Historical GUI callback delay is not physical motor-stop latency.",
+    "OperationLog.close retains its previous bounded writer join.",
+    "Firmware profiles are static known definitions, not device parameter readback.",
+    "New S120 physical effect, long-term small-motion balance, light-push recovery and G remain unaccepted."
+  ]
+}

@@ -10,12 +10,12 @@ module tb_start_diagnostics;
     reg [9:0] adc = 624;
     reg otr = 0;
     wire uart_tx, adc_clk, adc_oe_n;
-    wire an1, an2, pwma, bn1, bn2, pwmb;
-    top #(.KEY_CYCLES(4), .ADC_SAMPLE_CYCLES(10), .JOG_CYCLES(100000)) dut (
+    wire motor_in1, motor_in2, motor_pwm, unused_in1, unused_in2, unused_pwm;
+    top #(.TELEMETRY_EXTENDED(0),.KEY_CYCLES(4), .ADC_SAMPLE_CYCLES(10), .JOG_CYCLES(100000)) dut (
         .clk_50m(clk), .rst_n(rst_n), .key_sw(key_sw),
         .uart_rx(uart_rx), .uart_tx(uart_tx), .adc_data_in(adc), .adc_otr(otr),
         .adc_clk(adc_clk), .adc_oe_n(adc_oe_n), .enc1_a(1'b0), .enc1_b(1'b0),
-        .AN1(an1), .AN2(an2), .PWMA(pwma), .BN1(bn1), .BN2(bn2), .PWMB(pwmb));
+        .AN1(unused_in1), .AN2(unused_in2), .PWMA(unused_pwm), .BN1(motor_in1), .BN2(motor_in2), .PWMB(motor_pwm));
     // Only TX baud is accelerated. Incoming control commands retain 115200.
     defparam dut.u_telemetry.BAUD = 1000000;
     wire [7:0] rx_data;
@@ -75,8 +75,8 @@ module tb_start_diagnostics;
             if (dut.jogging || dut.state !== 1 || dut.start_result !== 1)
                 $fatal(1,"same-cycle SW2/F/B admitted jog or lost start priority");
         end
-        if (rst_n && {bn1,bn2,pwmb} !== 3'b001)
-            $fatal(1,"diagnostics changed motor B high impedance");
+        if (rst_n && {unused_in1,unused_in2,unused_pwm} !== 3'b001)
+            $fatal(1,"diagnostics changed XH2 / motor A high impedance");
     end
 
     task ticks(input integer cycles);
@@ -95,6 +95,22 @@ module tb_start_diagnostics;
             if(dut.start_result !== 0) $fatal(1,"reset did not clear start result");
         end
     endtask
+    // Keep manual movement within each ADC window and wait for trustworthy
+    // velocity history; instantaneous jumps are reserved for fault injection.
+    task move_adc(input integer target);
+        integer remaining;
+        begin
+            while (adc != target) begin
+                @(negedge clk);
+                remaining=target-$signed({1'b0,adc});
+                if (remaining>16) adc=adc+16;
+                else if (remaining < -16) adc=adc-16;
+                else adc=target;
+                ticks(160);
+            end
+            ticks(5120);
+        end
+    endtask
     task uart_bit(input bit value);
         begin uart_rx=value; repeat(434) @(negedge clk); end
     endtask
@@ -108,18 +124,19 @@ module tb_start_diagnostics;
     endtask
     task calibrate(input integer down_code, input integer up_code);
         begin
-            adc=down_code; ticks(350); key(0);
-            adc=up_code; ticks(350); key(3); ticks(100);
+            move_adc(down_code); key(0);
+            move_adc(up_code); key(3); ticks(3000);
             if (!dut.calibrated || dut.sensor_fault || dut.start_result !== 0)
                 $fatal(1,"test calibration failed or did not reset diagnostics");
         end
     endtask
     task healthy_calibration;
-        begin calibrate(624,800); adc=624; ticks(350); end
+        begin calibrate(624,800); move_adc(624);
+            if (!dut.measurement_ready) $fatal(1,"calibration never became measurement-ready"); end
     endtask
     task assert_idle;
         begin
-            if(dut.state !== 0 || dut.requested_command !== 0 || {an1,an2,pwma} !== 3'b001)
+            if(dut.state !== 0 || dut.requested_command !== 0 || {motor_in1,motor_in2,motor_pwm} !== 3'b001)
                 $fatal(1,"rejected/finished start did not stay IDLE/zero/high impedance");
         end
     endtask
@@ -158,7 +175,7 @@ module tb_start_diagnostics;
         end
     endtask
 
-    initial begin #20000000; $fatal(1,"tb_start_diagnostics global timeout"); end
+    initial begin #40000000; $fatal(1,"tb_start_diagnostics global timeout"); end
     initial begin
         reset_board;
         // A low pulse shorter than debounce must not produce an event.
@@ -175,7 +192,7 @@ module tb_start_diagnostics;
         healthy_calibration; await_packet(8'h80,0,0,1);
         key(1); ticks(3000);
         if(dut.start_result!==1 || dut.state!==1 || dut.requested_command!==667 ||
-           !dut.motor_permission || !(an1 || an2))
+           !dut.motor_permission || !(motor_in1 || motor_in2))
             $fatal(1,"healthy SW2 not admitted or original drive chain changed");
         await_packet(8'h90,0,1,1);
         uart_command("G");
@@ -192,31 +209,51 @@ module tb_start_diagnostics;
         uart_command("R");
         if(dut.start_result!==5) $fatal(1,"R erased stop-priority history");
 
-        reset_board; calibrate(0,512); adc=0; ticks(350); key(1); assert_idle;
-        if(!dut.calibrated || !dut.sensor_fault || dut.fault!==0 || dut.start_result!==3)
-            $fatal(1,"calibrated rail fault did not prove sticky sensor rejection");
-        await_packet(8'hb1,1,0,1);
-        uart_command("R");
-        if(!dut.sensor_fault || dut.start_result!==3) $fatal(1,"R cleared sensor/history");
-        await_packet(8'hb1,1,0,1);
-        // Require multiple newly received fault snapshots, not a stale packet.
-        // Every frame is independently checked for marker, length and CRC above.
-        for(heartbeat_index=0;heartbeat_index<3;heartbeat_index=heartbeat_index+1)
-            await_packet(8'hb1,1,0,1);
-
-        reset_board; healthy_calibration; otr=1; ticks(30); key(1); assert_idle;
-        if(dut.start_result!==4 || !dut.over_range || dut.fault!==0)
-            $fatal(1,"IDLE OTR start rejection reason");
-        await_packet(8'hc4,1,0,1);
-        otr=0; ticks(30); assert_idle;
+        reset_board; healthy_calibration; adc=0; ticks(1600); key(1); assert_idle;
+        if(!dut.calibrated || dut.sensor_fault || dut.telemetry_fault!==0 ||
+           !dut.sample_blind || dut.measurement_ready || dut.measurement_valid || dut.start_result!==4)
+            $fatal(1,"blind sector did not pause measurement and reject start without a fault: calibrated=%b sensor=%b fault=%h blind=%b valid=%b ready=%b result=%0d reason=%h control=%0d",
+                   dut.calibrated,dut.sensor_fault,dut.telemetry_fault,dut.sample_blind,
+                   dut.measurement_valid,dut.measurement_ready,dut.start_result,dut.sensor_fault_reason,dut.control_q4);
         await_packet(8'hc0,0,0,1);
-        // An OTR during jog also latches input_fault after the live OTR ends.
+        uart_command("R");
+        if(dut.sensor_fault || !dut.sample_blind || dut.start_result!==4)
+            $fatal(1,"R changed blind-sector availability or erased start history");
+        await_packet(8'hc0,0,0,1);
+        // Keep reporting fresh, CRC-checked unavailable measurements without
+        // turning the known blind sector into an electrical fault.
+        for(heartbeat_index=0;heartbeat_index<3;heartbeat_index=heartbeat_index+1)
+            await_packet(8'hc0,0,0,1);
+        @(negedge clk); adc=800; ticks(5120); assert_idle;
+        if(!dut.measurement_ready || !dut.measurement_valid || dut.sensor_fault || dut.telemetry_fault)
+            $fatal(1,"blind-sector exit did not recover healthy measurement without R");
+        uart_command("H"); ticks(30);
+        if(dut.state!==2 || dut.start_result!==1 || !dut.motor_enable)
+            $fatal(1,"fresh H after automatic measurement recovery was rejected");
+
+        reset_board; healthy_calibration;
+        // Sustained non-rail OTR must qualify as a hard fault; raw OTR alone
+        // does not bypass the new confirmation filter.
+        @(posedge dut.adc_valid); @(negedge clk); otr=1;
+        @(posedge dut.sample_fault); ticks(10); key(1); assert_idle;
+        if(dut.start_result!==3 || !dut.over_range || !dut.sensor_fault || dut.fault!==0)
+            $fatal(1,"qualified IDLE OTR did not retain sensor rejection");
+        await_packet(8'hb5,1,0,1);
+        uart_command("R");
+        if(!dut.sensor_fault || dut.start_result!==3) $fatal(1,"R cleared persistent hard fault or start history");
+        for(heartbeat_index=0;heartbeat_index<3;heartbeat_index=heartbeat_index+1)
+            await_packet(8'hb5,1,0,1);
+        otr=0; ticks(1600); assert_idle;
+        await_packet(8'hb1,1,0,1);
+        if (!dut.sensor_fault) $fatal(1,"clearing live OTR erased the contaminated window");
+        healthy_calibration;
+        // Qualified OTR during jog latches both input and estimator faults.
         uart_command("F");
         if(!dut.jogging) $fatal(1,"healthy F did not enter jog");
-        otr=1; ticks(30); otr=0; ticks(30); uart_command("G"); assert_idle;
-        if(!dut.input_fault || dut.sensor_fault || dut.start_result!==4)
-            $fatal(1,"latched input fault was not distinguished");
-        await_packet(8'hc2,1,0,1);
+        otr=1; @(posedge dut.sample_fault); ticks(10); otr=0; ticks(1600); uart_command("G"); assert_idle;
+        if(!dut.input_fault || !dut.sensor_fault || dut.start_result!==3)
+            $fatal(1,"jog OTR lost either input or same-window sensor fault");
+        await_packet(8'hb3,1,0,1);
 
         reset_board; healthy_calibration; uart_command("F"); uart_command("G");
         if(!dut.jogging || dut.state!==0 || dut.start_result!==6)

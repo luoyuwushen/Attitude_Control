@@ -171,7 +171,7 @@ class LoggedWindowTests(unittest.TestCase):
     def test_main_controls_and_developer_share_one_window_and_data(self):
         self.window.show()
         self.app.processEvents()
-        self.assertEqual(set(self.window.command_buttons), set('DUGFBR'))
+        self.assertEqual(set(self.window.command_buttons), set('DUGHFBRT'))
         for b in self.window.command_buttons.values():
             self.assertTrue(b.isVisible())
         self.window.start_demo()
@@ -198,8 +198,11 @@ class LoggedWindowTests(unittest.TestCase):
         worker.command_sent.emit('G')
         self.window.close_operation_log()
         events = rows(logger.directory, 'control')
-        self.assertEqual([row['event'] for row in events], ['command_queued', 'command_written'])
-        self.assertTrue(all(row['acknowledged'] is False for row in events))
+        commands = [row for row in events if row['event'].startswith('command_')]
+        self.assertEqual([row['event'] for row in commands], ['command_queued', 'command_written'])
+        self.assertTrue(all(row['acknowledged'] is False for row in commands))
+        self.assertIn('operator_checks', [row['event'] for row in events])
+        self.assertIn('control_availability', [row['event'] for row in events])
         self.assertFalse((logger.directory / 'serial.jsonl').exists())
 
     def test_raw_short_write_and_error_preserve_only_known_written_bytes(self):
@@ -253,12 +256,21 @@ class LoggedWindowTests(unittest.TestCase):
                 time.sleep(0.005)
                 return b''
         port = LivePort(worker)
+        worker.delivery_finished.connect(self.window.worker_finished)
         with patch('host.transport.serial.Serial', return_value=port):
             worker.start()
+            started = time.monotonic()
             self.window.close()
+            self.assertLess(time.monotonic() - started, 0.1)
+            deadline = time.monotonic() + 2
+            while self.window.worker is not None and time.monotonic() < deadline:
+                self.app.processEvents()
+                time.sleep(0.005)
         self.assertFalse(worker.isRunning())
         self.assertEqual(port.writes, [b'S'])
         directories = list((self.root / 'logs').iterdir())
         self.assertEqual(len(directories), 1)
         self.assertEqual(rows(directories[0], 'serial')[-1]['hex'], '53')
-        self.assertEqual(rows(directories[0], 'control')[-1]['event'], 'command_written')
+        events = rows(directories[0], 'control')
+        self.assertTrue(any(item['event'] == 'command_written' and item['command'] == 'S' for item in events))
+        self.assertEqual(events[-1]['event'], 'connection_finished')

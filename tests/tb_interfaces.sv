@@ -54,7 +54,16 @@ module tb_interfaces;
         .clk(clk), .rst_n(rst_n), .sample_valid(sample_valid), .adc(adc),
         .theta(theta), .omega(omega), .arm(arm), .arm_speed(arm_speed),
         .command(command), .state(state), .fault(fault), .calibrated(calibrated),
-        .diagnostic_status(8'hB4), .tx(telemetry_tx));
+        .diagnostic_status(8'hB4), .tx(telemetry_tx),
+        .device_time_ms(32'd0), .encoder_count(32'sd0), .sensor_flags(16'd0),
+        .adc_down(10'd0), .adc_up(10'd0), .adc_raw(10'd0),
+        .adc_window_min(10'd0), .adc_window_max(10'd0), .adc_mean_q4(14'd0),
+        .motor_command(16'sd0), .first_fault(8'd0), .sample_counter(32'd0),
+        .adc_quality_reason(8'd0), .sensor_fault_reason(16'd0),
+        .adc_fault_window_min(10'd0), .adc_fault_window_max(10'd0), .adc_fault_mean_q4(14'd0),
+        .adc_window_detail(272'd0),.adc_fault_detail(272'd0),
+        .adc_fault_time_ms(32'd0),.adc_fault_sample_counter(32'd0),
+        .motor_test_status(8'd0),.motor_test_delta(32'sd0),.handover_detail(56'd0));
     uart_rx_byte #(.CLK_HZ(1000000), .BAUD(100000)) telemetry_rx_dut (
         .clk(clk), .rst_n(rst_n), .rx(telemetry_tx), .data(telemetry_data),
         .valid(telemetry_valid), .framing_error(telemetry_error));

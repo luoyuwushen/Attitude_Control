@@ -1,0 +1,328 @@
+{
+  "passed": true,
+  "created_utc": "2026-09-28T13:48:09.475699+00:00",
+  "hardware_access": false,
+  "project": "project-v0.2.9",
+  "host": "host-v0.6.8",
+  "status": "offline_validated_hardware_pending",
+  "scope": "Read-only H continuous journal and stopped export; H gains unchanged from v0.2.8; oscillation not resolved",
+  "h_gain_q10": [
+    904758,
+    77909,
+    -34213,
+    -61768
+  ],
+  "bitstream": {
+    "path": "Release/project-v0.2.9/Attitude_Control.fs",
+    "sha256": "68539cd251aa976ed006e19d12420984eef4418c5ff9e8442f3925cbdc8e54ec",
+    "bytes": 18588969
+  },
+  "executable": {
+    "path": "Release/host-v0.6.8/J280_Monitor.exe",
+    "sha256": "6d19ec93ee44c90843e05f6b19bd6751ee47d5164c7d25e27675df5aa8d4f02e",
+    "bytes": 57742817
+  },
+  "python_tests": {
+    "command": [
+      "C:\\Program Files\\Python312\\python.exe",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "started_utc": "2026-09-28T13:42:06.555195+00:00",
+    "ended_utc": "2026-09-28T13:42:39.249895+00:00",
+    "wall_s": 32.703000000008615,
+    "returncode": 0,
+    "tests": 372,
+    "test_reported_s": 23.327,
+    "source_unchanged": true,
+    "log_sha256": "c9c1825c083e7e0ecdc84e9876f9d7369ffa190b72df039334045d5214c88926",
+    "log": "python_tests.log",
+    "scope": "Offline full Python regression; no physical COM or hardware acceptance",
+    "passed": true
+  },
+  "build": {
+    "setup_violations": 0,
+    "hold_violations": 0,
+    "fmax_mhz": 52.14,
+    "placed_pins": {
+      "clk_50m": {
+        "pad": "M19",
+        "standard": "LVCMOS33"
+      },
+      "rst_n": {
+        "pad": "AB3",
+        "standard": "LVCMOS33"
+      },
+      "key_sw[0]": {
+        "pad": "T18",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[1]": {
+        "pad": "R18",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[2]": {
+        "pad": "U20",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[3]": {
+        "pad": "T20",
+        "standard": "LVCMOS15"
+      },
+      "uart_rx": {
+        "pad": "L20",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[0]": {
+        "pad": "L21",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[1]": {
+        "pad": "M21",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[2]": {
+        "pad": "J20",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[3]": {
+        "pad": "J19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[4]": {
+        "pad": "D19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[5]": {
+        "pad": "H18",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[6]": {
+        "pad": "H19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[7]": {
+        "pad": "G19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[8]": {
+        "pad": "G17",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[9]": {
+        "pad": "E19",
+        "standard": "LVCMOS33"
+      },
+      "adc_otr": {
+        "pad": "F18",
+        "standard": "LVCMOS33"
+      },
+      "enc1_a": {
+        "pad": "Y20",
+        "standard": "LVCMOS33"
+      },
+      "enc1_b": {
+        "pad": "AA20",
+        "standard": "LVCMOS33"
+      },
+      "uart_tx": {
+        "pad": "K20",
+        "standard": "LVCMOS33"
+      },
+      "adc_clk": {
+        "pad": "G18",
+        "standard": "LVCMOS33"
+      },
+      "adc_oe_n": {
+        "pad": "H20",
+        "standard": "LVCMOS33"
+      },
+      "AN1": {
+        "pad": "Y17",
+        "standard": "LVCMOS33"
+      },
+      "AN2": {
+        "pad": "Y19",
+        "standard": "LVCMOS33"
+      },
+      "PWMA": {
+        "pad": "Y18",
+        "standard": "LVCMOS33"
+      },
+      "BN1": {
+        "pad": "AA17",
+        "standard": "LVCMOS33"
+      },
+      "BN2": {
+        "pad": "V15",
+        "standard": "LVCMOS33"
+      },
+      "PWMB": {
+        "pad": "V14",
+        "standard": "LVCMOS33"
+      }
+    },
+    "device": "GW2A-LV55PG484C8/I7",
+    "tool": "V1.9.12.03 (64-bit)",
+    "bitstream_sha256": "68539cd251aa976ed006e19d12420984eef4418c5ff9e8442f3925cbdc8e54ec",
+    "dsp_usage": "18.5/20",
+    "logic_usage": "13187/54720",
+    "register_usage": "8304/42000",
+    "created_time": "Mon Sep 28 21:30:52 2026",
+    "source_sha256": {
+      "Attitude_Control/src/adc_sampler.v": "1e5af785dedb3eed3ba5e1d2661e4cccaf7d0cac616c89f50def9c6de8992fed",
+      "Attitude_Control/src/attitude_control.cst": "3d68ed209bc75f8bc565b9458dcafad00bdb873f8a0e553d814e12e2cea02707",
+      "Attitude_Control/src/attitude_control.sdc": "9402f7049dfcf8cbc29688997cf9a63abc0b28154128a2c49c67f5dbbb056ef5",
+      "Attitude_Control/src/attitude_controller.v": "00974c716c16df9c22ef71fbc8de9250b637548e02edd1f082ef497195fa6043",
+      "Attitude_Control/src/calibration_divider.v": "25950cd80fd46c6a65c0000fdda495825575766e37e650be6bbc46b0e08ceeb9",
+      "Attitude_Control/src/control_trace_buffer.v": "1df8f8f9e8bfc8d816bfeef7e2d941bff36f839f4c27aeda707e84764d2db238",
+      "Attitude_Control/src/control_trace_export.v": "eff457e47741c6aec5a6d69c1ebc24432597085df5ffafd311d510244ffce013",
+      "Attitude_Control/src/control_trace_probe.v": "85a256241afeebf15dc3ae835622e46f51b6c9733118a12319947cbdab8e56f0",
+      "Attitude_Control/src/key_debounce.v": "a4a648df7d506ea42b7253f4e91967803bdefbca4ead784935e57614e53681ea",
+      "Attitude_Control/src/motor_pwm.v": "4ad6398d76f74fc95842cff862c85312dd54d350b47247c284aa118f6ad2cf28",
+      "Attitude_Control/src/motor_test.v": "c13df05aeffe902e79bf20dfec826123970994b8880d8a5a0f36276076e385ff",
+      "Attitude_Control/src/quadrature_encoder.v": "2696604dd9fa20a7c336855dba596d1c8253f01688735e82ed3a5c6a2877bae1",
+      "Attitude_Control/src/reset_sync.v": "1219239a961487841c2ecb93ae9fab5758c2d234e468968eb04a50739ac05cea",
+      "Attitude_Control/src/state_estimator.v": "232a4e44dfeb714dd8fafac756f7e9c51b82bc41242529a7722ab7fa318abec8",
+      "Attitude_Control/src/telemetry.v": "34bae71e046762051dd06265beb99a99571d6707287f06bf7891caa7eca107c8",
+      "Attitude_Control/src/top.v": "bd5c8fafe6fb6b0a71a80ffe907142da4c8c3252a6340002038ca0abf052d507",
+      "Attitude_Control/src/uart_rx_byte.v": "764cb9640fec89a57851dd53af536dc93f779ad72f17167d84249d4d5a4ced4b",
+      "Attitude_Control/src/uart_tx_byte.v": "48e56ab342381cc012b8b607c40ecf43d1b91976474e799ebc29dd8e5b8709f3"
+    }
+  },
+  "existing_rtl_benches_passed": [
+    "tb_adc_continuous",
+    "tb_adc_observability",
+    "tb_adc_quality",
+    "tb_balance_entry",
+    "tb_closed_loop",
+    "tb_control_trace_buffer",
+    "tb_control_trace_probe",
+    "tb_controller",
+    "tb_estimator",
+    "tb_estimator_motion",
+    "tb_fault_heartbeat",
+    "tb_handover_closed_loop",
+    "tb_handover_feedback",
+    "tb_handover_integral",
+    "tb_interfaces",
+    "tb_motor_test",
+    "tb_motor_test_top",
+    "tb_sample_freshness",
+    "tb_sensor_recovery",
+    "tb_start_diagnostics",
+    "tb_start_runtime",
+    "tb_telemetry_v2",
+    "tb_top",
+    "tb_top_v2"
+  ],
+  "regression_scope": "All prior benches passed before probe restart/exit-cause fix; final probe/baseline and real top/export UART separately revalidated after fix",
+  "control_observer": "Standalone ring/probe with actual controller, frozen v0.2.8 cycle equivalence on tested vectors, feedback/integral regression and top compile; no UART integration, synthesis or physical acceptance.",
+  "top_uart": {
+    "checks": 6172042,
+    "v2": 38,
+    "v3": 48,
+    "stop_checks": 5,
+    "stop_max_clocks": 1,
+    "max_v2_gap_clocks": 128000
+  },
+  "host_wire_crosscheck": {
+    "passed": true,
+    "live_frames": 38,
+    "captures": 4,
+    "completed": 2,
+    "interrupted": 2,
+    "reconstructed_commands": 290,
+    "nonzero_commands": 290,
+    "sample_gaps": 0,
+    "wire_sha256": "e3303e45a4c357dbd29f8e939704978c8c6cc53e8f2364d2e2634ab6542133eb",
+    "firmware_id": "0x00020009",
+    "scope": "Actual top UART, mixed current/history; exact old-Q24 command formula; ADC/encoder pin stimulus routing"
+  },
+  "protected_artifacts": {
+    "Release/Attitude_Control.fs": "aecb1724c2c8ca51d832e161a1bc99f7a3a9f4e69ec857217a1ed3394633eb50",
+    "Release/project-v0.2.8/Attitude_Control.fs": "f27dfa18749155c52a5fdea0502e8f964fe665a626b2b979404a3bd41ad63a38",
+    "Release/host-v0.6.7/J280_Monitor.exe": "3a9b41fff90f1c9ffe58c725fd8357eb90f553d47cab1bed77d8885d4d3bffed"
+  },
+  "evidence": [
+    {
+      "path": "Release/project-v0.2.9/validation/build_integrity.json",
+      "sha256": "569ecfb226c68fd86e04628fcaeca93682f6003ee89f8348dea4e2f618e0e082",
+      "bytes": 637
+    },
+    {
+      "path": "Release/project-v0.2.9/build_validation.json",
+      "sha256": "c14882375a17e525275d55fa573c4b530d8075bab8c0ad1af8b30afb0fe7cd18",
+      "bytes": 4625
+    },
+    {
+      "path": "Release/project-v0.2.9/validation/trace_buffer_validation.json",
+      "sha256": "0a7354a88bedb76622ca2fe353ad77a499b513230bc2ef7c087bbad6571ffe9e",
+      "bytes": 25326
+    },
+    {
+      "path": "Release/project-v0.2.9/validation/trace_export_rtl/summary.json",
+      "sha256": "4fdb663a1684a4e47314e4d541c41a2fecf0b8367c998b065843e57198c5aaec",
+      "bytes": 5664
+    },
+    {
+      "path": "Release/project-v0.2.9/validation/trace_top_rtl/summary.json",
+      "sha256": "189dff9d3642c032aad75745ff09f3667e96801a017830d34f9d653886564ac0",
+      "bytes": 8353
+    },
+    {
+      "path": "Release/project-v0.2.9/validation/wire_host_crosscheck.json",
+      "sha256": "e084046ade20102c96681be0e4c478fa0f37c52ced46afe6ce43f5ad1ab7a330",
+      "bytes": 3241
+    },
+    {
+      "path": "Release/project-v0.2.9/validation/initial.json",
+      "sha256": "6c297714b748e911d622f35b0be83dc1d913cedf205398ed40f04841919d1265",
+      "bytes": 26284
+    },
+    {
+      "path": "Release/project-v0.2.9/validation/manual.json",
+      "sha256": "0e9a301a3ef7678fe668aef60ea86f8ec6fe32b4dfc39a460f1965274ad8b512",
+      "bytes": 7725
+    },
+    {
+      "path": "Release/project-v0.2.9/validation/regression.json",
+      "sha256": "0e8a94c201d4b9658d9ba6bcf58db7b56a59444986e1c801cddb6f8a7e730a98",
+      "bytes": 67358
+    },
+    {
+      "path": "Release/project-v0.2.9/validation/restart_before.json",
+      "sha256": "2a8f92571ab47726c60be03168b904f397417a137d047582793f20d0507c817f",
+      "bytes": 8302
+    },
+    {
+      "path": "Release/project-v0.2.9/validation/restart_fixed.json",
+      "sha256": "70d84df380ea78952cbca58a95c964d16c37de1f591261c2213269ad2f88a2f5",
+      "bytes": 11474
+    },
+    {
+      "path": "Release/host-v0.6.8/validation/build_manifest.json",
+      "sha256": "05392cc7fdda16f2201b140180e8024ede099d73b20a2d38735703907d089cc3",
+      "bytes": 8055
+    },
+    {
+      "path": "Release/host-v0.6.8/validation/python_tests.json",
+      "sha256": "97e08b493e38907479ac92d97521e980ba3d35b3b7acd0983a6afb61fc047aab",
+      "bytes": 5431
+    }
+  ],
+  "limitations": [
+    "No physical COM connection or FPGA programming performed.",
+    "Latest field H is still periodic; upright zero was aligned by eye.",
+    "Small sustained balance, push recovery and G swing-up not physically accepted.",
+    "Trace is software state/request, not measured voltage/current/torque.",
+    "Some intermediate validation cleanup was rejected: blocked by policy; retained."
+  ]
+}

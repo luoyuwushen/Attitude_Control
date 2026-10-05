@@ -1,0 +1,180 @@
+{
+  "validated_at_utc": "2026-09-27T15:12:27.936581+00:00",
+  "project_version": "project-v0.2.1",
+  "host_version": "host-v0.6.1",
+  "release_id": "host-v0.6.1",
+  "previous_validation": "host_validation_host-v0.6.0.json",
+  "python_regression": {
+    "tests": 209,
+    "host_prefixed_tests": 191,
+    "skipped": 0,
+    "returncode": 0,
+    "log": "Release/project-v0.2.1/validation/regression.txt"
+  },
+  "hardware_validation": {
+    "performed": false,
+    "physical_port_opened": false,
+    "fpga_programmed": false,
+    "motor_moved_by_agent": false,
+    "official_pid_comparison": "user reports hands-off balance on same hardware/wiring/sensor installation; automatic swing-up untested",
+    "pending": [
+      "30-second uncalibrated stationary hanging test with device-reported project-v0.2.1; inspect latched sensor reason and trigger window if fault 0x01 recurs",
+      "physical ADC continuity and quality",
+      "motor/encoder/pendulum signs",
+      "H hands-off sustained balance",
+      "G repeated swing-up",
+      "push recovery",
+      "15-minute physical UART acquisition"
+    ]
+  },
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.5",
+  "dependencies": {
+    "PySide6-Essentials": "6.8.3",
+    "pyqtgraph": "0.13.7",
+    "pyserial": "3.5",
+    "PyInstaller": "6.20.0"
+  },
+  "checks": {
+    "source_smoke": "passed; offline startup/drawing/developer page/exit; source-smoke-result.json records observed zero exit",
+    "windows_exe_build_and_smoke": "passed; tools/build_host.py returned 0 including EXE --smoke-test; build-final.txt",
+    "visual_review": "passed; root inspected source_smoke and 1000x750/1366x768 offline UI; fixed header stop visible; current/latched cause and trigger window readable",
+    "protocol": "real RTL 106-byte UART frame/CRC/TLV, all 105 fragmentation boundaries, old v1/v2 and unknown/missing fields, diagnostics recorded",
+    "recovery": "version-aware R hints: old firmware cannot clear sensor latch; v0.2.1 needs fresh healthy stopped samples, retains calibration, never implies command ACK",
+    "rendering": "independent 10 Hz plot timer; 1 pixel/no AA; no redraw if hidden/frozen/unchanged; full history extremes and NaN discontinuities retained; receive/log/control scheduling unchanged",
+    "transport": "simulated serial delivery/stale frames/close-write races/slow writer/stop/bounded backlog/lifecycle regression passed; no physical COM opened",
+    "reference": "14 project files, 29 pads/voltage standards and 31/31 official reference checksums passed"
+  },
+  "render_replay": {
+    "source": "offline_simulation",
+    "physical_port_opened": false,
+    "source_telemetry": "Release\\host-v0.6.0\\captures\\fpga_logs\\20260927_215152_571605_eb67424d\\telemetry.jsonl",
+    "source_sha256": "b75c0dc07fe606a6c451b2415b1b0c763e94c051f60e15d2345a3911b1980d47",
+    "host_source_sha256": {
+      "app.py": "76db3926868cec46691200ede2357cb73f13eb3245162b2eebf0a2a908db7872",
+      "core.py": "c7967a3f2c76e676a6fe8dcb7203fa1b31e3a145a644b7fb02449634a6a83225",
+      "diagnostics.py": "2710da33dea9173ff6a8f2bce210b58c613ef2ab7e9e4a1915aa8103b53d136c",
+      "transport.py": "c7ed9b5902fcddfbed3eebd3f67953437a379af53be7012704ba46348185c03c"
+    },
+    "source_frames": 4192,
+    "source_crc_stats": {
+      "frames": 4192,
+      "crc_errors": 0,
+      "discarded_bytes": 0,
+      "unsupported_frames": 0,
+      "missing_frames": 0,
+      "duplicates": 0,
+      "resets": 0
+    },
+    "batch_reconstruction": "complete frame groups sharing recorded host_monotonic; original byte fragments unavailable",
+    "synthetic_prehistory_samples": 15000,
+    "mode": "fixed",
+    "render_policy": "independent 10 Hz, 1 px, no AA",
+    "platform": "offscreen",
+    "window_s": 300,
+    "width": 1366,
+    "requested_duration_s": 90.0,
+    "wall_s": 90.06200000000536,
+    "published_frames": 4500,
+    "delivered_frames": 4500,
+    "logged_frames": 4500,
+    "all_logged_raw_frames_match": true,
+    "delivery_overflows": 0,
+    "errors": [],
+    "measurements": {
+      "pending_batches": {
+        "count": 3840,
+        "mean": 1.3880208333333333,
+        "p95": 2,
+        "p99": 3,
+        "max": 4
+      },
+      "delivery_lag_ms": {
+        "count": 4500,
+        "mean": 8.832888889417518,
+        "p95": 31.000000017229468,
+        "p99": 46.999999991385266,
+        "max": 62.000000005355105
+      },
+      "receive_ms": {
+        "count": 3840,
+        "mean": 0.12367656258144659,
+        "p95": 0.2497999812476337,
+        "p99": 0.38129999302327633,
+        "max": 0.8008000149857253
+      },
+      "plot_prepare_ms": {
+        "count": 822,
+        "mean": 28.993170072665606,
+        "p95": 35.34239999135025,
+        "p99": 41.12660000100732,
+        "max": 66.02329999441281
+      },
+      "stop_callback_lag_ms": {
+        "count": 89,
+        "mean": 8.887640453333537,
+        "p95": 31.000000017229468,
+        "p99": 32.00000000651926,
+        "max": 32.00000000651926
+      }
+    },
+    "limitations": "Offline Qt rendering on this computer; not physical serial-driver/motor/hardware acceptance."
+  },
+  "render_replay_evidence": {
+    "path": "Release/host-v0.6.1/validation/fixed_300s_1366_render.json",
+    "size": 2457,
+    "sha256": "07ed90aaa7a6bdfd759bf3db7544835460270149c73df27247356c9ac53bd40e"
+  },
+  "executable": {
+    "path": "Release/host-v0.6.1/J280_Monitor.exe",
+    "size": 57693793,
+    "sha256": "d723dd46c8d17d7f3d22975d8b48de7486dcca0019036e022b18a0a0127db462"
+  },
+  "source_sha256": {
+    "host/__init__.py": "b7b8a08bd9d32550ee1d509aac087b2a7eb8ae4e6a7f05f867b8ab9814f090ff",
+    "host/app.py": "76db3926868cec46691200ede2357cb73f13eb3245162b2eebf0a2a908db7872",
+    "host/core.py": "c7967a3f2c76e676a6fe8dcb7203fa1b31e3a145a644b7fb02449634a6a83225",
+    "host/diagnostics.py": "2710da33dea9173ff6a8f2bce210b58c613ef2ab7e9e4a1915aa8103b53d136c",
+    "host/measurement_ui.py": "3575b4e33c0c4f27a394074c433a001b94357ddc459ceafb2d4029fd68301d7f",
+    "host/measurements.py": "ec5d55ae43892cca434581eaac6535f619b17397097f3b6f64601ae5884ca0fe",
+    "host/operation_log.py": "912a85c441c5fbbd9ac40b61dab539415587e7b6766b6712d00f36217b7ed0d2",
+    "host/serial_config.py": "3fabcfe478f115781027b506ca95778ce151528378c40879cb0df7fd1004ea8d",
+    "host/serial_ui.py": "c73a7c1256432fb96047d03226b4d923d6e9891cc8a73fbe94a813c21c9d99cc",
+    "host/settings.py": "bc66606aca51af582ae94d553df58df27b49b70df7d8313cefdf15d57a1914e4",
+    "host/transport.py": "c7ed9b5902fcddfbed3eebd3f67953437a379af53be7012704ba46348185c03c",
+    "host/version.py": "eddd3c3217ab32c0cdb86b27d8729f13ea608595b048a28b1cbf9a141d40ad54",
+    "tests/test_cli_protocol_v2.py": "f57ba5f65265c9393680490eaa2cb01a360c7ebd2177d8944ee1837ff5db508f",
+    "tests/test_control_model.py": "52b685a8c072c7221614e5ffc96ea1f994cbcffa37c32469276833d012d7e187",
+    "tests/test_host_adc_diagnostics.py": "41b75657e8716282a7c137edf041c1e73f75c8a866c5d8333dfc2e293827f000",
+    "tests/test_host_core.py": "8092a7b8f9a78116933b288b749d6dea3a3b09f4a966b1d0a17ed4c99658fc54",
+    "tests/test_host_feedback.py": "ca8dee8c11d51ba581044ce248f6a111abf1988ad9eebb0472193a5dc07965e2",
+    "tests/test_host_measurement_ui.py": "e7676816126827986a6c07ad29d503b166414f694a38ff2f2d1a5b0bed307372",
+    "tests/test_host_measurements.py": "ded63e7d24c5bd78cb7a3beeb8d39a840924715180cd9092f51826174c93c54b",
+    "tests/test_host_operation_log.py": "b1b371ccdf5b47558a22a80c063111a730648ac6f6c691050e1277a44d4c19c5",
+    "tests/test_host_render_budget.py": "871dd27276989c6e3ea17e73507bb08fcfb3120221a939d84e6b79b17a757dd2",
+    "tests/test_host_sensor_recovery.py": "c1a8324e31df12afb030e0c46c1f25ab1b8cce2709d85894e79ed3db171d1bf0",
+    "tests/test_host_serial.py": "95cb8db391029be97feca8193685ab34370e278ab9b1c5139b6de891118ab0a6",
+    "tests/test_host_serial_panel.py": "eba0a5c94d0bd65c1df6a7822b4a77c47cdc2075dcb9d79a1408cd9a8af7f1bb",
+    "tests/test_host_settings.py": "8ac91b50290f60d7b5e9781c3b11a4252de303e77546940f37e921265c241f02",
+    "tests/test_host_transport_delivery.py": "a45514f542da19d7d06800af3ae96a2c978c1dd85abe87215a8eb19539385c32",
+    "tests/test_host_transport_race.py": "55c4bdcf90f0306ce3d73a6136373c6b21322b3866cef942d7c0570d1ffe314b",
+    "tests/test_host_ui.py": "19b6a47994e812ed20c564b58a4db0f99c05a04428ad6b3c3e94080cf34d3fb0",
+    "tests/test_start_diagnostics_protocol.py": "1d87b5a956ceb99066e53f9cd14c4d4f982d1b82ce7931662a645af3989dfc6d",
+    "tests/test_telemetry.py": "42327303ce961de4145fc4299ef24ebc30ee53c05c071feba00c1c163c53aef1",
+    "tools/build_host.py": "509b82504b22f2ba783aaae8c0ff0eb902abb4f219f6124f3c40a2a10d2124d3",
+    "tools/host_monitor.py": "b3c34136f63f1b12b42246fd891caf19c9911b056318134bb0dd9b645497dc54",
+    "tools/telemetry_monitor.py": "1c386031e51b85b6eb2e51b3723318d13adc3f25e54a10e523d46c04921dcc0d"
+  },
+  "validation_files_sha256": {
+    "build-final.txt": "bd271adc624548b3c63a53d24c9a5097d654fc65f0b8658ac60147a7f6001422",
+    "fixed_300s_1366_render.json": "07ed90aaa7a6bdfd759bf3db7544835460270149c73df27247356c9ac53bd40e",
+    "offline_main_1000.png": "09eff2b056ac014b6206bfce1635d3f89429a9dcc024c768a3b584c67b853ceb",
+    "offline_main_1366.png": "53d28384473115605eacdfd2254d4d097e7390bbb0b9e82cc1da4e491aa1e6ac",
+    "python-regression.txt": "e5bff8eee95686ef1b92f7d5c12628ac2732e359a2abe7867b1453a89aaecb9e",
+    "replay_render_budget.py": "0752f4e3c0c0c71547db6dd738930eb9f17415fbdf6ee4b1ed1084fc550210b3",
+    "source-smoke-result.json": "3b95fdf59e7b82bb73d85e81e4c85e093c6ea9219287f79e44b98de26bb0c281",
+    "source-smoke.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_smoke.png": "9554004a017a90f3c82de627aa9929cd37766d3244e1008fc914083e982be84f",
+    "unprofiled_ablation.json": "703ef981677e710a2b258334d786813126794dec7e501a726efdb0a6ceb5fa61"
+  }
+}

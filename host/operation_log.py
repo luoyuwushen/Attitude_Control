@@ -1,18 +1,24 @@
 """Optional per-connection evidence; bounded writing never blocks command dispatch."""
 from copy import deepcopy
 from datetime import datetime, timezone
+import csv
 import json
 from pathlib import Path
 import queue
 import threading
 import time
 import uuid
+from host.tuning import TUNING_CSV_FIELDS, TUNING_SCHEMA, tuning_values
 
 
 class OperationLog:
-    def __init__(self, output_root, metadata):
+    def __init__(self, output_root, metadata, directory_name='logs'):
         self.root = Path(output_root)
+        if directory_name not in ('logs', 'fpga_logs'):
+            raise ValueError('未知日志目录')
+        self.directory_name = directory_name
         self.metadata = deepcopy(metadata)
+        self.metadata['tuning_schema'] = deepcopy(TUNING_SCHEMA)
         self.directory = None
         self.error = None
         self.closed = False
@@ -31,6 +37,9 @@ class OperationLog:
 
     def write_control(self, event, **details):
         self._put('control', dict(details, event=event))
+
+    def write_telemetry(self, record):
+        self._put('telemetry', dict(record, **tuning_values(record)))
 
     def write_serial_event(self, event, **details):
         self._put('serial', dict(details, event=event))
@@ -56,9 +65,16 @@ class OperationLog:
 
     def _run(self):
         streams = {}
+        tuning_writer = None
+        last_tuning_flush = time.monotonic()
+        def flush_tuning_if_due():
+            nonlocal last_tuning_flush
+            if 'tuning' in streams and time.monotonic() - last_tuning_flush >= 1.0:
+                streams['tuning'].flush()
+                last_tuning_flush = time.monotonic()
         try:
             identifier = datetime.now().strftime('%Y%m%d_%H%M%S_%f') + '_' + uuid.uuid4().hex[:8]
-            self.directory = self.root / 'logs' / identifier
+            self.directory = self.root / self.directory_name / identifier
             self.directory.mkdir(parents=True, exist_ok=False)
             metadata = dict(self.metadata, schema_version=1,
                             created_utc=datetime.now(timezone.utc).isoformat())
@@ -68,12 +84,23 @@ class OperationLog:
                 try:
                     channel, event = self._queue.get(timeout=0.05)
                 except queue.Empty:
+                    flush_tuning_if_due()
                     continue
                 if channel not in streams:
                     streams[channel] = (self.directory / (channel + '.jsonl')).open('x', encoding='utf-8')
                 stream = streams[channel]
                 stream.write(json.dumps(event, ensure_ascii=False, allow_nan=False) + '\n')
                 stream.flush()
+                if channel == 'telemetry' and self.directory_name == 'fpga_logs':
+                    if tuning_writer is None:
+                        streams['tuning'] = (self.directory/'tuning.csv').open(
+                            'x', encoding='utf-8-sig', newline='')
+                        tuning_writer = csv.DictWriter(streams['tuning'],
+                            fieldnames=TUNING_CSV_FIELDS, extrasaction='ignore')
+                        tuning_writer.writeheader()
+                        streams['tuning'].flush()
+                    tuning_writer.writerow(event)
+                flush_tuning_if_due()
         except (OSError, ValueError, TypeError) as error:
             self.error = str(error)
         finally:

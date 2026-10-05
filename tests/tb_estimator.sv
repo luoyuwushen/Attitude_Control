@@ -10,23 +10,22 @@ module tb_estimator;
     wire adc_over_range;
     wire [13:0] adc_sample;
     adc_sampler #(.SAMPLE_CYCLES(10)) adc_dut (
-        .clk(clk), .rst_n(rst_n), .data_in(adc_data), .otr(adc_otr), .adc_clk(adc_clock),
+        .clk(clk), .rst_n(rst_n), .data_in(adc_data), .otr(adc_otr), .motor_observe(4'd0), .adc_clk(adc_clock),
         .adc_oe_n(adc_oe_n), .sample_q4(adc_sample), .valid(adc_valid),
         .over_range(adc_over_range));
     reg adc_source_active = 0;
     integer source_code = 600;
     time last_rise = 0, previous_rise = 0, previous_sample = 0;
     integer adc_samples = 0;
-    // 80ns 采样窗口中提供正确总线；窗口前后给不同值检出错误采样相位。
-    always @(posedge adc_clock) begin
+    // Datasheet Fig.22 references output changes to the falling edge;
+    // 25 ns is typical tOD, not a guaranteed maximum.
+    always @(negedge adc_clock) begin
         if (adc_source_active) begin
             if (previous_rise != 0 && $time-previous_rise != 200)
                 $fatal(1, "ADC clock must be 5MHz");
             previous_rise = $time;
             last_rise = $time;
-            adc_data = 10'd400;
-            #70; adc_data = source_code;
-            #20; adc_data = 10'd1000;
+            #25; adc_data = source_code;
         end
     end
     always @(posedge clk) begin
@@ -50,6 +49,7 @@ module tb_estimator;
 
     reg sample_valid = 0;
     reg [13:0] sample_q4 = 0;
+    reg sample_bad = 0;
     reg signed [31:0] position = 0;
     reg cal_down = 0, cal_up = 0, stopped = 1;
     wire calibrated, sensor_fault, valid;
@@ -57,13 +57,13 @@ module tb_estimator;
     wire calibrated_neg, sensor_fault_neg, valid_neg;
     wire signed [15:0] theta_neg, omega_neg, arm_neg, arm_speed_neg;
     state_estimator estimator_dut (
-        .clk(clk), .rst_n(rst_n), .sample_valid(sample_valid), .sample_q4(sample_q4),
-        .position(position), .cal_down(cal_down), .cal_up(cal_up), .stopped(stopped),
+        .clk(clk), .rst_n(rst_n), .sample_valid(sample_valid), .sample_q4(sample_q4), .sample_bad(sample_bad),
+        .sample_blind(1'b0),.sample_fault(1'b0),.sample_quality_reason(8'd0), .clear_fault(1'b0), .position(position), .cal_down(cal_down), .cal_up(cal_up), .stopped(stopped),
         .calibrated(calibrated), .sensor_fault(sensor_fault), .valid(valid),
         .theta(theta), .omega(omega), .arm(arm), .arm_speed(arm_speed));
     state_estimator #(.THETA_SIGN(-1), .ENCODER_SIGN(-1)) reverse_dut (
-        .clk(clk), .rst_n(rst_n), .sample_valid(sample_valid), .sample_q4(sample_q4),
-        .position(position), .cal_down(cal_down), .cal_up(cal_up), .stopped(stopped),
+        .clk(clk), .rst_n(rst_n), .sample_valid(sample_valid), .sample_q4(sample_q4), .sample_bad(sample_bad),
+        .sample_blind(1'b0),.sample_fault(1'b0),.sample_quality_reason(8'd0), .clear_fault(1'b0), .position(position), .cal_down(cal_down), .cal_up(cal_up), .stopped(stopped),
         .calibrated(calibrated_neg), .sensor_fault(sensor_fault_neg), .valid(valid_neg),
         .theta(theta_neg), .omega(omega_neg), .arm(arm_neg), .arm_speed(arm_speed_neg));
     integer estimator_samples = 0;
@@ -103,11 +103,11 @@ module tb_estimator;
     task calibrate(input integer down, input integer up);
         begin
             stopped = 1;
-            @(negedge clk); sample_q4 = down*16; cal_down = 1;
-            @(negedge clk); cal_down = 0;
+            @(negedge clk); sample_q4 = down*16; sample_valid = 1; cal_down = 1;
+            @(negedge clk); sample_valid = 0; cal_down = 0;
             tick(2);
-            @(negedge clk); sample_q4 = up*16; cal_up = 1;
-            @(negedge clk); cal_up = 0;
+            @(negedge clk); sample_q4 = up*16; sample_valid = 1; cal_up = 1;
+            @(negedge clk); sample_valid = 0; cal_up = 0;
             tick(40);
             if (!calibrated || sensor_fault) $fatal(1, "two-point calibration rejected");
         end
@@ -155,9 +155,10 @@ module tb_estimator;
             $fatal(1, "Q10 angle/velocity or sign parameters");
         stopped = 1;
         sample(785*16,2);
-        if (omega !== 0 || arm_speed !== 0) $fatal(1, "stopped velocity filters not cleared");
+        if (omega <= 0 || arm_speed <= 0) $fatal(1, "IDLE motion was replaced by zero velocity");
 
         // 下点附近跨 ±pi，角速度必须取最短角度差。
+        calibrate(624,800);
         sample(624*16+16,2);
         if (theta < 3190 || theta > 3217) $fatal(1, "down reference should approach +pi");
         stopped = 0;
@@ -170,11 +171,13 @@ module tb_estimator;
         @(negedge clk); cal_down = 0; tick(3);
         if (!calibrated) $fatal(1, "running calibration changed state");
         sample(800*16,2);
-        if (!sensor_fault) $fatal(1, "running ADC discontinuity not reported");
+        if (sensor_fault || estimator_dut.measurement_valid || omega!=0)
+            $fatal(1, "isolated ADC discontinuity must be quarantined without a latched fault");
         stopped = 1;
         calibrate(624,800);
         sample(0,2);
-        if (!sensor_fault) $fatal(1, "ADC rail fault missing");
+        if (sensor_fault || estimator_dut.measurement_valid || omega!=0)
+            $fatal(1, "ADC blind rail must remain unmeasurable without a latched fault");
 
         // 校准请求取消尚在流水线中的样本，旧样本不能恢复 primed/valid。
         calibrate(624,800);
@@ -200,6 +203,7 @@ module tb_estimator;
         calibrate(800,624);
         sample(624*16,2);
         if (theta !== 0) $fatal(1, "negative-span upper reference");
+        calibrate(800,624);
         sample(800*16,2);
         if (theta < 3200 || theta > 3217 || theta_neg > -3200 || theta_neg < -3217)
             $fatal(1, "negative-span down reference");

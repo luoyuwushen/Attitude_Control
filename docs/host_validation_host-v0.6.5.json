@@ -1,0 +1,65 @@
+{
+  "host": "host-v0.6.5",
+  "compatible_project": "project-v0.2.6",
+  "status": "offline_validated_hardware_pending",
+  "executable": {
+    "path": "Release/host-v0.6.5/J280_Monitor.exe",
+    "bytes": 57711902,
+    "sha256": "ca5d92b9ece711e047d8028bf164c2dfabba6255335644c9b078efb3cdbb6879"
+  },
+  "python_tests": 284,
+  "evidence": [
+    {
+      "path": "Release/host-v0.6.5/validation/python_tests_release.json",
+      "bytes": 4185,
+      "sha256": "10166eef19494fd279c9563a77603281bfeb63041ccc74b112c612a28578868d"
+    },
+    {
+      "path": "Release/host-v0.6.5/validation/python_tests_release.log",
+      "bytes": 47555,
+      "sha256": "0dacccfd766d0b19e13e4946c078271e33eb67c0fda94f92a0fb4a8d693fd3cd"
+    },
+    {
+      "path": "Release/host-v0.6.5/validation/tuning_fixed_300s_1366_render.json",
+      "bytes": 6334,
+      "sha256": "beb77d45118d80692353f11ad72899ffd383adf85c6ccd2397367740278d7198"
+    },
+    {
+      "path": "Release/host-v0.6.5/validation/build_manifest.json",
+      "bytes": 10586,
+      "sha256": "fbcf6fa48d045126e3bcedd8c8ffef2e3574263c5a752827040bed6ff9a2a219"
+    },
+    {
+      "path": "Release/host-v0.6.5/validation/tuning_independent_review.md",
+      "bytes": 6008,
+      "sha256": "a76425070ac0c62f11676ad25004ea2089df9b117135ff5fd44228061b30a9d2"
+    },
+    {
+      "path": "Release/host-v0.6.5/validation/session_sticky_validation.json",
+      "bytes": 1646,
+      "sha256": "58782a8f034401fd271ded637eb864f16e4b1a97903eb4756b84a135b92bf575"
+    }
+  ],
+  "load": {
+    "duration_s": 90.0,
+    "frames": 4500,
+    "tuning_rows": 4500,
+    "source": "offline_synthetic_208B",
+    "delivery_overflows": 0,
+    "timeouts": 0,
+    "delivery_ms": {
+      "count": 4500,
+      "mean": 15.771555555602795,
+      "p95": 46.999999991385266,
+      "p99": 62.999999994644895,
+      "max": 141.00000000325963
+    }
+  },
+  "limitations": [
+    "No project-v0.2.6 hardware balance, swing-up, disturbance or long serial acceptance yet.",
+    "Motor friction, effective dynamics and true angle zero remain unidentified; nonlinear negative cases are preserved.",
+    "50Hz telemetry is not a recording of all 1kHz control updates.",
+    "Automatic operation/tuning logs use a bounded background queue; optional SessionRecorder disk writes/flush lock can still delay GUI on slow storage."
+  ],
+  "hardware_access": false
+}

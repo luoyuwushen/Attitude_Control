@@ -288,13 +288,21 @@ class OperatorAcceptanceTests(unittest.TestCase):
 
     def test_missing_invalid_or_future_receive_clock_cannot_enable_movement(self):
         worker = self.live()
-        self.window.direction_check.setChecked(True)
-        for received in (None, "bad clock", float("nan"), float("inf"),
-                         True, time.monotonic() + 10):
-            self.window.receive([self.record(host_monotonic=received)])
-            self.assertFalse(self.window.is_fresh(), received)
-            self.assertFalse(self.window.send_command("G"), received)
-        self.assertEqual(worker.sent, [])
+        # Invalid JSON clocks intentionally retire the automatic logger via
+        # nonblocking close(0). Retain its owner until this test removes its
+        # temporary directory; otherwise Windows cleanup races writer startup.
+        loggers = [logger for logger in (self.window.runtime_log, self.window.operation_log) if logger]
+        try:
+            self.window.direction_check.setChecked(True)
+            for received in (None, "bad clock", float("nan"), float("inf"),
+                             True, time.monotonic() + 10):
+                self.window.receive([self.record(host_monotonic=received)])
+                self.assertFalse(self.window.is_fresh(), received)
+                self.assertFalse(self.window.send_command("G"), received)
+            self.assertEqual(worker.sent, [])
+        finally:
+            for logger in loggers:
+                logger.close()
 
     def test_late_signals_from_old_connection_cannot_replace_current_data(self):
         old_worker = SerialWorker("TEST-COM")
@@ -415,12 +423,15 @@ class OperatorAcceptanceTests(unittest.TestCase):
         self.window.receive([self.record(t=.02, sequence=1)])
         self.assertTrue(self.window.load_replay(self.csv()))
         self.assertIsNone(self.window.recorder)
-        metadata = json.loads((recorder.directory / "metadata.json").read_text(encoding="utf-8"))
-        summary = json.loads((recorder.directory / "summary.json").read_text(encoding="utf-8"))
+        self.assertTrue(recorder.done.wait(2))
+        self.window.poll_recording()
+        directory = recorder.poll()['directory']
+        metadata = json.loads((directory / "metadata.json").read_text(encoding="utf-8"))
+        summary = json.loads((directory / "summary.json").read_text(encoding="utf-8"))
         self.assertEqual(metadata["source"], "demo")
         self.assertEqual(summary["source"], "demo")
         self.assertEqual(summary["samples"], 1)
-        self.assertTrue(self.window.load_replay(recorder.directory / "samples.csv"))
+        self.assertTrue(self.window.load_replay(directory / "samples.csv"))
         self.assertEqual(self.window.replay_rows[0]["original_source"], "demo")
 
 

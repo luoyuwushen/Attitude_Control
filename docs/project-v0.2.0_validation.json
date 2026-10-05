@@ -1,0 +1,290 @@
+{
+  "validated_at_utc": "2026-09-27T13:31:36.913314+00:00",
+  "project_version": "project-v0.2.0",
+  "host_version": "host-v0.6.0",
+  "python_regression": {
+    "tests": 200,
+    "host_prefixed_tests": 182,
+    "skipped": 0,
+    "returncode": 0,
+    "log": "Release/project-v0.2.0/validation/python-regression.txt"
+  },
+  "rtl_regression": {
+    "benches": [
+      "tb_adc_quality",
+      "tb_balance_entry",
+      "tb_closed_loop",
+      "tb_controller",
+      "tb_estimator",
+      "tb_estimator_motion",
+      "tb_fault_heartbeat",
+      "tb_interfaces",
+      "tb_sample_freshness",
+      "tb_start_diagnostics",
+      "tb_start_runtime",
+      "tb_telemetry_v2",
+      "tb_top",
+      "tb_top_v2"
+    ],
+    "count": 14,
+    "returncode": 0,
+    "verilog_2005_top": "passed",
+    "warnings": 0,
+    "log": "Release/project-v0.2.0/validation/rtl-regression.txt",
+    "initial_attempt": "Original full runner passed Python, then closed-loop exceeded 180 s while packaging/other simulation ran. All RTL was subsequently run sequentially with a 600 s per-process limit; closed-loop took 100.452 s. All assertions preserved. Initial log retained.",
+    "runner_timeout": "tools/run_tests.py now defaults to 600 seconds per check; --timeout allows positive override; default/override/invalid-value paths checked"
+  },
+  "closed_loop_model": {
+    "physical_hil": false,
+    "duration_s": 12,
+    "captures": 1,
+    "capture_s": 0.79,
+    "last_2s_max_deg": 0.683502,
+    "disturbance_Nm": 0.01,
+    "disturbance_duration_s": 0.05,
+    "disturbance_peak_deg": 3.781472,
+    "recovery_s": 0.493,
+    "max_arm_rad": 2.900234,
+    "limits": "Assumed nonlinear plant, quantized ADC and encoder, scaled time; not physical wiring, friction or torque validation"
+  },
+  "fpga_build": {
+    "setup_violations": 0,
+    "hold_violations": 0,
+    "fmax_mhz": 50.561,
+    "placed_pins": {
+      "clk_50m": {
+        "pad": "M19",
+        "standard": "LVCMOS33"
+      },
+      "rst_n": {
+        "pad": "AB3",
+        "standard": "LVCMOS33"
+      },
+      "key_sw[0]": {
+        "pad": "T18",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[1]": {
+        "pad": "R18",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[2]": {
+        "pad": "U20",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[3]": {
+        "pad": "T20",
+        "standard": "LVCMOS15"
+      },
+      "uart_rx": {
+        "pad": "L20",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[0]": {
+        "pad": "L21",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[1]": {
+        "pad": "M21",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[2]": {
+        "pad": "J20",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[3]": {
+        "pad": "J19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[4]": {
+        "pad": "D19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[5]": {
+        "pad": "H18",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[6]": {
+        "pad": "H19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[7]": {
+        "pad": "G19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[8]": {
+        "pad": "G17",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[9]": {
+        "pad": "E19",
+        "standard": "LVCMOS33"
+      },
+      "adc_otr": {
+        "pad": "F18",
+        "standard": "LVCMOS33"
+      },
+      "enc1_a": {
+        "pad": "Y20",
+        "standard": "LVCMOS33"
+      },
+      "enc1_b": {
+        "pad": "AA20",
+        "standard": "LVCMOS33"
+      },
+      "uart_tx": {
+        "pad": "K20",
+        "standard": "LVCMOS33"
+      },
+      "adc_clk": {
+        "pad": "G18",
+        "standard": "LVCMOS33"
+      },
+      "adc_oe_n": {
+        "pad": "H20",
+        "standard": "LVCMOS33"
+      },
+      "AN1": {
+        "pad": "Y17",
+        "standard": "LVCMOS33"
+      },
+      "AN2": {
+        "pad": "Y19",
+        "standard": "LVCMOS33"
+      },
+      "PWMA": {
+        "pad": "Y18",
+        "standard": "LVCMOS33"
+      },
+      "BN1": {
+        "pad": "AA17",
+        "standard": "LVCMOS33"
+      },
+      "BN2": {
+        "pad": "V15",
+        "standard": "LVCMOS33"
+      },
+      "PWMB": {
+        "pad": "V14",
+        "standard": "LVCMOS33"
+      }
+    },
+    "device": "GW2A-LV55PG484C8/I7",
+    "tool": "V1.9.12.03 (64-bit)",
+    "bitstream_sha256": "c5c8fb54233e980c305e9b68831cfac59582aea1cf43475625a6a6e900d4e36c",
+    "dsp_usage": "15/20",
+    "logic_usage": "3348/54720",
+    "register_usage": "1846/42000",
+    "created_time": "Sun Sep 27 20:57:12 2026",
+    "source_sha256": {
+      "Attitude_Control/src/adc_sampler.v": "ef7b0343691383139d3fea044e9e5a02d60a28f52cad43b99a8a5e285ca64dbe",
+      "Attitude_Control/src/attitude_control.cst": "3d68ed209bc75f8bc565b9458dcafad00bdb873f8a0e553d814e12e2cea02707",
+      "Attitude_Control/src/attitude_control.sdc": "9402f7049dfcf8cbc29688997cf9a63abc0b28154128a2c49c67f5dbbb056ef5",
+      "Attitude_Control/src/attitude_controller.v": "b0deaa99d13f002df248c9bae2c369089b791adda1d13dd1b736502c8dd1bc5e",
+      "Attitude_Control/src/calibration_divider.v": "25950cd80fd46c6a65c0000fdda495825575766e37e650be6bbc46b0e08ceeb9",
+      "Attitude_Control/src/key_debounce.v": "a4a648df7d506ea42b7253f4e91967803bdefbca4ead784935e57614e53681ea",
+      "Attitude_Control/src/motor_pwm.v": "4ad6398d76f74fc95842cff862c85312dd54d350b47247c284aa118f6ad2cf28",
+      "Attitude_Control/src/quadrature_encoder.v": "2696604dd9fa20a7c336855dba596d1c8253f01688735e82ed3a5c6a2877bae1",
+      "Attitude_Control/src/reset_sync.v": "1219239a961487841c2ecb93ae9fab5758c2d234e468968eb04a50739ac05cea",
+      "Attitude_Control/src/state_estimator.v": "81e1dca0a944d96f9570518d44514e74c13a724a68a7e1ae2a05010860c136bb",
+      "Attitude_Control/src/telemetry.v": "e54e43a2329c775aab6b9b194fe9dcfa5ccf98b76ce570402939a88a3b2d71b1",
+      "Attitude_Control/src/top.v": "19d89d414e1f57ff80da8fc9d2b9aac9c24ba3214927b3a86d6510d673acc3f2",
+      "Attitude_Control/src/uart_rx_byte.v": "764cb9640fec89a57851dd53af536dc93f779ad72f17167d84249d4d5a4ced4b",
+      "Attitude_Control/src/uart_tx_byte.v": "48e56ab342381cc012b8b607c40ecf43d1b91976474e799ebc29dd8e5b8709f3"
+    }
+  },
+  "bitstream": {
+    "path": "Release/project-v0.2.0/Attitude_Control.fs",
+    "size": 18588969,
+    "sha256": "c5c8fb54233e980c305e9b68831cfac59582aea1cf43475625a6a6e900d4e36c"
+  },
+  "host_executable": {
+    "path": "Release/host-v0.6.0/J280_Monitor.exe",
+    "size": 57691302,
+    "sha256": "242710a3609bd2c75dbdb6f30dbbd748bcb5349e11d3ee8387315ac91ff15ebc"
+  },
+  "contract_checks": {
+    "adc": "falling-edge pipeline model, all 1024 raw codes, rail/mixed-window/short OTR/boundary OTR, full-window quality and 1 ms cadence",
+    "estimator": "continuous idle velocity, fresh D/U, bad-window rejection, 16-sample maturity and gap recovery",
+    "controller": "H direct BALANCE/no kick, G/H priority, readiness, SW3/S, signed arm-product and ramp rounding equivalence",
+    "production_timing": "50 MHz, 20 ms key debounce, 1 kHz ADC, 20 kHz PWM, UART 115200, SW2/G to XH1, sample-outage heartbeat",
+    "v2_wire_hex": "aa5502570000fd0209fd0c007afe6000e803030121950104785634120204fffffeff0902e8030a0213000b02db000c02ff020d02ff030e0200000f02ff031002e01f110238ff120120130400000200140498badcfeb735",
+    "v2_top": "real UART D/U/H, full 87 bytes/CRC/TLV, H angle rejection, first fault persistence across 01 to 05, S preservation, R clear and persistent fault relatch",
+    "adc_sdc": "clock_fall, setup 9/end and hold 9/end; reports launch 100 to latch 280 ns setup, launch 100 to latch 80 ns hold; 45 ns external max is budget, not measured ADC guaranteed max",
+    "review": "independent read-only review; D/U first-fault reset wording corrected to accepted request rather than successful calibration ACK"
+  },
+  "hardware_validation": {
+    "performed": false,
+    "physical_port_opened": false,
+    "fpga_programmed": false,
+    "motor_moved_by_agent": false,
+    "official_pid_comparison": "user reports hands-off balance on same hardware/wiring/sensor installation; automatic swing-up untested",
+    "pending": [
+      "physical ADC continuity and quality",
+      "motor/encoder/pendulum signs",
+      "H hands-off sustained balance",
+      "G repeated swing-up",
+      "push recovery",
+      "15-minute physical UART acquisition"
+    ]
+  },
+  "official_pid_bitstream": {
+    "size": 18588997,
+    "sha256": "f82db8cfdf808904bc0907b3b43e6d6d0b04488c93a2e72f0b6ebdce44278f63",
+    "source_available": false,
+    "reference_and_download_identical": true
+  },
+  "source_sha256": {
+    "Attitude_Control/src/adc_sampler.v": "ef7b0343691383139d3fea044e9e5a02d60a28f52cad43b99a8a5e285ca64dbe",
+    "Attitude_Control/src/attitude_control.cst": "3d68ed209bc75f8bc565b9458dcafad00bdb873f8a0e553d814e12e2cea02707",
+    "Attitude_Control/src/attitude_control.sdc": "9402f7049dfcf8cbc29688997cf9a63abc0b28154128a2c49c67f5dbbb056ef5",
+    "Attitude_Control/src/attitude_controller.v": "b0deaa99d13f002df248c9bae2c369089b791adda1d13dd1b736502c8dd1bc5e",
+    "Attitude_Control/src/calibration_divider.v": "25950cd80fd46c6a65c0000fdda495825575766e37e650be6bbc46b0e08ceeb9",
+    "Attitude_Control/src/key_debounce.v": "a4a648df7d506ea42b7253f4e91967803bdefbca4ead784935e57614e53681ea",
+    "Attitude_Control/src/motor_pwm.v": "4ad6398d76f74fc95842cff862c85312dd54d350b47247c284aa118f6ad2cf28",
+    "Attitude_Control/src/quadrature_encoder.v": "2696604dd9fa20a7c336855dba596d1c8253f01688735e82ed3a5c6a2877bae1",
+    "Attitude_Control/src/reset_sync.v": "1219239a961487841c2ecb93ae9fab5758c2d234e468968eb04a50739ac05cea",
+    "Attitude_Control/src/state_estimator.v": "81e1dca0a944d96f9570518d44514e74c13a724a68a7e1ae2a05010860c136bb",
+    "Attitude_Control/src/telemetry.v": "e54e43a2329c775aab6b9b194fe9dcfa5ccf98b76ce570402939a88a3b2d71b1",
+    "Attitude_Control/src/top.v": "19d89d414e1f57ff80da8fc9d2b9aac9c24ba3214927b3a86d6510d673acc3f2",
+    "Attitude_Control/src/uart_rx_byte.v": "764cb9640fec89a57851dd53af536dc93f779ad72f17167d84249d4d5a4ced4b",
+    "Attitude_Control/src/uart_tx_byte.v": "48e56ab342381cc012b8b607c40ecf43d1b91976474e799ebc29dd8e5b8709f3",
+    "tests/tb_adc_quality.sv": "c335d920adc334b33fe895514bc8b7bf1a15a93c888653001afe98666ea786d8",
+    "tests/tb_balance_entry.sv": "8817c3a5d6da8fac8e1e83da500abdf3df2898d45981e03ce1074c7d3c709667",
+    "tests/tb_closed_loop.sv": "9fd19c37efbd3bc0a168d311b2d89c47f53bbca080149c879266efc365b1a031",
+    "tests/tb_controller.sv": "f0d0b10b89738542189ee51e6b3a1ea534dc8ccf401356ed912f750bfb7f629f",
+    "tests/tb_estimator.sv": "f655479a7877a48a1b11bb7ff5180914b8807a9ccfe914a3c01f427149a3a2ca",
+    "tests/tb_estimator_motion.sv": "a165b95a4151b7d7d5b9bd6a88004f5b96d4a58015059342ffd001d654821ac6",
+    "tests/tb_fault_heartbeat.sv": "b2cb8201295e8ccf6831c0a1a1e9b6b58502b3167595d6c2bbf525badfd01fb5",
+    "tests/tb_interfaces.sv": "a2479f2558a38df65ff15760c965df3705ea8d1c92eb87d111e12b286bc56c83",
+    "tests/tb_sample_freshness.sv": "3e10aa5fda37b3540cc0d4d23c51811bf9b0c51b3617f76ff347f2d85f38ac59",
+    "tests/tb_start_diagnostics.sv": "3f6a90a29f1a24141ef11e1e6ab5ee160b8e2537b6007c989df1569a686abaad",
+    "tests/tb_start_runtime.sv": "698695c3259081c411f162674b064ebe93f6c3f9bb8f713ff61d451923968cd4",
+    "tests/tb_telemetry_v2.sv": "017df9530711bb8d8edfac1dfc2927d16ae60a0cbf9b622bfa263a9ac3b01b08",
+    "tests/tb_top.sv": "937e940271854bb9e5148077ec6a60bb8dae4b7f011513839ad0f11eb9d8baf2",
+    "tests/tb_top_v2.sv": "cef886d3172b9a022fba431346183f5dac575490c0074feee5c12bb5fcf755ea",
+    "tests/test_cli_protocol_v2.py": "f57ba5f65265c9393680490eaa2cb01a360c7ebd2177d8944ee1837ff5db508f",
+    "tests/test_control_model.py": "52b685a8c072c7221614e5ffc96ea1f994cbcffa37c32469276833d012d7e187",
+    "tests/test_host_adc_diagnostics.py": "41b75657e8716282a7c137edf041c1e73f75c8a866c5d8333dfc2e293827f000",
+    "tests/test_host_core.py": "8092a7b8f9a78116933b288b749d6dea3a3b09f4a966b1d0a17ed4c99658fc54",
+    "tests/test_host_feedback.py": "ca8dee8c11d51ba581044ce248f6a111abf1988ad9eebb0472193a5dc07965e2",
+    "tests/test_host_measurement_ui.py": "e7676816126827986a6c07ad29d503b166414f694a38ff2f2d1a5b0bed307372",
+    "tests/test_host_measurements.py": "ded63e7d24c5bd78cb7a3beeb8d39a840924715180cd9092f51826174c93c54b",
+    "tests/test_host_operation_log.py": "b1b371ccdf5b47558a22a80c063111a730648ac6f6c691050e1277a44d4c19c5",
+    "tests/test_host_serial.py": "95cb8db391029be97feca8193685ab34370e278ab9b1c5139b6de891118ab0a6",
+    "tests/test_host_serial_panel.py": "eba0a5c94d0bd65c1df6a7822b4a77c47cdc2075dcb9d79a1408cd9a8af7f1bb",
+    "tests/test_host_settings.py": "8ac91b50290f60d7b5e9781c3b11a4252de303e77546940f37e921265c241f02",
+    "tests/test_host_transport_delivery.py": "a45514f542da19d7d06800af3ae96a2c978c1dd85abe87215a8eb19539385c32",
+    "tests/test_host_transport_race.py": "55c4bdcf90f0306ce3d73a6136373c6b21322b3866cef942d7c0570d1ffe314b",
+    "tests/test_host_ui.py": "19b6a47994e812ed20c564b58a4db0f99c05a04428ad6b3c3e94080cf34d3fb0",
+    "tests/test_start_diagnostics_protocol.py": "1d87b5a956ceb99066e53f9cd14c4d4f982d1b82ce7931662a645af3989dfc6d",
+    "tests/test_telemetry.py": "42327303ce961de4145fc4299ef24ebc30ee53c05c071feba00c1c163c53aef1",
+    "tools/run_tests.py": "4e90156f8b8f4c4b37cd61e11131db51e4a8fbd209fadd7d0cacfff7ef9fd2c1",
+    "tools/telemetry_monitor.py": "1c386031e51b85b6eb2e51b3723318d13adc3f25e54a10e523d46c04921dcc0d"
+  },
+  "validation_files_sha256": {
+    "python-regression.txt": "33d69ce2ed1a5ace514614b9ff6f365365f78bfee93660aa0cd251c6e1dfa9e7",
+    "regression-initial-timeout.txt": "a0aab0f566c6e96babfec7c0bba47e095d671fc67aca1f467139a5c29b6e3378",
+    "rtl-regression.txt": "87e345166b4dd58460940ad395caeb4503fb5c6136600c70aefe1ca757629407"
+  }
+}

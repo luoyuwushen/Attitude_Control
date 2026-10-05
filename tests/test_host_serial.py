@@ -104,7 +104,7 @@ class SerialTransportTests(unittest.TestCase):
         port = MemoryPort(worker)
         events, factory = self.run_memory(worker, port)
         self.assertEqual(factory.call_args.kwargs, dict(port=None, **config.as_dict(),
-                         timeout=0.04, write_timeout=0.25, rtscts=False, dsrdtr=False))
+                         timeout=0.02, write_timeout=0.25, rtscts=False, dsrdtr=False))
         self.assertEqual(port.open_lines, ('TEST-COM', False, False))
         self.assertEqual(port.writes, [])
         self.assertEqual(events['failed'], [])
@@ -210,6 +210,58 @@ class SerialTransportTests(unittest.TestCase):
         self.assertEqual(events['raw_sent'], [])
         self.assertEqual(events['statistics'][-1]['tx_bytes'], 1)
         self.assertTrue(any('未完整写入' in message for message in events['failed']))
+
+    def test_large_raw_packet_is_line_rate_bounded_and_receives_between_chunks(self):
+        for config in (SerialConfig(), SerialConfig(9600, 7, 'E', 2)):
+            with self.subTest(config=config):
+                worker = SerialWorker('TEST-COM', config=config, mode='raw')
+                payload = b'x' * 4096
+                self.assertTrue(worker.send_raw(payload))
+                port = MemoryPort(worker)
+                reads = []
+                frame_bits = 1 + config.bytesize + (config.parity != 'N') + config.stopbits
+
+                def write(data):
+                    # Model a driver which waits for bytes to leave the UART.
+                    # The old whole-packet write fails this legitimate case.
+                    if len(data) * frame_bits / config.baudrate > .25:
+                        raise serial.SerialTimeoutException('packet exceeds write timeout')
+                    port.writes.append(data)
+                    return len(data)
+
+                def read(count):
+                    reads.append(sum(map(len, port.writes)))
+                    if reads[-1] == len(payload):
+                        worker.request_close(False)
+                    return b'r'
+
+                port.write, port.read = write, read
+                events, _ = self.run_memory(worker, port)
+                self.assertEqual(b''.join(port.writes), payload)
+                self.assertGreater(len(port.writes), 1)
+                self.assertEqual(events['raw_sent'], [payload])
+                self.assertEqual(events['failed'], [])
+                self.assertEqual(events['statistics'][-1]['tx_bytes'], len(payload))
+                self.assertTrue(any(0 < offset < len(payload) for offset in reads))
+                self.assertEqual(len(events['raw_received']), len(reads))
+
+    def test_close_cancels_remaining_raw_chunks_without_claiming_complete_packet(self):
+        worker = SerialWorker('TEST-COM', config=SerialConfig(9600), mode='raw')
+        payload = b'x' * 4096
+        self.assertTrue(worker.send_raw(payload))
+        port = MemoryPort(worker)
+        activity = []
+        worker.wire_activity.connect(activity.append)
+        # Close on the first interleaved read, after only one chunk was sent.
+        port.read = lambda count: worker.request_close(False) or b''
+        events, _ = self.run_memory(worker, port)
+        self.assertEqual(len(port.writes), 1)
+        self.assertLess(len(port.writes[0]), len(payload))
+        self.assertEqual(events['raw_sent'], [])
+        self.assertEqual(events['failed'], [])
+        self.assertEqual(events['statistics'][-1]['tx_bytes'], len(port.writes[0]))
+        self.assertTrue(activity[-1]['cancelled'])
+        self.assertEqual(activity[-1]['requested_bytes'], len(payload) - len(port.writes[0]))
 
     def test_raw_close_failure_still_reports_disconnected(self):
         worker = SerialWorker('TEST-COM', mode='raw')

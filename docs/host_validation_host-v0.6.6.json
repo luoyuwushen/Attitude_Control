@@ -1,0 +1,155 @@
+{
+  "created_utc": "2026-09-28T10:30:11.142625+00:00",
+  "host": "host-v0.6.6",
+  "compatible_project": "project-v0.2.7; exact profiles for 0x20006 and 0x20007",
+  "status": "offline_checks_passed_hardware_acceptance_pending",
+  "hardware_access": false,
+  "executable": {
+    "path": "Release/host-v0.6.6/J280_Monitor.exe",
+    "bytes": 57719438,
+    "sha256": "b9b2aa43f885a38571e82251f11fe3255bfc84f7e87fd379c176bc1183913b24"
+  },
+  "python_tests": {
+    "command": [
+      "C:\\Program Files\\Python312\\python.exe",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "started_utc": "2026-09-28T10:21:43.257850+00:00",
+    "ended_utc": "2026-09-28T10:22:16.693345+00:00",
+    "wall_s": 33.421999999991385,
+    "returncode": 0,
+    "tests": 314,
+    "test_reported_s": 23.494,
+    "source_unchanged": true,
+    "log_sha256": "57e75e83cd85a502a9e827fe0b45c008bfc29ff4507c730aa3be02a7a0dfa32f",
+    "log": "python_tests.log",
+    "scope": "Offline full Python regression; no physical COM or hardware acceptance",
+    "passed": true
+  },
+  "evidence": [
+    {
+      "path": "Release/host-v0.6.6/validation/build_manifest.json",
+      "sha256": "1000c7c38bd21cad1c4f0461ac52f301c98445a8cffad56a1b9481cf2e85ed39",
+      "bytes": 10550
+    },
+    {
+      "path": "Release/host-v0.6.6/validation/source_snapshot.json",
+      "sha256": "cf7653b2a3884f713aedb15344be41974c287848cb69c2d5bb514bc87fa6a2a6",
+      "bytes": 3493
+    },
+    {
+      "path": "Release/host-v0.6.6/validation/source_snapshot.zip",
+      "sha256": "3451e731fd60c0ceb12365254fa68daebe104042b43098d5e43cf41579dfd06a",
+      "bytes": 99207
+    },
+    {
+      "path": "Release/host-v0.6.6/validation/python_tests.json",
+      "sha256": "1aeb73f366a8892546c40818a80bc8bdd28e9a61073506d50532e15f49ffc4c2",
+      "bytes": 5020
+    },
+    {
+      "path": "Release/host-v0.6.6/validation/python_tests.log",
+      "sha256": "57e75e83cd85a502a9e827fe0b45c008bfc29ff4507c730aa3be02a7a0dfa32f",
+      "bytes": 53232
+    },
+    {
+      "path": "Release/host-v0.6.6/validation/python_tests_initial_version_assertion.json",
+      "sha256": "19764a2b2334ff4853a2446e3fc54ed4fc709488f2fa6f16c12749d75c925b78",
+      "bytes": 8697
+    },
+    {
+      "path": "Release/host-v0.6.6/validation/slow_disk_before.json",
+      "sha256": "b0d9c57f018b3159d950760ac44c43450297d2ad41665b6c53ce426c5aae2241",
+      "bytes": 334
+    },
+    {
+      "path": "Release/host-v0.6.6/validation/experiment_fixed_300s_1366_render.json",
+      "sha256": "6164561f4eaf925db2cbea68eeda533fa9320e0aceee36ae6d26934883f777f6",
+      "bytes": 7848
+    },
+    {
+      "path": "Release/host-v0.6.6/validation/field_175126_independent.json",
+      "sha256": "a4e7d6d202c49c0ff46d0476ab71215955f5f670ed9168095b523b58eb8eec2c",
+      "bytes": 86896
+    },
+    {
+      "path": "Release/host-v0.6.6/validation/field_175126_independent.md",
+      "sha256": "22fc319c09879500b0982f1e7879cfe0c4b6d1764b9bc9b5dbcdf5a2fc6cdfbb",
+      "bytes": 6000
+    },
+    {
+      "path": "Release/host-v0.6.6/validation/field_175126_dynamics.py",
+      "sha256": "7b7d34738c7dc623132bee7df7a6a489ab0b4fcbc8bc3323e6a7dc5ccd93ee30",
+      "bytes": 32029
+    },
+    {
+      "path": "Release/host-v0.6.6/validation/field_175126_dynamics.json",
+      "sha256": "107c975358c532ad008416485aaba4eb4d2a2062164666e091e8cad3db83647e",
+      "bytes": 1428918
+    },
+    {
+      "path": "Release/host-v0.6.6/validation/field_175126_dynamics.md",
+      "sha256": "f3f5b65acce7a05ba54b1103483c0b22bbdbebf101485e4a1ce14a4af64601fc",
+      "bytes": 8677
+    },
+    {
+      "path": "Release/host-v0.6.6/validation/async_recording_review.md",
+      "sha256": "a235773197961293e0b8f517e8a8e417f16dcca42b40dc7b76b8e5f6c8a2f485",
+      "bytes": 8180
+    },
+    {
+      "path": "Release/host-v0.6.6/validation/release_crosscheck.json",
+      "sha256": "0322c27fb58bf7e3faaced739f4b48437893e2c010b783f3212a3b61624abd4c",
+      "bytes": 60812
+    },
+    {
+      "path": "Release/host-v0.6.6/validation/release_crosscheck.md",
+      "sha256": "f31fcd436d30b7bd39408814bf2613c046c51ea2b0be3d6dd146887f6fc90b95",
+      "bytes": 3019
+    }
+  ],
+  "load": {
+    "passed": true,
+    "frames": 4500,
+    "seconds": 90,
+    "physical_port_opened": false,
+    "synthetic_firmware": "0x00020006",
+    "experiment_and_automatic_logging": true,
+    "slow_flush_max_ms": 312.9999999946449,
+    "gui_delivery_max_ms": 77.9999999795109,
+    "stop_callback_max_ms": 46.999999991385266,
+    "current_io_and_gui_sources_match": true,
+    "later_changed_files": [
+      "diagnostics.py",
+      "version.py",
+      "tuning.py"
+    ],
+    "provenance": "Timed run predates final version/profile extension; final 314 tests and EXE smoke cover that extension. Not a repeated final-source performance run."
+  },
+  "field_source": {
+    "session": "20260928_175126_801625_a456a66e",
+    "excluded_session": "20260928_175111_707749_879b4d83",
+    "source_sha256": {
+      "control.jsonl": "bd8740cbf7dbded32a6358d060eb7fe53879f87fcef5b6d89fdd39a738f0a6c4",
+      "metadata.json": "dea879e00722bea9172779c5eac3780aebb37d686a07375693555e2663498812",
+      "telemetry.jsonl": "3cdddfbcd72d23720b44d0e50e48fda956bd6f81d34892cf825cdaf7a823eb06",
+      "tuning.csv": "1f19c6cdcea5964a130e8fe50b243cbc7e407f0a6ca598e0aa2c0cc8383f01e2"
+    },
+    "originals_unchanged": true
+  },
+  "limitations": [
+    "No physical serial port, programming or motor action during this development phase.",
+    "GUI callback delay is not physical motor-stop latency.",
+    "OperationLog close retains its previous bounded writer join; only manual experiment I/O was made asynchronous.",
+    "314 tests include the correction of the earlier old-version-only assertion failure; initial failure evidence is preserved.",
+    "H small-motion long-term stability, light-push recovery and G swing-up remain unaccepted."
+  ]
+}

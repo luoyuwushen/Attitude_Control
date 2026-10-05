@@ -1,0 +1,201 @@
+{
+  "validated_at_utc": "2026-09-27T17:19:01.823708+00:00",
+  "project_version": "project-v0.2.2",
+  "host_version": "host-v0.6.2",
+  "release_id": "host-v0.6.2",
+  "previous_validation": "host_validation_host-v0.6.1.json",
+  "python_regression": {
+    "tests": 220,
+    "host_prefixed_tests": 202,
+    "skipped": 0,
+    "returncode": 0,
+    "log": "Release/project-v0.2.2/validation/regression.txt"
+  },
+  "hardware_validation": {
+    "performed": false,
+    "physical_port_opened": false,
+    "fpga_programmed": false,
+    "motor_moved_by_agent": false,
+    "official_pid_comparison": "user reports hands-off balance on same hardware/wiring/sensor installation; automatic swing-up untested",
+    "pending": [
+      "project-v0.2.2 stationary hanging acquisition; first fault window statistics if 0x01 recurs",
+      "If stationary quality is healthy, D/U plus one bounded F and one B with at least 1 s between",
+      "Determine short-burst filtering versus persistent bad measurements from recorded statistics",
+      "Unify motor/encoder/pendulum coupling signs before G/H balance experiments",
+      "Physical ADC continuity; hands-off balance; repeated swing-up; push recovery; 15-minute physical UART acquisition"
+    ]
+  },
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.5",
+  "dependencies": {
+    "PySide6-Essentials": "6.8.3",
+    "pyqtgraph": "0.13.7",
+    "pyserial": "3.5",
+    "PyInstaller": "6.20.0"
+  },
+  "checks": {
+    "source_smoke": "passed offline startup/drawing/developer page/exit; source-smoke-result.json",
+    "windows_exe_build_and_smoke": "tools/build_host.py returned 0 including final EXE --smoke-test; build-final.txt",
+    "visual_review": "root inspected source_smoke and 1000x750/1366x768 diagnostic layouts; revised wording screenshots also reviewed by host agent",
+    "protocol": "real 190-byte RTL UART golden, all 189 split boundaries and bytewise input; 26/27 complete uint16/uint32 groups, duplicates/malformed/truncation/CRC resync; old 24/87/106 compatibility; CSV/JSON original fields",
+    "controls": "diagnostic statistics do not change G/H/F/B/R gates; H shared confirmation and near-upright/low-speed requirements unchanged; F/B 100 permille /150 ms"
+  },
+  "render_replay": {
+    "source": "offline_simulation",
+    "physical_port_opened": false,
+    "source_telemetry": "Release\\host-v0.6.0\\captures\\fpga_logs\\20260927_215152_571605_eb67424d\\telemetry.jsonl",
+    "source_sha256": "b75c0dc07fe606a6c451b2415b1b0c763e94c051f60e15d2345a3911b1980d47",
+    "host_source_sha256": {
+      "app.py": "5f54771141373916d424b8e353693570fbcff1ce5461e2a92e56d6e003c0ca7c",
+      "core.py": "533fe51a45d835756338f744a17089730a944801775555febcf0ba67a0c2e51f",
+      "diagnostics.py": "e9ee2b72f66cfa0de1d9e0a97dc1c226909fbd86086c13793ed1573b3ffbc80c",
+      "transport.py": "c7ed9b5902fcddfbed3eebd3f67953437a379af53be7012704ba46348185c03c"
+    },
+    "source_frames": 4192,
+    "source_crc_stats": {
+      "frames": 4192,
+      "crc_errors": 0,
+      "discarded_bytes": 0,
+      "unsupported_frames": 0,
+      "missing_frames": 0,
+      "duplicates": 0,
+      "resets": 0
+    },
+    "input_frame_bytes": 190,
+    "input_firmware_version": "0x00020002",
+    "input_transformation": "Old field baseline values and cadence retained; firmware changed to 0x20002. TLVs 21..29 are fixed/varying synthetic test values, NOT reconstructed field conversion statistics. All frames have regenerated length=190 and CRC. Repetition of the source capture creates an intentional sequence reset.",
+    "modified_input_sha256": "b2eeab45c1b2cc2f7d49bfb590bd57cb5dd0fe140648513aebd396f8d0f2bcc7",
+    "modified_input_crc_stats": {
+      "frames": 4192,
+      "crc_errors": 0,
+      "discarded_bytes": 0,
+      "unsupported_frames": 0,
+      "missing_frames": 0,
+      "duplicates": 0,
+      "resets": 0
+    },
+    "replay_decode_stats": {
+      "frames": 4500,
+      "crc_errors": 0,
+      "discarded_bytes": 0,
+      "unsupported_frames": 0,
+      "missing_frames": 0,
+      "duplicates": 0,
+      "resets": 1
+    },
+    "batch_reconstruction": "complete frame groups sharing recorded host_monotonic; original byte fragments unavailable",
+    "synthetic_prehistory_samples": 15000,
+    "mode": "fixed",
+    "render_policy": "independent 10 Hz, 1 px, no AA",
+    "platform": "offscreen",
+    "window_s": 300,
+    "width": 1366,
+    "requested_duration_s": 90.0,
+    "wall_s": 90.125,
+    "published_frames": 4500,
+    "delivered_frames": 4500,
+    "logged_frames": 4500,
+    "all_logged_raw_frames_match": true,
+    "delivery_overflows": 0,
+    "errors": [],
+    "measurements": {
+      "pending_batches": {
+        "count": 3840,
+        "mean": 1.37734375,
+        "p95": 3,
+        "p99": 3,
+        "max": 6
+      },
+      "delivery_lag_ms": {
+        "count": 4500,
+        "mean": 10.050666667035935,
+        "p95": 31.000000017229468,
+        "p99": 46.999999991385266,
+        "max": 78.99999999790452
+      },
+      "receive_ms": {
+        "count": 3840,
+        "mean": 0.1680948175968903,
+        "p95": 0.3217000048607588,
+        "p99": 0.4909999843221158,
+        "max": 1.1346999963279814
+      },
+      "plot_prepare_ms": {
+        "count": 823,
+        "mean": 28.502253949451788,
+        "p95": 41.42220001085661,
+        "p99": 54.19130000518635,
+        "max": 65.60880001052283
+      },
+      "stop_callback_lag_ms": {
+        "count": 89,
+        "mean": 10.022471911009672,
+        "p95": 30.999999988125637,
+        "p99": 46.000000002095476,
+        "max": 46.000000002095476
+      }
+    },
+    "limitations": "Offline Qt rendering on this computer; not physical serial-driver/motor/hardware acceptance."
+  },
+  "render_replay_evidence": {
+    "path": "Release/host-v0.6.2/validation/fixed_300s_1366_render.json",
+    "size": 3337,
+    "sha256": "2ce1b2b5400b090eedead0f20b09aed62fc43421d3bb17c7ed1088168a1e870d"
+  },
+  "executable": {
+    "path": "Release/host-v0.6.2/J280_Monitor.exe",
+    "size": 57697958,
+    "sha256": "fbb8181a98f3331a70740afc5b7858fff1d26b8da572480338222365e091be43"
+  },
+  "source_sha256": {
+    "host/__init__.py": "b7b8a08bd9d32550ee1d509aac087b2a7eb8ae4e6a7f05f867b8ab9814f090ff",
+    "host/app.py": "5f54771141373916d424b8e353693570fbcff1ce5461e2a92e56d6e003c0ca7c",
+    "host/core.py": "533fe51a45d835756338f744a17089730a944801775555febcf0ba67a0c2e51f",
+    "host/diagnostics.py": "e9ee2b72f66cfa0de1d9e0a97dc1c226909fbd86086c13793ed1573b3ffbc80c",
+    "host/measurement_ui.py": "3575b4e33c0c4f27a394074c433a001b94357ddc459ceafb2d4029fd68301d7f",
+    "host/measurements.py": "ec5d55ae43892cca434581eaac6535f619b17397097f3b6f64601ae5884ca0fe",
+    "host/operation_log.py": "912a85c441c5fbbd9ac40b61dab539415587e7b6766b6712d00f36217b7ed0d2",
+    "host/serial_config.py": "3fabcfe478f115781027b506ca95778ce151528378c40879cb0df7fd1004ea8d",
+    "host/serial_ui.py": "c73a7c1256432fb96047d03226b4d923d6e9891cc8a73fbe94a813c21c9d99cc",
+    "host/settings.py": "bc66606aca51af582ae94d553df58df27b49b70df7d8313cefdf15d57a1914e4",
+    "host/transport.py": "c7ed9b5902fcddfbed3eebd3f67953437a379af53be7012704ba46348185c03c",
+    "host/version.py": "298b3273fe582540f439b711964aeab10bac8daee74ef41ca90553f0a95aa43c",
+    "tests/test_cli_protocol_v2.py": "f57ba5f65265c9393680490eaa2cb01a360c7ebd2177d8944ee1837ff5db508f",
+    "tests/test_control_model.py": "52b685a8c072c7221614e5ffc96ea1f994cbcffa37c32469276833d012d7e187",
+    "tests/test_host_adc_diagnostics.py": "41b75657e8716282a7c137edf041c1e73f75c8a866c5d8333dfc2e293827f000",
+    "tests/test_host_adc_observability.py": "bf12d95e5f33700abce786be073ab73180ebf51234c724f9b8f56e7d61a95185",
+    "tests/test_host_core.py": "8092a7b8f9a78116933b288b749d6dea3a3b09f4a966b1d0a17ed4c99658fc54",
+    "tests/test_host_feedback.py": "ca8dee8c11d51ba581044ce248f6a111abf1988ad9eebb0472193a5dc07965e2",
+    "tests/test_host_measurement_ui.py": "e7676816126827986a6c07ad29d503b166414f694a38ff2f2d1a5b0bed307372",
+    "tests/test_host_measurements.py": "ded63e7d24c5bd78cb7a3beeb8d39a840924715180cd9092f51826174c93c54b",
+    "tests/test_host_operation_log.py": "b1b371ccdf5b47558a22a80c063111a730648ac6f6c691050e1277a44d4c19c5",
+    "tests/test_host_render_budget.py": "871dd27276989c6e3ea17e73507bb08fcfb3120221a939d84e6b79b17a757dd2",
+    "tests/test_host_sensor_recovery.py": "dd382429d523025ddbd4b97e5fe6f0ec0fedeb5a2122b1981ae9688302d1f0b1",
+    "tests/test_host_serial.py": "95cb8db391029be97feca8193685ab34370e278ab9b1c5139b6de891118ab0a6",
+    "tests/test_host_serial_panel.py": "eba0a5c94d0bd65c1df6a7822b4a77c47cdc2075dcb9d79a1408cd9a8af7f1bb",
+    "tests/test_host_settings.py": "8ac91b50290f60d7b5e9781c3b11a4252de303e77546940f37e921265c241f02",
+    "tests/test_host_transport_delivery.py": "a45514f542da19d7d06800af3ae96a2c978c1dd85abe87215a8eb19539385c32",
+    "tests/test_host_transport_race.py": "55c4bdcf90f0306ce3d73a6136373c6b21322b3866cef942d7c0570d1ffe314b",
+    "tests/test_host_ui.py": "19b6a47994e812ed20c564b58a4db0f99c05a04428ad6b3c3e94080cf34d3fb0",
+    "tests/test_start_diagnostics_protocol.py": "1d87b5a956ceb99066e53f9cd14c4d4f982d1b82ce7931662a645af3989dfc6d",
+    "tests/test_telemetry.py": "42327303ce961de4145fc4299ef24ebc30ee53c05c071feba00c1c163c53aef1",
+    "tools/build.py": "5bea8c21195d18e608103675248ce511846e9d70cc49137b62798d9b56a069e6",
+    "tools/build_host.py": "509b82504b22f2ba783aaae8c0ff0eb902abb4f219f6124f3c40a2a10d2124d3",
+    "tools/control_model.py": "da0f6ee7d667b91aa9617ff2701d047af9c32654eeadd4174a4607e3de6522e2",
+    "tools/host_monitor.py": "b3c34136f63f1b12b42246fd891caf19c9911b056318134bb0dd9b645497dc54",
+    "tools/run_tests.py": "4e90156f8b8f4c4b37cd61e11131db51e4a8fbd209fadd7d0cacfff7ef9fd2c1",
+    "tools/telemetry_monitor.py": "1c386031e51b85b6eb2e51b3723318d13adc3f25e54a10e523d46c04921dcc0d",
+    "tools/update_project.py": "7b817374b58b5797487efcab8f209d7e4447748f8dae12fb8073398aaa7f9b49",
+    "tools/verify_project.py": "4358ad4f11a5d6f40d237be57f441ab68b3b660c967d95192f9639b00c77d49b"
+  },
+  "validation_files_sha256": {
+    "build-final.txt": "ec9e97c28268ed5230d857e2c52ea7502461f93a1361d406662d45819b97b821",
+    "fixed_300s_1366_render.json": "2ce1b2b5400b090eedead0f20b09aed62fc43421d3bb17c7ed1088168a1e870d",
+    "offline_main_1000.png": "ccb6e5d6226d24e81d31388c442b3b9d50ec9e1374b05af0610d7b72b9a72bee",
+    "offline_main_1366.png": "322d950c5f06393893b25c9728813cb181d6e2e38a00a25585597669c396e509",
+    "replay_render_budget.py": "0e1b08d04b408b1ba69bdb1a043e11382c9eb2d81250f9de7215e3486b9d0638",
+    "source-smoke-result.json": "3eda0e414705e52e950e104cf65a92f0c98754e9e6edea8b62f61e0a420726d2",
+    "source-smoke.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_smoke.png": "7f777c949720b832d9ec82dcd456c86868fa7f5ad43fac258f4f2732bd4f7ef1"
+  }
+}

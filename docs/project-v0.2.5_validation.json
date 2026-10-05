@@ -1,0 +1,416 @@
+{
+  "created_utc": "2026-09-28T08:00:38.182758+00:00",
+  "project_version": "project-v0.2.5",
+  "compatible_host_version": "host-v0.6.4",
+  "firmware_id": "0x00020005",
+  "protocol_bytes": 199,
+  "hardware_access_by_agent": false,
+  "scope": "H-only lower-bandwidth R32 candidate; G capture keeps the previous gain profile.",
+  "H_gain_q10": [
+    853198,
+    72979,
+    -14826,
+    -45257
+  ],
+  "build": {
+    "setup_violations": 0,
+    "hold_violations": 0,
+    "fmax_mhz": 51.819,
+    "placed_pins": {
+      "clk_50m": {
+        "pad": "M19",
+        "standard": "LVCMOS33"
+      },
+      "rst_n": {
+        "pad": "AB3",
+        "standard": "LVCMOS33"
+      },
+      "key_sw[0]": {
+        "pad": "T18",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[1]": {
+        "pad": "R18",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[2]": {
+        "pad": "U20",
+        "standard": "LVCMOS15"
+      },
+      "key_sw[3]": {
+        "pad": "T20",
+        "standard": "LVCMOS15"
+      },
+      "uart_rx": {
+        "pad": "L20",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[0]": {
+        "pad": "L21",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[1]": {
+        "pad": "M21",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[2]": {
+        "pad": "J20",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[3]": {
+        "pad": "J19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[4]": {
+        "pad": "D19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[5]": {
+        "pad": "H18",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[6]": {
+        "pad": "H19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[7]": {
+        "pad": "G19",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[8]": {
+        "pad": "G17",
+        "standard": "LVCMOS33"
+      },
+      "adc_data_in[9]": {
+        "pad": "E19",
+        "standard": "LVCMOS33"
+      },
+      "adc_otr": {
+        "pad": "F18",
+        "standard": "LVCMOS33"
+      },
+      "enc1_a": {
+        "pad": "Y20",
+        "standard": "LVCMOS33"
+      },
+      "enc1_b": {
+        "pad": "AA20",
+        "standard": "LVCMOS33"
+      },
+      "uart_tx": {
+        "pad": "K20",
+        "standard": "LVCMOS33"
+      },
+      "adc_clk": {
+        "pad": "G18",
+        "standard": "LVCMOS33"
+      },
+      "adc_oe_n": {
+        "pad": "H20",
+        "standard": "LVCMOS33"
+      },
+      "AN1": {
+        "pad": "Y17",
+        "standard": "LVCMOS33"
+      },
+      "AN2": {
+        "pad": "Y19",
+        "standard": "LVCMOS33"
+      },
+      "PWMA": {
+        "pad": "Y18",
+        "standard": "LVCMOS33"
+      },
+      "BN1": {
+        "pad": "AA17",
+        "standard": "LVCMOS33"
+      },
+      "BN2": {
+        "pad": "V15",
+        "standard": "LVCMOS33"
+      },
+      "PWMB": {
+        "pad": "V14",
+        "standard": "LVCMOS33"
+      }
+    },
+    "device": "GW2A-LV55PG484C8/I7",
+    "tool": "V1.9.12.03 (64-bit)",
+    "bitstream_sha256": "9aab9c62cd8a30252575f1ee80fdc80a74a608a6b13db5e082d7c2d1c02ff11b",
+    "dsp_usage": "18.5/20",
+    "logic_usage": "7219/54720",
+    "register_usage": "5198/42000",
+    "created_time": "Mon Sep 28 15:48:18 2026",
+    "source_sha256": {
+      "Attitude_Control/src/adc_sampler.v": "1e5af785dedb3eed3ba5e1d2661e4cccaf7d0cac616c89f50def9c6de8992fed",
+      "Attitude_Control/src/attitude_control.cst": "3d68ed209bc75f8bc565b9458dcafad00bdb873f8a0e553d814e12e2cea02707",
+      "Attitude_Control/src/attitude_control.sdc": "9402f7049dfcf8cbc29688997cf9a63abc0b28154128a2c49c67f5dbbb056ef5",
+      "Attitude_Control/src/attitude_controller.v": "8215ae198265a516b7be92b06e2955d9d30b92241dce657fe21049ffc07f70df",
+      "Attitude_Control/src/calibration_divider.v": "25950cd80fd46c6a65c0000fdda495825575766e37e650be6bbc46b0e08ceeb9",
+      "Attitude_Control/src/key_debounce.v": "a4a648df7d506ea42b7253f4e91967803bdefbca4ead784935e57614e53681ea",
+      "Attitude_Control/src/motor_pwm.v": "4ad6398d76f74fc95842cff862c85312dd54d350b47247c284aa118f6ad2cf28",
+      "Attitude_Control/src/motor_test.v": "c13df05aeffe902e79bf20dfec826123970994b8880d8a5a0f36276076e385ff",
+      "Attitude_Control/src/quadrature_encoder.v": "2696604dd9fa20a7c336855dba596d1c8253f01688735e82ed3a5c6a2877bae1",
+      "Attitude_Control/src/reset_sync.v": "1219239a961487841c2ecb93ae9fab5758c2d234e468968eb04a50739ac05cea",
+      "Attitude_Control/src/state_estimator.v": "232a4e44dfeb714dd8fafac756f7e9c51b82bc41242529a7722ab7fa318abec8",
+      "Attitude_Control/src/telemetry.v": "b8971279a71a4dd2aa011e86c398c1b6b04b30dccc11573de27a6c6bdbafce1c",
+      "Attitude_Control/src/top.v": "06c906b3cb29e369a50010a2d7df0b68aaab32652de89c4ca47a32f5d4e1e6ba",
+      "Attitude_Control/src/uart_rx_byte.v": "764cb9640fec89a57851dd53af536dc93f779ad72f17167d84249d4d5a4ced4b",
+      "Attitude_Control/src/uart_tx_byte.v": "48e56ab342381cc012b8b607c40ecf43d1b91976474e799ebc29dd8e5b8709f3"
+    }
+  },
+  "build_input_sha256": {
+    "Attitude_Control/src/adc_sampler.v": "1e5af785dedb3eed3ba5e1d2661e4cccaf7d0cac616c89f50def9c6de8992fed",
+    "Attitude_Control/src/attitude_control.cst": "3d68ed209bc75f8bc565b9458dcafad00bdb873f8a0e553d814e12e2cea02707",
+    "Attitude_Control/src/attitude_control.sdc": "9402f7049dfcf8cbc29688997cf9a63abc0b28154128a2c49c67f5dbbb056ef5",
+    "Attitude_Control/src/attitude_controller.v": "8215ae198265a516b7be92b06e2955d9d30b92241dce657fe21049ffc07f70df",
+    "Attitude_Control/src/calibration_divider.v": "25950cd80fd46c6a65c0000fdda495825575766e37e650be6bbc46b0e08ceeb9",
+    "Attitude_Control/src/key_debounce.v": "a4a648df7d506ea42b7253f4e91967803bdefbca4ead784935e57614e53681ea",
+    "Attitude_Control/src/motor_pwm.v": "4ad6398d76f74fc95842cff862c85312dd54d350b47247c284aa118f6ad2cf28",
+    "Attitude_Control/src/motor_test.v": "c13df05aeffe902e79bf20dfec826123970994b8880d8a5a0f36276076e385ff",
+    "Attitude_Control/src/quadrature_encoder.v": "2696604dd9fa20a7c336855dba596d1c8253f01688735e82ed3a5c6a2877bae1",
+    "Attitude_Control/src/reset_sync.v": "1219239a961487841c2ecb93ae9fab5758c2d234e468968eb04a50739ac05cea",
+    "Attitude_Control/src/state_estimator.v": "232a4e44dfeb714dd8fafac756f7e9c51b82bc41242529a7722ab7fa318abec8",
+    "Attitude_Control/src/telemetry.v": "b8971279a71a4dd2aa011e86c398c1b6b04b30dccc11573de27a6c6bdbafce1c",
+    "Attitude_Control/src/top.v": "06c906b3cb29e369a50010a2d7df0b68aaab32652de89c4ca47a32f5d4e1e6ba",
+    "Attitude_Control/src/uart_rx_byte.v": "764cb9640fec89a57851dd53af536dc93f779ad72f17167d84249d4d5a4ced4b",
+    "Attitude_Control/src/uart_tx_byte.v": "48e56ab342381cc012b8b607c40ecf43d1b91976474e799ebc29dd8e5b8709f3",
+    "Attitude_Control/Attitude_Control.gprj": "5f35cf7a89e00002631f05ec3aaf4ec5247a6275016143df027068b361eb7932",
+    "Attitude_Control/build.tcl": "375156a061a058f4c4b10d19c9fd654305bde637250bd49b2345e2c6673f9298"
+  },
+  "production_RTL_changed_since_v024": [
+    "Attitude_Control/src/attitude_controller.v",
+    "Attitude_Control/src/telemetry.v"
+  ],
+  "verification": {
+    "python_tests_passed": 253,
+    "python_log": {
+      "path": "Release/project-v0.2.5/validation/python.txt",
+      "bytes": 42042,
+      "sha256": "e2d09e9a56caf3471b8a45feebdaaff1f5e388f8fa9ce5cf68349b1404fddd6a"
+    },
+    "RTL_benches_run_this_release": 13,
+    "RTL_results": [
+      {
+        "bench": "tb_top_v2",
+        "log": {
+          "path": "Release/project-v0.2.5/validation/rtl_integration_tb_top_v2.txt",
+          "bytes": 1930,
+          "sha256": "21d0839dfbfec92a95320b496f9fb0da568de8a34606d00875de183436d32ce7"
+        }
+      },
+      {
+        "bench": "tb_top",
+        "log": {
+          "path": "Release/project-v0.2.5/validation/rtl_integration_tb_top.txt",
+          "bytes": 1887,
+          "sha256": "6105b9e5721f15e709d2b6ba16e72f19e32696720f48f0fe84979130aab1e73b"
+        }
+      },
+      {
+        "bench": "tb_telemetry_v2",
+        "log": {
+          "path": "Release/project-v0.2.5/validation/rtl_integration_tb_telemetry_v2.txt",
+          "bytes": 2293,
+          "sha256": "31b1513d1241ed2aceddb28db5cca6a204ce7cb6762eafb14fddb052ffe6fde1"
+        }
+      },
+      {
+        "bench": "tb_sensor_recovery",
+        "log": {
+          "path": "Release/project-v0.2.5/validation/rtl_integration_tb_sensor_recovery.txt",
+          "bytes": 1886,
+          "sha256": "d4d42fcdd0a80b78b3952695ff25e8241bacfef8dea6dda7e78087104407b7ad"
+        }
+      },
+      {
+        "bench": "tb_start_diagnostics",
+        "log": {
+          "path": "Release/project-v0.2.5/validation/rtl_integration_tb_start_diagnostics.txt",
+          "bytes": 1896,
+          "sha256": "f450872d2de65743136482547c9ddfb83afcef644d276bada2f7b6fe788dc6c8"
+        }
+      },
+      {
+        "bench": "tb_sample_freshness",
+        "log": {
+          "path": "Release/project-v0.2.5/validation/rtl_integration_tb_sample_freshness.txt",
+          "bytes": 1893,
+          "sha256": "212bc34fd36b345df05175eceeab9ccbadaac739939b85561cb4ab2cd9ffd0a4"
+        }
+      },
+      {
+        "bench": "tb_motor_test_top",
+        "log": {
+          "path": "Release/project-v0.2.5/validation/rtl_integration_tb_motor_test_top.txt",
+          "bytes": 1972,
+          "sha256": "3677ec66626b3ea7d143f6250ba4fca7f92fa3e0a418b2ccd981a735d31ec95e"
+        }
+      },
+      {
+        "bench": "tb_handover_feedback",
+        "evidence": {
+          "path": "Release/project-v0.2.5/validation/fpga_review_r32_tb_handover_feedback_final.json",
+          "bytes": 5656,
+          "sha256": "c94cc5a73ae4f83ed506dc79bdfd343bdfcff7ca5fdc000930473074c08eaab7"
+        },
+        "log": {
+          "path": "Release/project-v0.2.5/validation/fpga_review_r32_tb_handover_feedback_final.log",
+          "bytes": 2709,
+          "sha256": "1b7b02c30137b00fba66deebf5645eae7fc1524b0b2329662ce1758eeb27ed17"
+        }
+      },
+      {
+        "bench": "tb_balance_entry",
+        "evidence": {
+          "path": "Release/project-v0.2.5/validation/fpga_review_r32_tb_balance_entry.json",
+          "bytes": 5626,
+          "sha256": "ab6449d941a683c6fc5293a12fcb13d098b9e7b6fb208478154c8dac5886a0db"
+        },
+        "log": {
+          "path": "Release/project-v0.2.5/validation/fpga_review_r32_tb_balance_entry.log",
+          "bytes": 2054,
+          "sha256": "d179684c55c1ad87c77fbafd5fd53f2ab60477c4cf93b2074748d5e435d8eb49"
+        }
+      },
+      {
+        "bench": "tb_controller",
+        "evidence": {
+          "path": "Release/project-v0.2.5/validation/fpga_review_r32_tb_controller.json",
+          "bytes": 5610,
+          "sha256": "e93b1a7e116587deb4061bec4fb5bbd82958571fff225e8337d6450c72e5992e"
+        },
+        "log": {
+          "path": "Release/project-v0.2.5/validation/fpga_review_r32_tb_controller.log",
+          "bytes": 1980,
+          "sha256": "38e37e76d7d60bd32ee1d35a3faf7ecdcc72e7a4daf8396ceed8b48ec58af424"
+        }
+      },
+      {
+        "bench": "tb_start_runtime",
+        "evidence": {
+          "path": "Release/project-v0.2.5/validation/fpga_review_r32_tb_start_runtime.json",
+          "bytes": 5611,
+          "sha256": "ccd060d41080223dcdcc295c7272db524750ddd9cd4c3d432ddf7fb7c9fbd9a9"
+        },
+        "log": {
+          "path": "Release/project-v0.2.5/validation/fpga_review_r32_tb_start_runtime.log",
+          "bytes": 2019,
+          "sha256": "63acce74c5365f3bee938bd0bfd22561afa957662f0e7feb3f2f3699163d28aa"
+        }
+      },
+      {
+        "bench": "tb_closed_loop",
+        "log": {
+          "path": "Release/project-v0.2.5/validation/rtl_balance_tb_closed_loop.txt",
+          "bytes": 1691,
+          "sha256": "a1b23f00ed380edd0d133bbf2fceda8dfcb071235f3193184354895c826ad765"
+        }
+      },
+      {
+        "bench": "tb_fault_heartbeat",
+        "log": {
+          "path": "Release/project-v0.2.5/validation/rtl_balance_tb_fault_heartbeat.txt",
+          "bytes": 212,
+          "sha256": "cfe3a29250c34de3be6679e62a2474e0606d4432ffad9719092630133a5a6002"
+        }
+      }
+    ],
+    "verilog_2005_top_passed": true,
+    "unaffected_benches_not_rerun": [
+      "tb_adc_continuous",
+      "tb_adc_observability",
+      "tb_adc_quality",
+      "tb_estimator",
+      "tb_estimator_motion",
+      "tb_interfaces",
+      "tb_motor_test"
+    ],
+    "not_rerun_scope": "Seven unchanged sampler/estimator/interface-only benches remain historical v0.2.4 evidence; not claimed as rerun.",
+    "H_synthetic_step_response_permille": {
+      "one_ADC_code": 58,
+      "five_ADC_codes": 276,
+      "old_one_ADC_code": 228,
+      "old_five_ADC_codes": 1000
+    },
+    "models": [
+      {
+        "path": "Release/project-v0.2.4/validation/h_gain_candidate.py",
+        "bytes": 19622,
+        "sha256": "0383f66e01ddbc9d6f7d9d2d33c66b15bf75fec6f42c811c56ae41f7c74c5de7"
+      },
+      {
+        "path": "Release/project-v0.2.4/validation/h_gain_candidate.json",
+        "bytes": 849711,
+        "sha256": "fcf32b5060f71fa9d861ba403863afa1adad25d755c5c87ea6f72f415a3219c7"
+      },
+      {
+        "path": "Release/project-v0.2.4/validation/h_gain_candidate_report.md",
+        "bytes": 8030,
+        "sha256": "4b4102ddb4f867c28afaa82e0c038c62c25e93591f86a8f13bdfde43252aa733"
+      },
+      {
+        "path": "Release/project-v0.2.4/validation/h_gain_candidate_coast.py",
+        "bytes": 13370,
+        "sha256": "9d461720d5501beabfa941f32906f76b8dbfb517a48dc96990773bbb6dcae929"
+      },
+      {
+        "path": "Release/project-v0.2.4/validation/h_gain_candidate_coast.json",
+        "bytes": 25387,
+        "sha256": "6a526258312f6b99d39282b442fde8a0267a5a346b7a7431285a46aa2b67295c"
+      },
+      {
+        "path": "Release/project-v0.2.4/validation/h_gain_candidate_coast_report.md",
+        "bytes": 5426,
+        "sha256": "008d960de4f93c3cf82b1514b69f0d309cb96de5ecbbe58f8b2eebce0021aa8c"
+      }
+    ],
+    "model_scope": "Historical candidate study includes R0.5/R8/R32; historical source hashes are not the final RTL. Coast supplement checks final H coefficients. Neither is physical validation.",
+    "intermediate_evidence": "validation/r8_intermediate and fpga_review_r8_* preserve superseded R8 outputs, an old-version golden-frame mismatch and a cancelled superseded run; excluded from final acceptance."
+  },
+  "physical_status": {
+    "baseline_field_audit": {
+      "path": "Release/host-v0.6.4/validation/h_oscillation_comparison.json",
+      "bytes": 9537,
+      "sha256": "c999396351ff0abdb5b9495408075ad9178688d719749a72d47ecd6984916c94"
+    },
+    "baseline_version": "project-v0.2.4",
+    "baseline": "User confirms hands-free H holding, but large arm oscillation; both logged H intervals fault-free and ended by S.",
+    "v025_tested_on_hardware": false,
+    "pending": [
+      "H arm oscillation and drift comparison",
+      "long-duration small-oscillation holding",
+      "push recovery",
+      "automatic swing-up",
+      "long-duration physical serial reliability"
+    ],
+    "limits": "Actual mechanism dynamics and independent CPR remain unmeasured; conservative H gains can increase static arm offset and slow recovery."
+  },
+  "artifacts": [
+    {
+      "path": "Release/project-v0.2.5/Attitude_Control.fs",
+      "bytes": 18588969,
+      "sha256": "9aab9c62cd8a30252575f1ee80fdc80a74a608a6b13db5e082d7c2d1c02ff11b"
+    },
+    {
+      "path": "Release/project-v0.2.5/README.md",
+      "bytes": 1235,
+      "sha256": "41d925f2d22f8e24e794f04d1b2813f6c45be671b16eb285c4cbbf964adf2e8b"
+    },
+    {
+      "path": "Release/host-v0.6.4/J280_Monitor.exe",
+      "bytes": 57704179,
+      "sha256": "c9dde1221e39ce823bad6403874d0b141aae1cbd39ae140cf9fbce58e3ad3b4f"
+    },
+    {
+      "path": "docs/H直立平衡振荡分析.md",
+      "bytes": 5479,
+      "sha256": "b2c85bef587038abad246a82b94a6cfd9062c1f9a44c60b2a64525d447fa6c07"
+    },
+    {
+      "path": "tools/control_model.py",
+      "bytes": 14566,
+      "sha256": "b61d0cecc51f4a7ecd9341189fc58885af7b00d4ab71f8de95d24e06ea4aa63c"
+    }
+  ]
+}
